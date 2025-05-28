@@ -1,11 +1,22 @@
 import React, { useState } from 'react';
-import AppointmentDetails from './AppointmentDetails';
+import AppointmentDrawer from './AppointmentDetails';
 
 const AppointmentScheduler = () => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false); // Drawer open state
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
 
   const toggleDetails = () => {
     setIsExpanded(!isExpanded);
+  };
+
+  const handleDoubleClick = (time, doctor) => {
+    if (!isDrawerOpen) { // Prevent opening the drawer again if it's already open
+      setSelectedTimeSlot(time);
+      setSelectedDoctor(doctor);
+      setIsDrawerOpen(true);  // Open the AppointmentDrawer on double-click
+    }
   };
 
   const timeSlots = [
@@ -70,11 +81,18 @@ const AppointmentScheduler = () => {
         <div className="rgtcol">
           {timeSlots.map((time, index) => (
             <div className="cldrrow" key={index}>
-              <div className="cldrttl clnctm">
+              <div
+                className="cldrttl clnctm"
+                onDoubleClick={() => handleDoubleClick(time, doctors[index % doctors.length])} // Handle double click and set time and doctor
+              >
                 {time}
               </div>
-              {doctors.map((_, colIndex) => (
-                <div key={colIndex} className="cldrcol clncoff" onDoubleClick={toggleDetails}>
+              {doctors.map((doctor, colIndex) => (
+                <div
+                  key={colIndex}
+                  className="cldrcol clncoff"
+                  onDoubleClick={() => handleDoubleClick(time, doctor)} // Handle double click and set time and doctor
+                >
                   {/* Appointment cells */}
                 </div>
               ))}
@@ -83,43 +101,15 @@ const AppointmentScheduler = () => {
         </div>
       </div>
 
-      {isExpanded && (
-        <div className="smdiv">
-          <div className="resizable" id="resizableDiv">
-            <div className="rightcls" onClick={toggleDetails}>
-              <img src="images/dblrigh.svg" alt="" width="16" height="16" />
-            </div>
-
-            {/* Appointment details here */}
-            <div className="apptcdet custdiv">
-              <img src="images/usericon.png" width="30" alt="" />
-              <h3 className="cstnm">Jane Doe</h3>
-            </div>
-            <div className="apptsts">
-              <div className="form-group slctgrp">
-                <label htmlFor="">Status</label>
-                <select id="docSelect">
-                  <option value="0">New</option>
-                  <option value="1" selected>Booked</option>
-                  <option value="2">Confirmed</option>
-                  {/* other options */}
-                </select>
-              </div>
-            </div>
-
-            {/* More Appointment Info */}
-            <div className="apptlst">
-              <ul>
-                <li><span className="apptlbl">Date:</span> 29/05/2025</li>
-                <li><span className="apptlbl">Start Time:</span> 10:00 AM</li>
-                {/* more details */}
-              </ul>
-            </div>
-          </div>
-        </div>
+      {/* Render AppointmentDrawer when isDrawerOpen is true */}
+      {isDrawerOpen && (
+        <AppointmentDrawer 
+          isOpen={isDrawerOpen} 
+          onClose={() => setIsDrawerOpen(false)} 
+          timeSlot={selectedTimeSlot} 
+          doctor={selectedDoctor}
+        />
       )}
-
-      <AppointmentDetails isExpanded={true}/>
     </section>
   );
 };

@@ -1,19 +1,92 @@
-// src/components/ServiceRequestForm.jsx
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import AddNoteModal from "../../AddNoteModal";
 
 const ServiceRequestForm = () => {
+  const [formData, setFormData] = useState({
+    service: "",
+    preference: "any",
+    practitioner: "",
+    startTime: "",
+    duration: "",
+    endTime: "", // New field for End Time
+    room: "",
+  });
 
-    const [showAddNote, setShowAddNote] = useState(false);
+  const [errors, setErrors] = useState({
+    service: "",
+    preference: "",
+    practitioner: "",
+    startTime: "",
+    duration: "",
+    room: "",
+  });
 
+  const [showAddNote, setShowAddNote] = useState(false);
+
+  const validateForm = () => {
+    let formErrors = {};
+    let isValid = true;
+
+    if (!formData.service) {
+      formErrors.service = "Service is required.";
+      isValid = false;
+    }
+
+    if (!formData.practitioner) {
+      formErrors.practitioner = "Please select a practitioner.";
+      isValid = false;
+    }
+
+    if (!formData.startTime) {
+      formErrors.startTime = "Start time is required.";
+      isValid = false;
+    }
+
+    if (!formData.duration) {
+      formErrors.duration = "Duration is required.";
+      isValid = false;
+    }
+
+    if (!formData.room) {
+      formErrors.room = "Please select a room.";
+      isValid = false;
+    }
+
+    setErrors(formErrors);
+    return isValid;
+  };
+
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [id]: value,
+    }));
+  };
+
+  const handleRadioChange = (e) => {
+    const { value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      preference: value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (validateForm()) {
+      console.log("Form submitted successfully", formData);
+    }
+  };
 
   useEffect(() => {
     const timeSelect = document.getElementById("timeSelect");
     const durationSelect = document.getElementById("durationSelect");
 
+    // Populating Start Time (from 10:00 AM to 10:00 PM with 5 mins interval)
     if (timeSelect) {
-      const startTime = 10 * 60;
-      const endTime = 23 * 60 + 55;
+      const startTime = 10 * 60; // 10:00 AM
+      const endTime = 22 * 60; // 10:00 PM
       for (let minutes = startTime; minutes <= endTime; minutes += 5) {
         const hours = Math.floor(minutes / 60);
         const mins = minutes % 60;
@@ -26,6 +99,7 @@ const ServiceRequestForm = () => {
       }
     }
 
+    // Populating Duration (from 5 mins to 12 hours with 5 mins interval)
     if (durationSelect) {
       for (let minutes = 5; minutes <= 720; minutes += 5) {
         const hrs = Math.floor(minutes / 60);
@@ -37,79 +111,221 @@ const ServiceRequestForm = () => {
     }
   }, []);
 
+  const calculateEndTime = (startTime, duration) => {
+    // Convert start time to minutes
+    const startTimeInMinutes = convertToMinutes(startTime);
+    const endTimeInMinutes = startTimeInMinutes + parseInt(duration, 10);
+
+    // Convert back to time format
+    return convertToTime(endTimeInMinutes);
+  };
+
+  const convertToMinutes = (time) => {
+    const [hours, minutesPeriod] = time.split(":");
+    const [minutes, period] = minutesPeriod.split(" ");
+    let totalMinutes = parseInt(hours) * 60 + parseInt(minutes);
+
+    if (period === "PM" && hours !== "12") {
+      totalMinutes += 12 * 60;
+    }
+
+    if (period === "AM" && hours === "12") {
+      totalMinutes -= 12 * 60;
+    }
+
+    return totalMinutes;
+  };
+
+  const convertToTime = (minutes) => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    const period = hours >= 12 ? "PM" : "AM";
+    const displayHours = hours % 12 === 0 ? 12 : hours % 12;
+    const displayMins = mins.toString().padStart(2, "0");
+    return `${displayHours}:${displayMins} ${period}`;
+  };
+
+  const handleStartTimeChange = (e) => {
+    const { value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      startTime: value,
+      endTime: calculateEndTime(value, formData.duration), // Recalculate end time
+    }));
+  };
+
+  const handleDurationChange = (e) => {
+    const { value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      duration: value,
+      endTime: calculateEndTime(formData.startTime, value), // Recalculate end time
+    }));
+  };
+
+  // Handle double-click on a time slot
+  const handleTimeSlotDoubleClick = (time) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      startTime: time,
+      endTime: calculateEndTime(time, formData.duration), // Recalculate end time based on new start time
+    }));
+  };
+
   return (
-    <>   
-     <div className="srvwrp">
-      <div className="frmlgnd">Requesting Services</div>
+    <>
+      <div className="srvwrp">
+        <div className="frmlgnd">Requesting Services</div>
 
-      <div className="form-group">
-        <input type="text" id="service" placeholder=" " />
-        <label htmlFor="service" className="frmlbl">Service</label>
+        <form onSubmit={handleSubmit}>
+          {/* Service */}
+          <div className="form-group">
+            <input
+              type="text"
+              id="service"
+              placeholder=" "
+              value={formData.service}
+              onChange={handleChange}
+            />
+            <label htmlFor="service" className="frmlbl">Service</label>
+            {errors.service && <div className="error">{errors.service}</div>}
+          </div>
+
+          {/* Preference */}
+          <div className="form-group radgrp">
+            <label>Preference</label>
+            <div className="rdbox">
+              <input
+                type="radio"
+                id="any"
+                name="preference"
+                value="any"
+                checked={formData.preference === "any"}
+                onChange={handleRadioChange}
+              />
+              <label htmlFor="any">Any</label>
+            </div>
+            <div className="rdbox">
+              <input
+                type="radio"
+                id="male2"
+                name="preference"
+                value="male"
+                checked={formData.preference === "male"}
+                onChange={handleRadioChange}
+              />
+              <label htmlFor="male2">Male</label>
+            </div>
+            <div className="rdbox">
+              <input
+                type="radio"
+                id="female2"
+                name="preference"
+                value="female"
+                checked={formData.preference === "female"}
+                onChange={handleRadioChange}
+              />
+              <label htmlFor="female2">Female</label>
+            </div>
+          </div>
+
+          {/* Practitioner */}
+          <div className="form-group slctgrp">
+            <label>Practitioner:</label>
+            <select
+              id="practitioner"
+              value={formData.practitioner}
+              onChange={handleChange}
+            >
+              <option value="">Select Practitioner</option>
+              {[...Array(7)].map((_, i) => (
+                <option key={i} value={i + 1}>Dr. Aaliya</option>
+              ))}
+            </select>
+            {errors.practitioner && <div className="error">{errors.practitioner}</div>}
+          </div>
+
+          {/* Start Time */}
+          <div className="form-group slctgrp">
+            <label htmlFor="timeSelect">Start Time:</label>
+            <select
+              id="timeSelect"
+              value={formData.startTime}
+              onChange={handleStartTimeChange}
+            >
+              {[...Array(13)].map((_, index) => (
+                <option key={index} value={`10:${(index * 5).toString().padStart(2, "0")} AM`}>
+                  10:{(index * 5).toString().padStart(2, "0")} AM
+                </option>
+              ))}
+            </select>
+            {errors.startTime && <div className="error">{errors.startTime}</div>}
+          </div>
+
+          {/* Duration */}
+          <div className="form-group slctgrp">
+            <label htmlFor="durationSelect">Duration:</label>
+            <select
+              id="durationSelect"
+              value={formData.duration}
+              onChange={handleDurationChange}
+            >
+              {[...Array(144)].map((_, i) => (
+                <option key={i} value={i * 5 + 5}>
+                  {i * 5 + 5} mins
+                </option>
+              ))}
+            </select>
+            {errors.duration && <div className="error">{errors.duration}</div>}
+          </div>
+
+          {/* End Time */}
+          <div className="form-group">
+            <input
+              type="text"
+              id="endtm"
+              placeholder=" "
+              value={formData.endTime}
+              readOnly
+            />
+            <label htmlFor="endtm" className="frmlbl">End Time</label>
+          </div>
+
+          {/* Room */}
+          <div className="lstfrmsect">
+            <div className="form-group slctgrp rmgrp">
+              <label>Room:</label>
+              <select
+                value={formData.room}
+                onChange={handleChange}
+                id="room"
+              >
+                <option value="">Select Room</option>
+                {[...Array(4)].map((_, i) => (
+                  <option key={i} value={i + 1}>Room {i + 1}</option>
+                ))}
+              </select>
+            </div>
+
+            <span
+            className="notebtn tooltip"
+            data-tooltip="Add Note"
+            data-tooltip-pos="down"
+            onClick={() => setShowAddNote(true)}
+          >
+            <img src="/images/notes.svg" alt="Add Note" />
+          </span>
+
+          <button className="lnkbtn" type="submit">
+            <img src="/images/addservice.svg" alt="Add Service" /> Add Service
+          </button>
+          </div>
+
+          
+        </form>
       </div>
 
-      <div className="form-group radgrp">
-        <label>Preference</label>
-        <div className="rdbox">
-          <input type="radio" id="any" name="preference" defaultChecked />
-          <label htmlFor="any">Any</label>
-        </div>
-        <div className="rdbox">
-          <input type="radio" id="male2" name="preference" />
-          <label htmlFor="male2">Male</label>
-        </div>
-        <div className="rdbox">
-          <input type="radio" id="female2" name="preference" />
-          <label htmlFor="female2">Female</label>
-        </div>
-      </div>
-
-      <div className="form-group slctgrp">
-        <label>Practitioner:</label>
-        <select id="docSelect">
-          <option value="0">Select Practitioner</option>
-          {[...Array(7)].map((_, i) => (
-            <option key={i} value={i + 1}>Dr. Aaliya</option>
-          ))}
-        </select>
-      </div>
-
-      <div className="form-group slctgrp">
-        <label htmlFor="timeSelect">Start Time:</label>
-        <select id="timeSelect"></select>
-      </div>
-
-      <div className="form-group slctgrp">
-        <label htmlFor="durationSelect">Duration:</label>
-        <select id="durationSelect"></select>
-      </div>
-
-      <div className="form-group">
-        <input type="text" id="endtm" placeholder=" " readOnly value="10:05 AM" />
-        <label htmlFor="endtm" className="frmlbl">End Time</label>
-      </div>
-
-      <div className="lstfrmsect">
-        <div className="form-group slctgrp rmgrp">
-          <label>Room:</label>
-          <select>
-            <option value="0">Select Room</option>
-            {[...Array(4)].map((_, i) => (
-              <option key={i} value={i + 1}>Room {i + 1}</option>
-            ))}
-          </select>
-        </div>
-
-        <span className="notebtn tooltip" data-tooltip="Add Note" data-tooltip-pos="down" onClick={() => setShowAddNote(true)}>
-          <img src="/images/notes.svg" alt="Add Note" />
-        </span>
-
-        <button className="lnkbtn">
-          <img src="/images/addservice.svg" alt="Add Service" /> Add Service
-        </button>
-      </div>
-    </div>
-
-    {showAddNote && (
+      {showAddNote && (
         <AddNoteModal
           onClose={() => setShowAddNote(false)}
           onSubmit={() => {
@@ -118,9 +334,7 @@ const ServiceRequestForm = () => {
           }}
         />
       )}
-  </>
-
-  
+    </>
   );
 };
 

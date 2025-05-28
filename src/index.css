@@ -670,7 +670,7 @@ table {
 
 
                 .dappttl {
-                    font: 600 16px/22px 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    font: 600 16px/22px 'Lato', sans-serif;
                     color: #000;
                 }
 
@@ -915,7 +915,7 @@ table {
                 }
 
                 .frmlgnd {
-            font: 600 13px/20px 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font: 600 13px/20px 'Lato', sans-serif;
             margin: 0 0 12px;
             background: #2D3250;
             padding: 5px 10px;
@@ -932,11 +932,11 @@ table {
         }
 
         .frmdiv label {
-            font: 400 13px/20px 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font: 400 13px/20px 'Lato', sans-serif;
         }
 
         .frmdiv input {
-            font: 400 14px/20px 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font: 400 14px/20px 'Lato', sans-serif;
             padding: 5px 10px;
             border-radius: 4px;
             width: 200px;
@@ -944,7 +944,7 @@ table {
         }
 
         .frmdiv select {
-            font: 400 14px/20px 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font: 400 14px/20px 'Lato', sans-serif;
             padding: 5px 10px;
             border-radius: 4px;
             width: 222px;
@@ -960,7 +960,7 @@ table {
             background: none;
             border: none;
             padding: 10px;
-            font: 600 13px/20px 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font: 600 13px/20px 'Lato', sans-serif;
         }
 
         .prilnk {
@@ -969,7 +969,7 @@ table {
             background: #334B71;
             border: none;
             padding: 2px 10px;
-            font: 600 13px/15px 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font: 600 13px/15px 'Lato', sans-serif;
         }
 
         .btnbar {
@@ -1059,7 +1059,7 @@ table {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font: 500 16px/20px 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font: 500 16px/20px 'Lato', sans-serif;
         }
 
         .clsbtn {
@@ -1220,7 +1220,7 @@ table {
 
 .lftcol {
   display: flex;
-  font: 400 12px/15px 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font: 400 12px/15px 'Lato', sans-serif;
   border-bottom: 1px solid #E9EDF5;
 }
 
@@ -1689,7 +1689,7 @@ table {
                     margin: 0 0 30px;
                 }
 .error {
-  color: red;
+  color: rgb(132, 11, 11);
   font-size: 12px;
   margin-top: 5px;
 }
