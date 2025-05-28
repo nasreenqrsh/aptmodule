@@ -12,6 +12,8 @@ const AppointmentScheduler = () => {
   };
 
   const handleDoubleClick = (time, doctor) => {
+    console.log(time)
+    console.log(doctor)
     if (!isDrawerOpen) { // Prevent opening the drawer again if it's already open
       setSelectedTimeSlot(time);
       setSelectedDoctor(doctor);
