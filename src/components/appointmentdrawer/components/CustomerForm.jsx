@@ -42,16 +42,16 @@ const CustomerForm = () => {
     }
   };
 
-  // Auto-suggestion for Mobile (if required)
-  const handleMobileChange = (e) => {
-    const { value } = e.target;
+  // Handle input change for other fields
+  const handleChange = (e) => {
+    const { id, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      number: value,
+      [id]: value,
     }));
   };
 
-  // Validation function
+  // Validation function for form fields
   const validateForm = () => {
     let formErrors = {};
     let isValid = true;
@@ -80,13 +80,60 @@ const CustomerForm = () => {
     return isValid;
   };
 
-  // Handle input change
-  const handleChange = (e) => {
-    const { id, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [id]: value,
-    }));
+  // Handle blur for field validation
+  const handleBlur = (e) => {
+    const { id } = e.target;
+    validateField(id);
+  };
+
+  // Validate individual fields
+  const validateField = (field) => {
+    let formErrors = { ...errors };
+    let isValid = true;
+
+    switch (field) {
+      case "number":
+        if (!formData.number || formData.number.length !== 10) {
+          formErrors.number = "Mobile number must be 10 digits.";
+          isValid = false;
+        } else {
+          formErrors.number = "";
+        }
+        break;
+
+      case "name":
+        if (!formData.name) {
+          formErrors.name = "First name is required.";
+          isValid = false;
+        } else {
+          formErrors.name = "";
+        }
+        break;
+
+      case "lastname":
+        if (!formData.lastname) {
+          formErrors.lastname = "Last name is required.";
+          isValid = false;
+        } else {
+          formErrors.lastname = "";
+        }
+        break;
+
+      case "email":
+        if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) {
+          formErrors.email = "Please enter a valid email address.";
+          isValid = false;
+        } else {
+          formErrors.email = "";
+        }
+        break;
+
+      default:
+        break;
+    }
+
+    setErrors(formErrors);
+    return isValid;
   };
 
   // Handle form submission
@@ -95,6 +142,15 @@ const CustomerForm = () => {
     if (validateForm()) {
       console.log("Form submitted successfully", formData);
     }
+  };
+
+  // Handle click on auto-suggested name
+  const handleNameSelect = (name) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      name,
+    }));
+    setFilteredNames([]); // Hide suggestions once a name is selected
   };
 
   return (
@@ -109,7 +165,8 @@ const CustomerForm = () => {
             id="number"
             placeholder=" "
             value={formData.number}
-            onChange={handleMobileChange}
+            onChange={handleChange}
+            onBlur={handleBlur}
           />
           <label htmlFor="number" className="frmlbl">
             Mobile Number
@@ -125,6 +182,7 @@ const CustomerForm = () => {
             placeholder=" "
             value={formData.name}
             onChange={handleNameChange}
+            onBlur={handleBlur}
           />
           <label htmlFor="name" className="frmlbl">
             First Name
@@ -135,7 +193,11 @@ const CustomerForm = () => {
           {filteredNames.length > 0 && (
             <ul className="suggestions">
               {filteredNames.map((name, index) => (
-                <li key={index} onClick={() => setFormData({ ...formData, name })}>
+                <li
+                  key={index}
+                  onClick={() => handleNameSelect(name)}
+                  className="suggestion-item"
+                >
                   {name}
                 </li>
               ))}
@@ -151,6 +213,7 @@ const CustomerForm = () => {
             placeholder=" "
             value={formData.lastname}
             onChange={handleChange}
+            onBlur={handleBlur}
           />
           <label htmlFor="lastname" className="frmlbl">
             Last Name
@@ -166,6 +229,7 @@ const CustomerForm = () => {
             placeholder=" "
             value={formData.email}
             onChange={handleChange}
+            onBlur={handleBlur}
           />
           <label htmlFor="email" className="frmlbl">
             Email Address
@@ -200,11 +264,7 @@ const CustomerForm = () => {
           </div>
         </div>
 
-        <div className="form-group">
-          <button type="submit" className="submitbtn">
-            Submit
-          </button>
-        </div>
+        
       </form>
     </div>
   );

@@ -389,6 +389,7 @@ table {
 
         .appointdrwr.expand {
             bottom: 0;
+             transition: 1s all;
         }
 
         .apptfrmflx {
@@ -1207,7 +1208,7 @@ table {
 .lftcol {
   display: flex;
   font: 400 12px/15px 'Lato', sans-serif;
-  border-bottom: 1px solid #E9EDF5;
+  border-bottom: 1px solid #b7babf;
 }
 
 .rgtcol {
@@ -1219,11 +1220,11 @@ table {
 .tblcell {
   height: 45px;
   padding: 10px;
-  border-bottom: 1px solid #E9EDF5;
+  border-bottom: 1px solid #b7babf;
 }
 
 .lftmin {
-  border-left: 1px solid #E9EDF5;
+  border-left: 1px solid #b7babf;
   width: 180px;
   font-weight: 600;
   border-right: 3px solid #E9EDF5;
@@ -1237,19 +1238,22 @@ table {
 .lgndth {
   padding: 10px;
   font-weight: 600;
-  height: 50px;
+  height: 25px;
 }
+
+.hrtxt{text-align: right;}
 
 .cldrttl {
   padding: 10px;
   font-weight: 400;
-  border-right: 1px solid #E9EDF5;
-  border-bottom: 1px solid #E9EDF5;
+  border-right: 1px solid #b7babf;
+  border-bottom: 1px solid #b7babf;
   padding: 10px 5px;
-  font-size: 10px;
-  height: 50px;
+  font-size: 9px;
+  height: 25px;
   text-align: center;
   position: sticky;
+  font-weight:700;
   width: 40px;
   display: flex;
   align-items: flex-end;
@@ -1259,8 +1263,8 @@ table {
 .cldrcol {
   width: 40px;
   height: 45px;
-  border-right: 1px solid #E9EDF5;
-  border-bottom: 1px solid #E9EDF5;
+  border-right: 1px solid #b7babf;
+  border-bottom: 1px solid #b7babf;
   padding: 10px 5px;
   position: relative;
 }
@@ -1697,7 +1701,7 @@ table {
     border-radius: 2px;
     font-size: 12px;
     font-family: 'Lato', sans-serif;
-    padding:10px;
+    padding:10px 5px;
     position: absolute;
     top:29px;
     width: 280px;
@@ -1706,7 +1710,7 @@ table {
 
 .suggestions li{
     margin: 0 0 5px;
-    padding: 2px;
+    padding:5px 2px;
     cursor: pointer;
 }
 

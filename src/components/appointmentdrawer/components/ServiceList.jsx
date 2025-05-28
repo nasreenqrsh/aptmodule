@@ -1,17 +1,49 @@
-// src/components/ServiceList.jsx
-import React from "react";
-
-const bookedServices = new Array(6).fill({
-  service: "Hair Loss Treatment (PRP - Hair Loss Treatment )",
-  preference: "Female",
-  practitioner: "Dr. Aaliya",
-  amount: 100,
-  start: "10:00 AM",
-  end: "10:50 AM",
-  duration: "50 mins"
-});
+import React, { useState } from "react";
 
 const ServiceList = () => {
+  const [bookedServices, setBookedServices] = useState([
+    {
+      service: "Hair Loss Treatment (PRP - Hair Loss Treatment)",
+      preference: "Female",
+      practitioner: "Dr. Aaliya",
+      amount: 100,
+      start: "10:00 AM",
+      end: "10:50 AM",
+      duration: "50 mins"
+    },
+    {
+      service: "Skin Treatment (Laser)",
+      preference: "Male",
+      practitioner: "Dr. Samira",
+      amount: 150,
+      start: "11:00 AM",
+      end: "11:45 AM",
+      duration: "45 mins"
+    },
+    {
+      service: "Skin Treatment (Laser)",
+      preference: "Male",
+      practitioner: "Dr. Samira",
+      amount: 150,
+      start: "11:00 AM",
+      end: "11:45 AM",
+      duration: "45 mins"
+    },
+    {
+      service: "Skin Treatment (Laser)",
+      preference: "Male",
+      practitioner: "Dr. Samira",
+      amount: 150,
+      start: "11:00 AM",
+      end: "11:45 AM",
+      duration: "45 mins"
+    }
+  ]);
+
+  const deleteService = (index) => {
+    setBookedServices((prevServices) => prevServices.filter((_, i) => i !== index));
+  };
+
   return (
     <div className="srvlist">
       <div className="frmlgnd">Booked Services</div>
@@ -42,7 +74,12 @@ const ServiceList = () => {
                   <td>{service.end}</td>
                   <td>{service.duration}</td>
                   <td>
-                    <button className="delbtn tooltip" data-tooltip="Delete Service" data-tooltip-pos="left">
+                    <button
+                      className="delbtn tooltip"
+                      data-tooltip="Delete Service"
+                      data-tooltip-pos="left"
+                      onClick={() => deleteService(index)}
+                    >
                       <img src="/images/deletewt.svg" alt="Delete" />
                     </button>
                   </td>

@@ -106,6 +106,7 @@ const AppointmentScheduler = () => {
       {/* Render AppointmentDrawer when isDrawerOpen is true */}
       {isDrawerOpen && (
         <AppointmentDrawer 
+                  className={isDrawerOpen ? "expand" : ""} // Add the 'expand' class if drawer is open
           isOpen={isDrawerOpen} 
           onClose={() => setIsDrawerOpen(false)} 
           timeSlot={selectedTimeSlot} 

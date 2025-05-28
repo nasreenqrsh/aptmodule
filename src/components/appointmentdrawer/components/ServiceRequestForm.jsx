@@ -64,39 +64,66 @@ const ServiceRequestForm = () => {
     setFilteredServices([]); // Clear suggestions after selection
   };
 
-  const validateForm = () => {
-    let formErrors = {};
+  // Validation function for form fields
+  const validateField = (field) => {
+    let formErrors = { ...errors };
     let isValid = true;
 
-    if (!formData.service) {
-      formErrors.service = "Service is required.";
-      isValid = false;
-    }
+    switch (field) {
+      case "service":
+        if (!formData.service) {
+          formErrors.service = "Service is required.";
+          isValid = false;
+        } else {
+          formErrors.service = "";
+        }
+        break;
 
-    if (!formData.practitioner) {
-      formErrors.practitioner = "Please select a practitioner.";
-      isValid = false;
-    }
+      case "practitioner":
+        if (!formData.practitioner) {
+          formErrors.practitioner = "Please select a practitioner.";
+          isValid = false;
+        } else {
+          formErrors.practitioner = "";
+        }
+        break;
 
-    if (!formData.startTime) {
-      formErrors.startTime = "Start time is required.";
-      isValid = false;
-    }
+      case "startTime":
+        if (!formData.startTime) {
+          formErrors.startTime = "Start time is required.";
+          isValid = false;
+        } else {
+          formErrors.startTime = "";
+        }
+        break;
 
-    if (!formData.duration) {
-      formErrors.duration = "Duration is required.";
-      isValid = false;
-    }
+      case "duration":
+        if (!formData.duration) {
+          formErrors.duration = "Duration is required.";
+          isValid = false;
+        } else {
+          formErrors.duration = "";
+        }
+        break;
 
-    if (!formData.room) {
-      formErrors.room = "Please select a room.";
-      isValid = false;
+      case "room":
+        if (!formData.room) {
+          formErrors.room = "Please select a room.";
+          isValid = false;
+        } else {
+          formErrors.room = "";
+        }
+        break;
+
+      default:
+        break;
     }
 
     setErrors(formErrors);
     return isValid;
   };
 
+  // Handle change for other fields
   const handleChange = (e) => {
     const { id, value } = e.target;
     setFormData((prevData) => ({
@@ -115,9 +142,16 @@ const ServiceRequestForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (validateForm()) {
+    const isValid = Object.keys(formData).every((field) => validateField(field));
+    if (isValid) {
       console.log("Form submitted successfully", formData);
     }
+  };
+
+  // Handle blur validation
+  const handleBlur = (e) => {
+    const { id } = e.target;
+    validateField(id);
   };
 
   useEffect(() => {
@@ -224,6 +258,7 @@ const ServiceRequestForm = () => {
               placeholder=" "
               value={formData.service}
               onChange={handleServiceChange}
+              onBlur={handleBlur}
             />
             <label htmlFor="service" className="frmlbl">Service</label>
             {errors.service && <div className="error">{errors.service}</div>}
@@ -285,6 +320,7 @@ const ServiceRequestForm = () => {
               id="practitioner"
               value={formData.practitioner}
               onChange={handleChange}
+              onBlur={handleBlur}
             >
               <option value="">Select Practitioner</option>
               {[...Array(7)].map((_, i) => (
@@ -301,6 +337,7 @@ const ServiceRequestForm = () => {
               id="timeSelect"
               value={formData.startTime}
               onChange={handleStartTimeChange}
+              onBlur={handleBlur}
             >
               {[...Array(13)].map((_, index) => (
                 <option key={index} value={`10:${(index * 5).toString().padStart(2, "0")} AM`}>
@@ -318,6 +355,7 @@ const ServiceRequestForm = () => {
               id="durationSelect"
               value={formData.duration}
               onChange={handleDurationChange}
+              onBlur={handleBlur}
             >
               {[...Array(144)].map((_, i) => (
                 <option key={i} value={i * 5 + 5}>
@@ -348,12 +386,14 @@ const ServiceRequestForm = () => {
                 value={formData.room}
                 onChange={handleChange}
                 id="room"
+                onBlur={handleBlur}
               >
                 <option value="">Select Room</option>
                 {[...Array(4)].map((_, i) => (
                   <option key={i} value={i + 1}>Room {i + 1}</option>
                 ))}
               </select>
+              {errors.room && <div className="error">{errors.room}</div>}
             </div>
 
             <span

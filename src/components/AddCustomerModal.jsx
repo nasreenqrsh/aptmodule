@@ -63,6 +63,44 @@ const AddCustomerModal = ({ onClose }) => {
     }));
   };
 
+  const handleBlur = (e) => {
+    const { id } = e.target;
+    validateField(id); // Trigger field-level validation when the input loses focus
+  };
+
+  const validateField = (field) => {
+    let formErrors = { ...errors };
+    let isValid = true;
+
+    if (field === "mobile" && (!formData.mobile || !/^\d{10}$/.test(formData.mobile))) {
+      formErrors.mobile = "Mobile number must be 10 digits.";
+      isValid = false;
+    }
+
+    if (field === "firstName" && !formData.firstName) {
+      formErrors.firstName = "First name is required.";
+      isValid = false;
+    }
+
+    if (field === "lastName" && !formData.lastName) {
+      formErrors.lastName = "Last name is required.";
+      isValid = false;
+    }
+
+    if (field === "email" && (!formData.email || !/\S+@\S+\.\S+/.test(formData.email))) {
+      formErrors.email = "Please enter a valid email address.";
+      isValid = false;
+    }
+
+    if (field === "gender" && !formData.gender) {
+      formErrors.gender = "Please select gender.";
+      isValid = false;
+    }
+
+    setErrors(formErrors);
+    return isValid;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validateForm()) {
@@ -91,14 +129,14 @@ const AddCustomerModal = ({ onClose }) => {
               </label>
               <div className="inptdiv">
                 <input
-                type="text"
-                id="mobile"
-                value={formData.mobile}
-                onChange={handleChange}
-              />
-              {errors.mobile && <div className="error">{errors.mobile}</div>}
+                  type="text"
+                  id="mobile"
+                  value={formData.mobile}
+                  onChange={handleChange}
+                  onBlur={handleBlur} // Validation on blur
+                />
+                {errors.mobile && <div className="error">{errors.mobile}</div>}
               </div>
-              
             </div>
 
             {/* First Name */}
@@ -107,13 +145,14 @@ const AddCustomerModal = ({ onClose }) => {
                 First Name: <span className="rd">*</span>
               </label>
               <div className="inptdiv">
-              <input
-                type="text"
-                id="firstName"
-                value={formData.firstName}
-                onChange={handleChange}
-              />
-              {errors.firstName && <div className="error">{errors.firstName}</div>}
+                <input
+                  type="text"
+                  id="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  onBlur={handleBlur} // Validation on blur
+                />
+                {errors.firstName && <div className="error">{errors.firstName}</div>}
               </div>
             </div>
 
@@ -123,13 +162,14 @@ const AddCustomerModal = ({ onClose }) => {
                 Last Name: <span className="rd">*</span>
               </label>
               <div className="inptdiv">
-              <input
-                type="text"
-                id="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-              />
-              {errors.lastName && <div className="error">{errors.lastName}</div>}
+                <input
+                  type="text"
+                  id="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  onBlur={handleBlur} // Validation on blur
+                />
+                {errors.lastName && <div className="error">{errors.lastName}</div>}
               </div>
             </div>
 
@@ -139,13 +179,14 @@ const AddCustomerModal = ({ onClose }) => {
                 Email: <span className="rd">*</span>
               </label>
               <div className="inptdiv">
-              <input
-                type="text"
-                id="email"
-                value={formData.email}
-                onChange={handleChange}
-              />
-              {errors.email && <div className="error">{errors.email}</div>}
+                <input
+                  type="text"
+                  id="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  onBlur={handleBlur} // Validation on blur
+                />
+                {errors.email && <div className="error">{errors.email}</div>}
               </div>
             </div>
 
@@ -155,12 +196,17 @@ const AddCustomerModal = ({ onClose }) => {
                 Gender: <span className="rd">*</span>
               </label>
               <div className="inptdiv">
-              <select id="gender" value={formData.gender} onChange={handleChange}>
-                <option value="">Select Gender</option>
-                <option value="1">Male</option>
-                <option value="2">Female</option>
-              </select>
-              {errors.gender && <div className="error">{errors.gender}</div>}
+                <select
+                  id="gender"
+                  value={formData.gender}
+                  onChange={handleChange}
+                  onBlur={handleBlur} // Validation on blur
+                >
+                  <option value="">Select Gender</option>
+                  <option value="1">Male</option>
+                  <option value="2">Female</option>
+                </select>
+                {errors.gender && <div className="error">{errors.gender}</div>}
               </div>
             </div>
 
