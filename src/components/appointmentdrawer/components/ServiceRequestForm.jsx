@@ -6,9 +6,9 @@ const ServiceRequestForm = () => {
     service: "",
     preference: "any",
     practitioner: "",
-    startTime: "",
-    duration: "",
-    endTime: "", // New field for End Time
+    startTime: "10:00 AM", // Default value for start time
+    duration: "5", // Default duration (5 mins)
+    endTime: "10:05 AM", // Default value for end time (5 mins after 10:00 AM)
     room: "",
   });
 
@@ -22,6 +22,47 @@ const ServiceRequestForm = () => {
   });
 
   const [showAddNote, setShowAddNote] = useState(false);
+
+  // For auto-suggestion
+  const [filteredServices, setFilteredServices] = useState([]);
+  const [servicesList] = useState([
+    "PRP",
+    "Laser treatment",
+    "Hair Fall Consultation",
+    "Skin Treatment",
+    "Facial",
+    "Botox",
+    "Acne Treatment",
+    "Teeth Whitening",
+  ]);
+
+  // Filter services based on input
+  const handleServiceChange = (e) => {
+    const { value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      service: value,
+    }));
+
+    // Filter services based on the input
+    if (value) {
+      setFilteredServices(
+        servicesList.filter((service) =>
+          service.toLowerCase().includes(value.toLowerCase())
+        )
+      );
+    } else {
+      setFilteredServices([]);
+    }
+  };
+
+  const handleServiceSelect = (service) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      service,
+    }));
+    setFilteredServices([]); // Clear suggestions after selection
+  };
 
   const validateForm = () => {
     let formErrors = {};
@@ -80,10 +121,10 @@ const ServiceRequestForm = () => {
   };
 
   useEffect(() => {
+    // Populating Start Time (from 10:00 AM to 10:00 PM with 5 mins interval)
     const timeSelect = document.getElementById("timeSelect");
     const durationSelect = document.getElementById("durationSelect");
 
-    // Populating Start Time (from 10:00 AM to 10:00 PM with 5 mins interval)
     if (timeSelect) {
       const startTime = 10 * 60; // 10:00 AM
       const endTime = 22 * 60; // 10:00 PM
@@ -112,11 +153,9 @@ const ServiceRequestForm = () => {
   }, []);
 
   const calculateEndTime = (startTime, duration) => {
-    // Convert start time to minutes
     const startTimeInMinutes = convertToMinutes(startTime);
     const endTimeInMinutes = startTimeInMinutes + parseInt(duration, 10);
 
-    // Convert back to time format
     return convertToTime(endTimeInMinutes);
   };
 
@@ -150,7 +189,7 @@ const ServiceRequestForm = () => {
     setFormData((prevData) => ({
       ...prevData,
       startTime: value,
-      endTime: calculateEndTime(value, formData.duration), // Recalculate end time
+      endTime: calculateEndTime(value, formData.duration),
     }));
   };
 
@@ -159,16 +198,15 @@ const ServiceRequestForm = () => {
     setFormData((prevData) => ({
       ...prevData,
       duration: value,
-      endTime: calculateEndTime(formData.startTime, value), // Recalculate end time
+      endTime: calculateEndTime(formData.startTime, value),
     }));
   };
 
-  // Handle double-click on a time slot
   const handleTimeSlotDoubleClick = (time) => {
     setFormData((prevData) => ({
       ...prevData,
       startTime: time,
-      endTime: calculateEndTime(time, formData.duration), // Recalculate end time based on new start time
+      endTime: calculateEndTime(time, formData.duration),
     }));
   };
 
@@ -185,10 +223,21 @@ const ServiceRequestForm = () => {
               id="service"
               placeholder=" "
               value={formData.service}
-              onChange={handleChange}
+              onChange={handleServiceChange}
             />
             <label htmlFor="service" className="frmlbl">Service</label>
             {errors.service && <div className="error">{errors.service}</div>}
+
+            {/* Auto-suggestions for Service */}
+            {filteredServices.length > 0 && (
+              <ul className="suggestions">
+                {filteredServices.map((service, index) => (
+                  <li key={index} onClick={() => handleServiceSelect(service)}>
+                    {service}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
           {/* Preference */}
@@ -308,20 +357,18 @@ const ServiceRequestForm = () => {
             </div>
 
             <span
-            className="notebtn tooltip"
-            data-tooltip="Add Note"
-            data-tooltip-pos="down"
-            onClick={() => setShowAddNote(true)}
-          >
-            <img src="/images/notes.svg" alt="Add Note" />
-          </span>
+              className="notebtn tooltip"
+              data-tooltip="Add Note"
+              data-tooltip-pos="down"
+              onClick={() => setShowAddNote(true)}
+            >
+              <img src="/images/notes.svg" alt="Add Note" />
+            </span>
 
-          <button className="lnkbtn" type="submit">
-            <img src="/images/addservice.svg" alt="Add Service" /> Add Service
-          </button>
+            <button className="lnkbtn" type="submit">
+              <img src="/images/addservice.svg" alt="Add Service" /> Add Service
+            </button>
           </div>
-
-          
         </form>
       </div>
 

@@ -326,13 +326,6 @@ table {
   cursor: pointer;
 }
 
-.search-container input,
-.search-container .suggestions {
-  width: 100%;
-  font-size: 14px;
-  padding: 10px;
-}
-
 .search-container input {
   background: rgba(255, 255, 255, 1);
   padding: 10px;
@@ -341,14 +334,7 @@ table {
   font-family: "Lato", sans-serif;
 }
 
-.search-container .suggestions {
-  position: absolute;
-  top: 30px;
-  z-index: 10;
-  padding: 10px 0;
-  width: 300px;
-  left: 7px;
-}
+
 
 .search-container ul {
   display: none;
@@ -1702,4 +1688,28 @@ table {
 }
 .submitbtn:hover {
   background-color: #45a049;
+}
+
+
+.suggestions{
+    background: #fff;
+    border: 1px solid #666;
+    border-radius: 2px;
+    font-size: 12px;
+    font-family: 'Lato', sans-serif;
+    padding:10px;
+    position: absolute;
+    top:29px;
+    width: 280px;
+    z-index: 20;
+}
+
+.suggestions li{
+    margin: 0 0 5px;
+    padding: 2px;
+    cursor: pointer;
+}
+
+.suggestions li:hover{
+    background: #ccc;
 }

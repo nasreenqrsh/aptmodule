@@ -50,7 +50,7 @@ const AppointmentHeader = ({ onAddAppointment, onAddCustomer }) => {
 
           <div className="search-container">
             <input type="text" id="fruit" placeholder="Search..." />
-            <div className="suggestions">
+            <div className="suggestionssrc">
               <ul></ul>
             </div>
           </div>

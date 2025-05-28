@@ -18,6 +18,39 @@ const CustomerForm = () => {
     email: "",
   });
 
+  // State variables for auto-suggestions
+  const [filteredNames, setFilteredNames] = useState([]);
+  const [namesList] = useState([
+    "John", "Jane", "Alicia", "Tom", "Harry", "Emily", "Sophia", "Michael", "Chris", "Sarah"
+  ]);
+
+  // Auto-suggestion for First Name
+  const handleNameChange = (e) => {
+    const { value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      name: value,
+    }));
+
+    // Filter names based on input
+    if (value) {
+      setFilteredNames(
+        namesList.filter((name) => name.toLowerCase().includes(value.toLowerCase()))
+      );
+    } else {
+      setFilteredNames([]);
+    }
+  };
+
+  // Auto-suggestion for Mobile (if required)
+  const handleMobileChange = (e) => {
+    const { value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      number: value,
+    }));
+  };
+
   // Validation function
   const validateForm = () => {
     let formErrors = {};
@@ -76,7 +109,7 @@ const CustomerForm = () => {
             id="number"
             placeholder=" "
             value={formData.number}
-            onChange={handleChange}
+            onChange={handleMobileChange}
           />
           <label htmlFor="number" className="frmlbl">
             Mobile Number
@@ -91,12 +124,23 @@ const CustomerForm = () => {
             id="name"
             placeholder=" "
             value={formData.name}
-            onChange={handleChange}
+            onChange={handleNameChange}
           />
           <label htmlFor="name" className="frmlbl">
             First Name
           </label>
           {errors.name && <div className="error">{errors.name}</div>}
+
+          {/* Auto-suggestions for First Name */}
+          {filteredNames.length > 0 && (
+            <ul className="suggestions">
+              {filteredNames.map((name, index) => (
+                <li key={index} onClick={() => setFormData({ ...formData, name })}>
+                  {name}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         {/* Last Name */}
