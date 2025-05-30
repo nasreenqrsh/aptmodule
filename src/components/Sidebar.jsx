@@ -1,29 +1,160 @@
-// src/components/Sidebar.jsx
-import React from "react";
+import React, { useState } from "react";
 
-const menuItems = [
-  { icon: "services.svg", label: "Services" },
-  { icon: "booked.svg", label: "Booked" },
-  { icon: "confirmed.png", label: "Confirmed" },
-  { icon: "ongoing.png", label: "Ongoing" },
-  { icon: "completed.svg", label: "Completed" },
-  { icon: "paymentpend.svg", label: "Payment Pending" },
-  { icon: "reports.svg", label: "Reports" },
-];
+// The AppointmentDetails component
+const AppointmentDetails = ({ appointment, onClose }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
 
-const Sidebar = () => {
+  // Function to handle expanding the appointment drawer
+  const toggleDetails = () => {
+    setIsExpanded(!isExpanded);
+  };
+
   return (
-    <aside className="w-64 bg-white shadow h-full p-4 space-y-4">
-      <nav className="space-y-2">
-        {menuItems.map((item) => (
-          <div key={item.label} className="flex items-center gap-3 p-2 rounded hover:bg-gray-100 cursor-pointer">
-            <img src={`/images/${item.icon}`} alt={item.label} className="h-6 w-6" />
-            <span className="text-gray-700 text-sm">{item.label}</span>
+    <div className={`smdiv expand ${isExpanded ? "expand" : ""}`}>
+      <div className="resizable" id="resizableDiv">
+        <div className="rightcls" onClick={onClose}>
+          <img src="images/dblrigh.svg" alt="Close" width="16" height="16" />
+        </div>
+
+        <div className="apptcdet custdiv">
+          <div className="csttopdiv">
+            <img
+              src="images/usericon.png"
+              width="30"
+              title="User Icon"
+              alt="User Icon"
+            />
+            <h3 className="cstnm">
+              {appointment.customerName}
+              <div className="cstno">{appointment.customerPhone}</div>
+              <div className="cstid">{appointment.customerId}</div>
+            </h3>
           </div>
-        ))}
-      </nav>
-    </aside>
+
+          <div className="cdtprof">
+            <a href="#" title="" className="cstlnk">
+              <img
+                src="images/custome.svg"
+                width="16"
+                title="Customer Profile"
+                alt="Customer Profile"
+              />
+              Customer Profile
+            </a>
+          </div>
+        </div>
+
+        <div className="apptblk">
+          <div className="hdflx">
+            <h2 className="dethead">Appointment Details</h2>
+            <div className="acticons">
+              <a href="#" className="edit tooltip" title="Edit Appointment">
+                <span className="stimg">
+                  <img src="images/edtwht.svg" alt="Edit Appointment" />
+                </span>
+              </a>
+              <a href="#" className="delete tooltip" title="Delete Appointment">
+                <span className="stimg">
+                  <img src="images/deletewt.svg" alt="Delete Appointment" />
+                </span>
+              </a>
+            </div>
+          </div>
+
+          <div className="apptsts">
+            <div className="form-group slctgrp">
+              <label>Status</label>
+              <select id="docSelect" value={appointment.status}>
+                <option value="0">New</option>
+                <option value="1" selected={appointment.status === "Booked"}>
+                  Booked
+                </option>
+                <option value="2" selected={appointment.status === "Confirmed"}>
+                  Confirmed
+                </option>
+                <option value="3" selected={appointment.status === "Checked In"}>
+                  Checked In
+                </option>
+                <option value="4" selected={appointment.status === "Active"}>
+                  Active
+                </option>
+                <option value="5" selected={appointment.status === "Completed"}>
+                  Completed
+                </option>
+                <option value="6" selected={appointment.status === "Cancelled"}>
+                  Cancelled
+                </option>
+                <option value="7" selected={appointment.status === "No Show"}>
+                  No Show
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div className="medhistdiv">
+            <div className="aptdetailwrp">
+              <div className="dtntime">
+                <div className="icondiv">
+                  <img src="images/Datentime.svg" alt="Date and Time" />
+                </div>
+                <div className="detaildiv">
+                  <div className="dtlbl">Date & Time</div>
+                  <div className="dtval">{appointment.dateTime}</div>
+                </div>
+              </div>
+
+              <div className="dtntime">
+                <div className="icondiv">
+                  <img src="images/services.svg" alt="Services" />
+                </div>
+                <div className="detaildiv">
+                  <div className="dtlbl">Services</div>
+                  <div className="dtval">{appointment.services}</div>
+                </div>
+              </div>
+
+              <div className="dtntime">
+                <div className="icondiv">
+                  <img src="images/noteslist.svg" alt="Notes" />
+                </div>
+                <div className="detaildiv">
+                  <div className="dtlbl">Notes</div>
+                  <div className="dtval">{appointment.notes}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="apptactdiv">
+          <div className="hdflx">
+            <h2 className="dethead">Appointment Execution</h2>
+          </div>
+
+          <div className="apptcdet">
+            <a href="#" className="cstlnk">
+              <img src="images/medical.svg" alt="Medical History" />
+              Medical History
+            </a>
+            <a href="#" className="cstlnk">
+              <img src="images/consent.svg" alt="Consent and Treatment Forms" />
+              Consent and Treatment forms
+            </a>
+          </div>
+
+          <a href="#" className="pndpay">
+            <span className="stimg">
+              <img
+                src="images/paymentpend.svg"
+                alt="Make Payment"
+              />{" "}
+              Make Payment
+            </span>
+          </a>
+        </div>
+      </div>
+    </div>
   );
 };
 
-export default Sidebar;
+export default AppointmentDetails;
