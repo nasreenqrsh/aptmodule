@@ -17,35 +17,33 @@ const AddCustomerModal = ({ onClose }) => {
     gender: "",
   });
 
+  const [newCustomer, setNewCustomer] = useState(null); // New state to store added customer
+  const [showNewCustomer, setShowNewCustomer] = useState(false); // State to toggle visibility of new customer
+
   const validateForm = () => {
     let formErrors = {};
     let isValid = true;
 
-    // Mobile validation: should be exactly 10 digits
     if (!formData.mobile || !/^\d{10}$/.test(formData.mobile)) {
       formErrors.mobile = "Mobile number must be 10 digits.";
       isValid = false;
     }
 
-    // First name validation
     if (!formData.firstName) {
       formErrors.firstName = "First name is required.";
       isValid = false;
     }
 
-    // Last name validation
     if (!formData.lastName) {
       formErrors.lastName = "Last name is required.";
       isValid = false;
     }
 
-    // Email validation
     if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) {
       formErrors.email = "Please enter a valid email address.";
       isValid = false;
     }
 
-    // Gender validation
     if (!formData.gender) {
       formErrors.gender = "Please select gender.";
       isValid = false;
@@ -65,7 +63,7 @@ const AddCustomerModal = ({ onClose }) => {
 
   const handleBlur = (e) => {
     const { id } = e.target;
-    validateField(id); // Trigger field-level validation when the input loses focus
+    validateField(id); // Trigger field-level validation on blur
   };
 
   const validateField = (field) => {
@@ -101,13 +99,45 @@ const AddCustomerModal = ({ onClose }) => {
     return isValid;
   };
 
-  const handleSubmit = (e) => {
+  // Create Data Handler: Submit the form data and update the state
+  const createDataHandler = async (formData) => {
+  try {
+    // Log data before sending to check if it's correct
+    console.log("Sending customer data:", formData);
+    
+    const response = await fetch("https://6839de246561b8d882b1fc2e.mockapi.io/api/customer/customers", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    // Log response status and text for debugging
+    console.log("Response status:", response.status);
+    const data = await response.json();
+    
+    if (response.ok) {
+      console.log("Form submitted successfully:", data);
+      setNewCustomer(formData); // Save new customer data to show in UI
+      onClose(); // Close the modal on successful form submission
+    } else {
+      console.error("Error:", data);
+      alert(`Failed to create customer: ${data.message || 'Unknown error'}`);
+    }
+  } catch (error) {
+    console.error("Error while submitting the form:", error);
+    alert("An error occurred while submitting the form. Please try again later.");
+  }
+};
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      console.log("Form submitted successfully", formData);
-      onClose(); // Close the modal on successful form submission
+      createDataHandler(formData); // Call the createDataHandler to submit the form data
     }
   };
+
 
   return (
     <div className="popouter" id="addcust">
@@ -219,9 +249,11 @@ const AddCustomerModal = ({ onClose }) => {
                 onClick={onClose}
               />
             </div>
+
           </form>
         </div>
       </div>
+
     </div>
   );
 };
