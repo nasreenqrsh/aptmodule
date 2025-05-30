@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const ServiceList = () => {
+const ServiceList = ({ services, onDeleteService }) => {
   const [bookedServices, setBookedServices] = useState([
     {
       service: "Hair Loss Treatment (PRP - Hair Loss Treatment)",
@@ -64,28 +64,29 @@ const ServiceList = () => {
               </tr>
             </thead>
             <tbody>
-              {bookedServices.map((service, index) => (
-                <tr key={index}>
-                  <td>{service.service}</td>
-                  <td>{service.preference}</td>
-                  <td>{service.practitioner}</td>
-                  <td>{service.amount}</td>
-                  <td>{service.start}</td>
-                  <td>{service.end}</td>
-                  <td>{service.duration}</td>
-                  <td>
-                    <button
-                      className="delbtn tooltip"
-                      data-tooltip="Delete Service"
-                      data-tooltip-pos="left"
-                      onClick={() => deleteService(index)}
-                    >
-                      <img src="/images/deletewt.svg" alt="Delete" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+  {services.map((service, index) => (
+    <tr key={index}>
+      <td>{service.service}</td>
+      <td>{service.preference}</td>
+      <td>{service.practitioner}</td>
+      <td>{service.amount}</td>
+      <td>{service.start}</td>
+      <td>{service.end}</td>
+      <td>{service.duration}</td>
+      <td>
+        <button
+          className="delbtn tooltip"
+          data-tooltip="Delete Service"
+          data-tooltip-pos="left"
+          onClick={() => onDeleteService(index)}
+        >
+          <img src="/images/deletewt.svg" alt="Delete" />
+        </button>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
           </table>
         </div>
       </div>

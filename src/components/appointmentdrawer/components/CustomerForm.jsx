@@ -241,27 +241,37 @@ const CustomerForm = () => {
         <div className="form-group radgrp">
           <label>Gender</label>
           <div className="rdbox">
-            <input
-              type="radio"
-              id="male2"
-              name="gender1"
-              value="male"
-              checked={formData.gender === "male"}
-              onChange={handleChange}
-            />
-            <label htmlFor="male2">Male</label>
-          </div>
-          <div className="rdbox">
-            <input
-              type="radio"
-              id="female2"
-              name="gender1"
-              value="female"
-              checked={formData.gender === "female"}
-              onChange={handleChange}
-            />
-            <label htmlFor="female2">Female</label>
-          </div>
+    <input
+      type="radio"
+      id="gender_male"
+      name="gender"
+      value="male"
+      checked={formData.gender === "male"}
+      onChange={(e) =>
+        setFormData((prevData) => ({
+          ...prevData,
+          gender: e.target.value,
+        }))
+      }
+    />
+    <label htmlFor="gender_male">Male</label>
+  </div>
+  <div className="rdbox">
+    <input
+      type="radio"
+      id="gender_female"
+      name="gender"
+      value="female"
+      checked={formData.gender === "female"}
+      onChange={(e) =>
+        setFormData((prevData) => ({
+          ...prevData,
+          gender: e.target.value,
+        }))
+      }
+    />
+    <label htmlFor="gender_female">Female</label>
+  </div>
         </div>
 
         

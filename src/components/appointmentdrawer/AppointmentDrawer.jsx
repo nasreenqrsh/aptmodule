@@ -1,10 +1,8 @@
 // src/components/AppointmentDrawer.jsx
 import React, { useEffect, useRef, useState } from "react";
 import CustomerForm from "./components/CustomerForm";
-import ServiceRequestForm from "./components/ServiceRequestForm";
-import ServiceList from "./components/ServiceList";
 import FormFooter from "./components/FormFooter";
-
+import ServiceBookingContainer from "./components/ServiceBookingContainer"
 
 const AppointmentDrawer = ({ isOpen, onClose }) => {
   const drawerRef = useRef(null);
@@ -29,8 +27,7 @@ const AppointmentDrawer = ({ isOpen, onClose }) => {
         </span>
 
         <CustomerForm />
-        <ServiceRequestForm />
-        <ServiceList />
+        <ServiceBookingContainer />
       </div>
 
       <FormFooter onCancel={onClose} />

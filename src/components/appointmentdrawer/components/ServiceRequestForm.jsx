@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import AddNoteModal from "../../AddNoteModal";
 
-const ServiceRequestForm = () => {
+const ServiceRequestForm = ({ onAddService }) => {
+
   const [formData, setFormData] = useState({
     service: "",
     preference: "any",
@@ -141,12 +142,37 @@ const ServiceRequestForm = () => {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    const isValid = Object.keys(formData).every((field) => validateField(field));
-    if (isValid) {
-      console.log("Form submitted successfully", formData);
+  e.preventDefault();
+  const isValid = Object.keys(formData).every((field) => validateField(field));
+  if (isValid) {
+    const newService = {
+      service: formData.service,
+      preference: formData.preference.charAt(0).toUpperCase() + formData.preference.slice(1),
+      practitioner: formData.practitioner || "Dr. Aaliya",
+      amount: 100, // Static or dynamic pricing logic can go here
+      start: formData.startTime,
+      end: formData.endTime,
+      duration: `${formData.duration} mins`
+    };
+
+    if (typeof onAddService === "function") {
+      onAddService(newService);
     }
-  };
+
+    // Optionally reset the form
+    setFormData({
+      service: "",
+      preference: "any",
+      practitioner: "",
+      startTime: "10:00 AM",
+      duration: "5",
+      endTime: "10:05 AM",
+      room: ""
+    });
+    setFilteredServices([]);
+  }
+};
+
 
   // Handle blur validation
   const handleBlur = (e) => {
@@ -284,35 +310,35 @@ const ServiceRequestForm = () => {
             <div className="rdbox">
               <input
                 type="radio"
-                id="any"
+                id="pref_any"
                 name="preference"
                 value="any"
                 checked={formData.preference === "any"}
                 onChange={handleRadioChange}
               />
-              <label htmlFor="any">Any</label>
+              <label htmlFor="pref_any">Any</label>
             </div>
             <div className="rdbox">
               <input
                 type="radio"
-                id="male2"
+                id="pref_male"
                 name="preference"
                 value="male"
                 checked={formData.preference === "male"}
                 onChange={handleRadioChange}
               />
-              <label htmlFor="male2">Male</label>
+              <label htmlFor="pref_male">Male</label>
             </div>
             <div className="rdbox">
               <input
                 type="radio"
-                id="female2"
+                id="pref_female"
                 name="preference"
                 value="female"
                 checked={formData.preference === "female"}
                 onChange={handleRadioChange}
               />
-              <label htmlFor="female2">Female</label>
+              <label htmlFor="pref_female">Female</label>
             </div>
           </div>
 
