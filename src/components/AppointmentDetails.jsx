@@ -19,7 +19,7 @@ const AppointmentDrawer = ({ isOpen, onClose }) => {
 
   return (
     <div ref={drawerRef} className="appointdrwr">
-      <div className="apptfrmflx">
+      <div className="">
         <span className="clpse" onClick={onClose}>
           <img src="/images/collpase.svg" alt="Collapse" />
         </span>

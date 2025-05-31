@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import AddNoteModal from "../../AddNoteModal";
 
-const ServiceRequestForm = ({ onAddService }) => {
+const ServiceRequestForm = ({ onAddService, resetKey, initialData }) => {
 
   const [formData, setFormData] = useState({
     service: "",
@@ -173,7 +173,23 @@ const ServiceRequestForm = ({ onAddService }) => {
     const { id } = e.target;
     validateField(id);
   };
-
+useEffect(() => {
+  if (initialData) {
+    setFormData(initialData);
+  } else {
+    setFormData({
+      service: "",
+      preference: "any",
+      practitioner: "",
+      startTime: "10:00 AM",
+      duration: "5",
+      endTime: "10:05 AM",
+      room: "",
+      note: ""
+    });
+  }
+  setErrors({});
+}, [resetKey]);
   useEffect(() => {
     // Populating Start Time (from 10:00 AM to 10:00 PM with 5 mins interval)
     const timeSelect = document.getElementById("timeSelect");

@@ -1,100 +1,59 @@
-import React, { useState } from "react";
+import React from "react";
 
-const ServiceList = ({ services, onDeleteService }) => {
-  const [bookedServices, setBookedServices] = useState([
-    {
-      service: "Hair Loss Treatment (PRP - Hair Loss Treatment)",
-      preference: "Female",
-      practitioner: "Dr. Aaliya",
-      equipment:"Machine 1",
-      amount: 100,
-      start: "10:00 AM",
-      end: "10:50 AM",
-      duration: "50 mins"
-    },
-    {
-      service: "Skin Treatment (Laser)",
-      preference: "Male",
-      practitioner: "Dr. Samira",
-       equipment:"Machine 2",
-      amount: 150,
-      start: "11:00 AM",
-      end: "11:45 AM",
-      duration: "45 mins"
-    },
-    {
-      service: "Skin Treatment (Laser)",
-      preference: "Male",
-      practitioner: "Dr. Samira",
-       equipment:"Machine 1",
-      amount: 150,
-      start: "11:00 AM",
-      end: "11:45 AM",
-      duration: "45 mins"
-    },
-    {
-      service: "Skin Treatment (Laser)",
-      preference: "Male",
-      practitioner: "Dr. Samira",
-       equipment:"Machine 4",
-      amount: 150,
-      start: "11:00 AM",
-      end: "11:45 AM",
-      duration: "45 mins"
-    }
-  ]);
+const ServiceList = ({ data, onDelete, onEdit }) => {
+  if (!data.length) return (
+    <div className="service-list srvlist">
+      <h4 className="frmlgnd">Booked Services</h4>
 
-  const deleteService = (index) => {
-    setBookedServices((prevServices) => prevServices.filter((_, i) => i !== index));
-  };
+      <div>No services added.</div>
+      </div>
+  );
 
   return (
-    <div className="srvlist">
-      <div className="frmlgnd">Booked Services</div>
-
-      <div className="bkdwrp">
-        <div className="srctblwrp">
-          <table className="srvctbl">
-            <thead>
-              <tr>
-                <th width="300">Service</th>
-                <th>Preference</th>
-                <th>Practitioner</th>
-                <th>Equipment</th>
-                <th>Amount</th>
-                <th width="90">Start Time</th>
-                <th width="90">End Time</th>
-                <th>Duration</th>
-                <th></th>
+    <div className="service-list srvlist">
+      <h4 className="frmlgnd">Booked Services</h4>
+      <div className="srctblwrp">
+        <table className="srvctbl">
+          <thead>
+            <tr>
+              <th width="300">Service</th>
+              <th>Practitioner</th>
+              <th>Equipment</th>
+              <th width="90">Start</th>
+              <th width="90">End</th>
+              <th>Duration</th>
+              <th>Note</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((entry, index) => (
+              <tr key={index}>
+                <td>{entry.service.service}</td>
+                <td>{entry.service.practitioner}</td>
+                <td>Machine 1</td>
+                <td>{entry.service.start}</td>
+                <td>{entry.service.end}</td>
+                <td>{entry.service.duration}</td>
+                <td>{entry.service.note}</td>
+                <td>
+                  <button
+                    className="tblbtn edit"
+                    onClick={() => onEdit(index)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="tblbtn delete"
+                    onClick={() => onDelete(index)}
+                  >
+                    Delete
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-  {services.map((service, index) => (
-    <tr key={index}>
-      <td>{service.service}</td>
-      <td>{service.preference}</td>
-      <td>{service.practitioner}</td>
-      <td>{service.equipment}</td>
-      <td>{service.amount}</td>
-      <td>{service.start}</td>
-      <td>{service.end}</td>
-      <td>{service.duration}</td>
-      <td>
-        <button
-          className="delbtn tooltip"
-          data-tooltip="Delete Service"
-          data-tooltip-pos="left"
-          onClick={() => onDeleteService(index)}
-        >
-          <img src="/images/deletewt.svg" alt="Delete" />
-        </button>
-      </td>
-    </tr>
-  ))}
-</tbody>
-
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
