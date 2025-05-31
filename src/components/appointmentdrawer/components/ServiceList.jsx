@@ -6,6 +6,7 @@ const ServiceList = ({ services, onDeleteService }) => {
       service: "Hair Loss Treatment (PRP - Hair Loss Treatment)",
       preference: "Female",
       practitioner: "Dr. Aaliya",
+      equipment:"Machine 1",
       amount: 100,
       start: "10:00 AM",
       end: "10:50 AM",
@@ -15,6 +16,7 @@ const ServiceList = ({ services, onDeleteService }) => {
       service: "Skin Treatment (Laser)",
       preference: "Male",
       practitioner: "Dr. Samira",
+       equipment:"Machine 2",
       amount: 150,
       start: "11:00 AM",
       end: "11:45 AM",
@@ -24,6 +26,7 @@ const ServiceList = ({ services, onDeleteService }) => {
       service: "Skin Treatment (Laser)",
       preference: "Male",
       practitioner: "Dr. Samira",
+       equipment:"Machine 1",
       amount: 150,
       start: "11:00 AM",
       end: "11:45 AM",
@@ -33,6 +36,7 @@ const ServiceList = ({ services, onDeleteService }) => {
       service: "Skin Treatment (Laser)",
       preference: "Male",
       practitioner: "Dr. Samira",
+       equipment:"Machine 4",
       amount: 150,
       start: "11:00 AM",
       end: "11:45 AM",
@@ -56,6 +60,7 @@ const ServiceList = ({ services, onDeleteService }) => {
                 <th width="300">Service</th>
                 <th>Preference</th>
                 <th>Practitioner</th>
+                <th>Equipment</th>
                 <th>Amount</th>
                 <th width="90">Start Time</th>
                 <th width="90">End Time</th>
@@ -69,6 +74,7 @@ const ServiceList = ({ services, onDeleteService }) => {
       <td>{service.service}</td>
       <td>{service.preference}</td>
       <td>{service.practitioner}</td>
+      <td>{service.equipment}</td>
       <td>{service.amount}</td>
       <td>{service.start}</td>
       <td>{service.end}</td>

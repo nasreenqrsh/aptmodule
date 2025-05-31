@@ -1,6 +1,14 @@
-import React from "react";
+import React, {useState} from "react";
 
 const AddNoteModal = ({ onClose, onSubmit }) => {
+
+  const [note, setNote] = useState("");
+
+  const handleSave = () => {
+    if (note.trim()) {
+      onSubmit(note);
+    }
+  };
   return (
     <div className="popouter" id="addnote">
       <div className="popovrly"></div>
@@ -17,7 +25,11 @@ const AddNoteModal = ({ onClose, onSubmit }) => {
             <label htmlFor="note">
               Add Note: <span className="rd">*</span>
             </label>
-            <textarea id="note" rows="4" cols="30" />
+            <textarea
+        placeholder="Enter your note..."
+        value={note}
+        onChange={(e) => setNote(e.target.value)}
+      />
           </div>
 
           <div className="btnbar">
@@ -25,7 +37,7 @@ const AddNoteModal = ({ onClose, onSubmit }) => {
               type="submit"
               className="prilnk"
               value="Add Note"
-              onClick={onSubmit}
+              onClick={handleSave}
             />
             <input
               type="button"

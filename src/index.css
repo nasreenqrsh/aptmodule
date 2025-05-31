@@ -337,7 +337,6 @@ table {
 
 
 .search-container ul {
-  display: none;
   list-style-type: none;
   padding: 0;
   margin: 0;
@@ -359,6 +358,14 @@ table {
   font-size: 14px;
 }
 
+.suggestionssrc{position: absolute;left:0;    position: absolute;
+    left: 0;
+    width: 300px;
+    background: #fff;
+    padding: 5px;}
+
+    .bookappt img{filter: invert(100%);}
+
 .search-container ul li strong {
   font-weight: 700;
 }
@@ -374,7 +381,30 @@ table {
   cursor: pointer;
 }
 
+.toast {
+  position: fixed;
+  top: 150px;
+  right: 0;
+  left:0;
+  margin: 0 auto;
+  background: #000;
+  color: white;
+  padding: 12px 20px;
+  max-width: 200px;
+  border-radius: 6px;
+  display:none;
+  font-size: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+  animation: fadeInOut 3s ease forwards;
+}
 
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(-10px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-10px); }
+}
 /*Appointment Drawer*/
 .appointdrwr {
             position: fixed;
@@ -420,6 +450,8 @@ table {
             color: #777;
             transition: top 0.3s ease, font-size 0.3s ease, color 0.3s ease;
         }
+
+        .form-group.radgrp label.frmlbl{position: unset;}
 
         .form-group input:focus {
             border-color: #2D3250;

@@ -1,7 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-const CustomerForm = () => {
-  // State variables for form fields
+// Fetch from API
+const CreateDataHandler = async () => {
+  const res = await fetch("https://mocki.io/v1/fe1da8d7-3afa-4866-bb24-553db358f743");
+  if (!res.ok) throw new Error("Failed to fetch");
+  return await res.json();
+};
+
+const Toast = ({ message, onClose }) => {
+  useEffect(() => {
+    const timer = setTimeout(onClose, 3000);
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  return <div className="toast">{message}</div>;
+};
+
+const CustomerForm = ({ prefillData, setCustomerData }) => {
   const [formData, setFormData] = useState({
     number: "",
     name: "",
@@ -10,273 +25,250 @@ const CustomerForm = () => {
     gender: "",
   });
 
-  // State variables for error messages
-  const [errors, setErrors] = useState({
-    number: "",
-    name: "",
-    lastname: "",
-    email: "",
-  });
+  const [errors, setErrors] = useState({});
+  const [suggestions, setSuggestions] = useState([]);
+  const [isPrefilled, setIsPrefilled] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [prefillActive, setPrefillActive] = useState(false); // ✅ new flag
 
-  // State variables for auto-suggestions
-  const [filteredNames, setFilteredNames] = useState([]);
-  const [namesList] = useState([
-    "John", "Jane", "Alicia", "Tom", "Harry", "Emily", "Sophia", "Michael", "Chris", "Sarah"
-  ]);
-
-  // Auto-suggestion for First Name
-  const handleNameChange = (e) => {
-    const { value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      name: value,
-    }));
-
-    // Filter names based on input
-    if (value) {
-      setFilteredNames(
-        namesList.filter((name) => name.toLowerCase().includes(value.toLowerCase()))
-      );
-    } else {
-      setFilteredNames([]);
+  // ✅ Load from parent when real data is passed
+  useEffect(() => {
+    if (
+      prefillData &&
+      typeof prefillData === "object" &&
+      !prefillActive &&
+      (prefillData.name || prefillData.mobile || prefillData.number)
+    ) {
+      const data = {
+        number: prefillData.number || prefillData.mobile || "",
+        name: prefillData.name || "",
+        lastname: prefillData.lastname || "",
+        email: prefillData.email || "",
+        gender: prefillData.gender || "",
+      };
+      setFormData(data);
+      setCustomerData?.(data);
+      setIsPrefilled(true);
+      setPrefillActive(true); // ✅ prevent re-trigger
+      setShowToast(true);
     }
+  }, [prefillData, prefillActive]);
+
+  const syncCustomerData = (updated) => {
+    setFormData(updated);
+    setCustomerData?.(updated);
   };
 
-  // Handle input change for other fields
-  const handleChange = (e) => {
+  const handleChange = async (e) => {
     const { id, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [id]: value,
-    }));
+    const updated = { ...formData, [id]: value };
+    syncCustomerData(updated);
+
+    if ((id === "number" && value.length >= 3) || (id === "name" && value.length >= 2)) {
+      try {
+        const data = await CreateDataHandler();
+        const matches = data.filter((item) =>
+          id === "number"
+            ? item.mobile.startsWith(value)
+            : item.name.toLowerCase().includes(value.toLowerCase())
+        );
+        setSuggestions(matches);
+      } catch (err) {
+        console.error("Suggestion fetch failed:", err);
+        setSuggestions([]);
+      }
+    } else {
+      setSuggestions([]);
+    }
   };
 
-  // Validation function for form fields
-  const validateForm = () => {
-    let formErrors = {};
-    let isValid = true;
-
-    if (!formData.number || formData.number.length !== 10) {
-      formErrors.number = "Mobile number must be 10 digits.";
-      isValid = false;
-    }
-
-    if (!formData.name) {
-      formErrors.name = "First name is required.";
-      isValid = false;
-    }
-
-    if (!formData.lastname) {
-      formErrors.lastname = "Last name is required.";
-      isValid = false;
-    }
-
-    if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) {
-      formErrors.email = "Please enter a valid email address.";
-      isValid = false;
-    }
-
-    setErrors(formErrors);
-    return isValid;
+  const handleSuggestionSelect = (item) => {
+    const selected = {
+      number: item.mobile || "",
+      name: item.name || "",
+      lastname: item.lastname || "",
+      email: item.email || "",
+      gender: item.gender || "",
+    };
+    setFormData(selected);
+    setCustomerData?.(selected);
+    setIsPrefilled(true);
+    setPrefillActive(true);
+    setSuggestions([]);
+    setShowToast(true);
   };
 
-  // Handle blur for field validation
-  const handleBlur = (e) => {
-    const { id } = e.target;
-    validateField(id);
-  };
+  const handleBlur = (e) => validateField(e.target.id);
 
-  // Validate individual fields
   const validateField = (field) => {
-    let formErrors = { ...errors };
+    let newErrors = { ...errors };
     let isValid = true;
 
     switch (field) {
       case "number":
         if (!formData.number || formData.number.length !== 10) {
-          formErrors.number = "Mobile number must be 10 digits.";
+          newErrors.number = "Mobile number must be 10 digits.";
           isValid = false;
-        } else {
-          formErrors.number = "";
-        }
+        } else delete newErrors.number;
         break;
-
       case "name":
         if (!formData.name) {
-          formErrors.name = "First name is required.";
+          newErrors.name = "First name is required.";
           isValid = false;
-        } else {
-          formErrors.name = "";
-        }
+        } else delete newErrors.name;
         break;
-
       case "lastname":
         if (!formData.lastname) {
-          formErrors.lastname = "Last name is required.";
+          newErrors.lastname = "Last name is required.";
           isValid = false;
-        } else {
-          formErrors.lastname = "";
-        }
+        } else delete newErrors.lastname;
         break;
-
       case "email":
         if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) {
-          formErrors.email = "Please enter a valid email address.";
+          newErrors.email = "Valid email required.";
           isValid = false;
-        } else {
-          formErrors.email = "";
-        }
+        } else delete newErrors.email;
         break;
-
+      case "gender":
+        if (!formData.gender) {
+          newErrors.gender = "Please select gender.";
+          isValid = false;
+        } else delete newErrors.gender;
+        break;
       default:
         break;
     }
 
-    setErrors(formErrors);
+    setErrors(newErrors);
     return isValid;
   };
 
-  // Handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (validateForm()) {
-      console.log("Form submitted successfully", formData);
-    }
-  };
-
-  // Handle click on auto-suggested name
-  const handleNameSelect = (name) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      name,
-    }));
-    setFilteredNames([]); // Hide suggestions once a name is selected
-  };
-
   return (
-    <div className="bscdetwrp">
-      <div className="frmlgnd">Customer Details</div>
+    <>
+      {showToast && <Toast message="Customer loaded successfully" onClose={() => setShowToast(false)} />}
 
-      <form onSubmit={handleSubmit}>
-        {/* Mobile Number */}
-        <div className="form-group">
-          <input
-            type="number"
-            id="number"
-            placeholder=" "
-            value={formData.number}
-            onChange={handleChange}
-            onBlur={handleBlur}
-          />
-          <label htmlFor="number" className="frmlbl">
-            Mobile Number
-          </label>
-          {errors.number && <div className="error">{errors.number}</div>}
-        </div>
+      <div className="bscdetwrp">
+        <div className="frmlgnd">Customer Details</div>
+        <form autoComplete="off">
+          {/* Mobile Number */}
+          <div className="form-group" style={{ position: "relative" }}>
+            <input
+              type="text"
+              id="number"
+              placeholder=" "
+              value={formData.number}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              readOnly={isPrefilled}
+            />
+            <label htmlFor="number" className="frmlbl">Mobile Number</label>
+            {errors.number && <div className="error">{errors.number}</div>}
+          </div>
 
-        {/* First Name */}
-        <div className="form-group">
-          <input
-            type="text"
-            id="name"
-            placeholder=" "
-            value={formData.name}
-            onChange={handleNameChange}
-            onBlur={handleBlur}
-          />
-          <label htmlFor="name" className="frmlbl">
-            First Name
-          </label>
-          {errors.name && <div className="error">{errors.name}</div>}
+          {/* First Name */}
+          <div className="form-group" style={{ position: "relative" }}>
+            <input
+              type="text"
+              id="name"
+              placeholder=" "
+              value={formData.name}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              readOnly={isPrefilled}
+            />
+            <label htmlFor="name" className="frmlbl">First Name</label>
+            {errors.name && <div className="error">{errors.name}</div>}
+            {suggestions.length > 0 && (
+              <ul className="suggestions">
+                {suggestions.map((item, index) => (
+                  <li key={index} onClick={() => handleSuggestionSelect(item)} style={{ cursor: "pointer" }}>
+                    {item.name} – {item.mobile}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
 
-          {/* Auto-suggestions for First Name */}
-          {filteredNames.length > 0 && (
-            <ul className="suggestions">
-              {filteredNames.map((name, index) => (
-                <li
-                  key={index}
-                  onClick={() => handleNameSelect(name)}
-                  className="suggestion-item"
-                >
-                  {name}
-                </li>
-              ))}
-            </ul>
+          {/* Last Name */}
+          <div className="form-group">
+            <input
+              type="text"
+              id="lastname"
+              placeholder=" "
+              value={formData.lastname}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              readOnly={isPrefilled}
+            />
+            <label htmlFor="lastname" className="frmlbl">Last Name</label>
+            {errors.lastname && <div className="error">{errors.lastname}</div>}
+          </div>
+
+          {/* Email */}
+          <div className="form-group">
+            <input
+              type="email"
+              id="email"
+              placeholder=" "
+              value={formData.email}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              readOnly={isPrefilled}
+            />
+            <label htmlFor="email" className="frmlbl">Email Address</label>
+            {errors.email && <div className="error">{errors.email}</div>}
+          </div>
+
+          {/* Gender */}
+          <div className="form-group radgrp">
+            <label className="frmlbl">Gender</label>
+            <div className="rdbox">
+              <input
+                type="radio"
+                id="gender_male"
+                name="gender"
+                value="male"
+                checked={formData.gender === "male"}
+                onChange={(e) =>
+                  syncCustomerData({ ...formData, gender: e.target.value })
+                }
+                disabled={isPrefilled}
+              />
+              <label htmlFor="gender_male">Male</label>
+            </div>
+            <div className="rdbox">
+              <input
+                type="radio"
+                id="gender_female"
+                name="gender"
+                value="female"
+                checked={formData.gender === "female"}
+                onChange={(e) =>
+                  syncCustomerData({ ...formData, gender: e.target.value })
+                }
+                disabled={isPrefilled}
+              />
+              <label htmlFor="gender_female">Female</label>
+            </div>
+            {errors.gender && <div className="error">{errors.gender}</div>}
+          </div>
+
+          {/* Optional "Edit" button */}
+          {isPrefilled && (
+            <button
+              type="button"
+              onClick={() => {
+                setIsPrefilled(false);
+                setPrefillActive(false);
+              }}
+              className="edit-btn editbtn"
+            >
+              Edit Customer
+            </button>
           )}
-        </div>
-
-        {/* Last Name */}
-        <div className="form-group">
-          <input
-            type="text"
-            id="lastname"
-            placeholder=" "
-            value={formData.lastname}
-            onChange={handleChange}
-            onBlur={handleBlur}
-          />
-          <label htmlFor="lastname" className="frmlbl">
-            Last Name
-          </label>
-          {errors.lastname && <div className="error">{errors.lastname}</div>}
-        </div>
-
-        {/* Email Address */}
-        <div className="form-group">
-          <input
-            type="email"
-            id="email"
-            placeholder=" "
-            value={formData.email}
-            onChange={handleChange}
-            onBlur={handleBlur}
-          />
-          <label htmlFor="email" className="frmlbl">
-            Email Address
-          </label>
-          {errors.email && <div className="error">{errors.email}</div>}
-        </div>
-
-        {/* Gender */}
-        <div className="form-group radgrp">
-          <label>Gender</label>
-          <div className="rdbox">
-    <input
-      type="radio"
-      id="gender_male"
-      name="gender"
-      value="male"
-      checked={formData.gender === "male"}
-      onChange={(e) =>
-        setFormData((prevData) => ({
-          ...prevData,
-          gender: e.target.value,
-        }))
-      }
-    />
-    <label htmlFor="gender_male">Male</label>
-  </div>
-  <div className="rdbox">
-    <input
-      type="radio"
-      id="gender_female"
-      name="gender"
-      value="female"
-      checked={formData.gender === "female"}
-      onChange={(e) =>
-        setFormData((prevData) => ({
-          ...prevData,
-          gender: e.target.value,
-        }))
-      }
-    />
-    <label htmlFor="gender_female">Female</label>
-  </div>
-        </div>
-
-        
-      </form>
-    </div>
+        </form>
+      </div>
+    </>
   );
 };
 

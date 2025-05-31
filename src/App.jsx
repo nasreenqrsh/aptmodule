@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import AppointmentHeader from "./components/AppointmentHeader";
 import AddCustomerModal from "./components/AddCustomerModal"; 
-import AppointmentDrawer from "./components/appointmentdrawer/AppointmentDrawer"
+import AppointmentDrawer from "./components/appointmentdrawer/AppointmentDrawer";
 import FilterHeader from "./components/FilterHeader";
 import SchedulerGrid from "./components/SchedulerGrid";
-import AppointmentDetails from "./components/Sidebar"; 
+import AppointmentDetails from "./components/Sidebar";
 
 const App = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [showAddCustomer, setShowAddCustomer] = useState(false); 
-   const [showDetails, setShowDetails] = useState(false);
+  const [showAddCustomer, setShowAddCustomer] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState(null); //  New state
 
   const appointment = {
     customerName: "Jane Doe",
@@ -24,18 +25,26 @@ const App = () => {
   const toggleDetails = () => {
     setShowDetails(!showDetails);
   };
+
+  const handleBookAppointment = (customer) => {
+    setSelectedCustomer(customer); //  Set selected customer
+    setDrawerOpen(true);           //  Open appointment drawer
+  };
+
   return (
     <>
       <AppointmentHeader
-        onAddAppointment={() => setDrawerOpen(true)}
-        onAddCustomer={() => setShowAddCustomer(true)} 
+        onAddAppointment={handleBookAppointment} //  Handle book with data
+        onAddCustomer={() => setShowAddCustomer(true)}
       />
+
       <FilterHeader />
-    <SchedulerGrid />
-      
+      <SchedulerGrid />
+
       <AppointmentDrawer
         isOpen={drawerOpen}
         onClose={() => setDrawerOpen(false)}
+        customer={selectedCustomer} //  Pass customer prop
       />
 
       <button onClick={toggleDetails}>Show Appointment Details</button>

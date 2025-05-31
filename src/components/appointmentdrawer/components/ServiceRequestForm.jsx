@@ -11,6 +11,8 @@ const ServiceRequestForm = ({ onAddService }) => {
     duration: "5", // Default duration (5 mins)
     endTime: "10:05 AM", // Default value for end time (5 mins after 10:00 AM)
     room: "",
+      note: "" // ✅ Add this line
+
   });
 
   const [errors, setErrors] = useState({
@@ -144,32 +146,24 @@ const ServiceRequestForm = ({ onAddService }) => {
   const handleSubmit = (e) => {
   e.preventDefault();
   const isValid = Object.keys(formData).every((field) => validateField(field));
+  console.log(formData)
   if (isValid) {
     const newService = {
       service: formData.service,
       preference: formData.preference.charAt(0).toUpperCase() + formData.preference.slice(1),
       practitioner: formData.practitioner || "Dr. Aaliya",
-      amount: 100, // Static or dynamic pricing logic can go here
+      amount: 100,
       start: formData.startTime,
       end: formData.endTime,
-      duration: `${formData.duration} mins`
+      duration: `${formData.duration} mins`,
+      note: formData.note
     };
 
     if (typeof onAddService === "function") {
-      onAddService(newService);
+      onAddService(newService); // ✅ Parent will merge with customerData
     }
 
-    // Optionally reset the form
-    setFormData({
-      service: "",
-      preference: "any",
-      practitioner: "",
-      startTime: "10:00 AM",
-      duration: "5",
-      endTime: "10:05 AM",
-      room: ""
-    });
-    setFilteredServices([]);
+    // Optionally reset formData
   }
 };
 
@@ -442,14 +436,16 @@ const ServiceRequestForm = ({ onAddService }) => {
       </div>
 
       {showAddNote && (
-        <AddNoteModal
-          onClose={() => setShowAddNote(false)}
-          onSubmit={() => {
-            console.log("Note submitted");
-            setShowAddNote(false);
-          }}
-        />
-      )}
+  <AddNoteModal
+    onClose={() => setShowAddNote(false)}
+    onSubmit={(noteContent) => {
+      setFormData((prev) => ({ ...prev, note: noteContent }));
+      setShowAddNote(false);
+    }}
+  />
+)}
+
+
     </>
   );
 };
