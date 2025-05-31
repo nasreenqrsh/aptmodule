@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 
 const CreateDataHandler = async () => {
-  const res = await fetch("https://mocki.io/v1/fe1da8d7-3afa-4866-bb24-553db358f743");
+  const res = await fetch("/GetCustomerHandler.ashx");
   if (!res.ok) throw new Error("Failed to fetch");
   return await res.json();
 };
@@ -19,7 +19,7 @@ const Toast = ({ message, onClose }) => {
 const CustomerForm = ({ prefillData, setCustomerData, setLoading, customerFormData, setCustomerFormData }) => {
   const [formData, setFormData] = useState({
     number: "",
-    name: "",
+    firstname: "",
     lastname: "",
     email: "",
     gender: "",
@@ -62,37 +62,38 @@ const CustomerForm = ({ prefillData, setCustomerData, setLoading, customerFormDa
   };
 
   const handleChange = async (e) => {
-    const { id, value } = e.target;
-    const updated = { ...formData, [id]: value };
-    syncCustomerData(updated);
+  const { id, value } = e.target;
+  const updated = { ...formData, [id]: value };
+  syncCustomerData(updated);
 
-    if ((id === "number" && value.length >= 3) || (id === "name" && value.length >= 2)) {
-      try {
-        setIsFetching(true);
-        setLoading?.(true);
-        const data = await CreateDataHandler();
-        const matches = data.filter((item) =>
-          id === "number"
-            ? item.mobile.startsWith(value)
-            : item.name.toLowerCase().includes(value.toLowerCase())
-        );
-        setSuggestions(matches);
-      } catch (err) {
-        console.error("Suggestion fetch failed:", err);
-        setSuggestions([]);
-      } finally {
-        setIsFetching(false);
-        setLoading?.(false);
-      }
-    } else {
+  if ((id === "number" && value.length >= 3) || (id === "firstname" && value.length >= 2)) {
+    try {
+      setIsFetching(true);
+      setLoading?.(true);
+      const data = await CreateDataHandler();
+      const matches = data.filter((item) =>
+        id === "number"
+          ? item.mobile.startsWith(value)
+          : item.firstname.toLowerCase().includes(value.toLowerCase())
+      );
+      setSuggestions(matches);
+    } catch (err) {
+      console.error("Suggestion fetch failed:", err);
       setSuggestions([]);
+    } finally {
+      setIsFetching(false);
+      setLoading?.(false);
     }
-  };
+  } else {
+    setSuggestions([]);
+  }
+};
+
 
   const handleSuggestionSelect = (item) => {
     const selected = {
       number: item.mobile || "",
-      name: item.name || "",
+      firstname: item.firstname || "",
       lastname: item.lastname || "",
       email: item.email || "",
       gender: item.gender || "",
@@ -175,15 +176,15 @@ const CustomerForm = ({ prefillData, setCustomerData, setLoading, customerFormDa
           <div className="form-group" style={{ position: "relative" }}>
             <input
               type="text"
-              id="name"
+              id="firstname"
               placeholder=" "
               value={formData.name}
               onChange={handleChange}
               onBlur={handleBlur}
               readOnly={isPrefilled && prefillActive}
             />
-            <label htmlFor="name" className="frmlbl">First Name</label>
-            {errors.name && <div className="error">{errors.name}</div>}
+            <label htmlFor="firstname" className="frmlbl">First Name</label>
+            {errors.firstname && <div className="error">{errors.firstname}</div>}
             {isFetching && (
               <img
                 src="/images/loader.svg"
@@ -195,7 +196,7 @@ const CustomerForm = ({ prefillData, setCustomerData, setLoading, customerFormDa
               <ul className="suggestions">
                 {suggestions.map((item, index) => (
                   <li key={index} onClick={() => handleSuggestionSelect(item)} style={{ cursor: "pointer" }}>
-                    {item.name} – {item.mobile}
+                    {item.firstname} – {item.mobile}
                   </li>
                 ))}
               </ul>

@@ -3,7 +3,7 @@ import "../index.css";
 
 // Fetches suggestions
 const CreateDataHandler = async () => {
-  const response = await fetch("https://mocki.io/v1/fe1da8d7-3afa-4866-bb24-553db358f743");
+  const response = await fetch("/GetCustomerHandler.ashx");
   if (!response.ok) throw new Error("Failed to fetch data");
   return await response.json();
 };
@@ -24,7 +24,7 @@ const AppointmentHeader = ({ onAddAppointment, onAddCustomer }) => {
     try {
       const data = await CreateDataHandler();
       const filtered = data.filter((item) =>
-        item.name.toLowerCase().includes(query.toLowerCase()) ||
+        item.firstname.toLowerCase().includes(query.toLowerCase()) ||
         item.mobile.includes(query)
       );
       setSuggestions(filtered);
@@ -162,10 +162,11 @@ const AppointmentHeader = ({ onAddAppointment, onAddCustomer }) => {
                         alignItems: "center",
                       }}
                     >
-                      <span>{item.name} – {item.mobile}</span>
+                      <span>{item.firstname} – {item.mobile}</span>
                       <span
                         onClick={(e) => {
                           e.stopPropagation();
+                          console.log(item)
                           handleBookAppointment(item);
                         }}
                         className="bookappt"

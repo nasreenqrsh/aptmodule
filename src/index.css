@@ -604,7 +604,7 @@ table {
             padding: 5px 10px;
         }
 
-        .delbtn {
+        .delbtn, .tblbtn.delete {
             border: none;
             background: #b13737;
             color: #fff;
@@ -748,7 +748,7 @@ table {
                     width: 80px;
                 }
 
-                .editbtn {
+                .editbtn, .edit {
                     background: #334B71;
                     color: #fff;
                     display: inline-block;
