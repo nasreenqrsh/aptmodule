@@ -21,7 +21,7 @@ const createDataHandler = async (payload) => {
   }
 };
 
-const ServiceBookingContainer = ({ prefillData, onClose }) => {
+const ServiceBookingContainer = ({ prefillData, doctor, timeSlot, onClose }) => {
   const [customerFormData, setCustomerFormData] = useState(null);
   const [serviceList, setServiceList] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -124,6 +124,8 @@ const handleCancel = () => {
           resetKey={resetKey}
           initialData={editingService}
           lastEndTime={lastEndTime}
+           selectedDoctor={doctor}     
+          selectedTime={timeSlot} 
         />
 
         <ServiceList

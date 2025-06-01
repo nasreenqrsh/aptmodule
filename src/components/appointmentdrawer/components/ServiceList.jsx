@@ -1,6 +1,6 @@
 import React from "react";
 
-const ServiceList = ({ data, onDelete, onEdit }) => {
+const ServiceList = ({ data=[], onDelete, onEdit }) => {
   if (!data.length) return (
     <div className="service-list srvlist">
       <h4 className="frmlgnd">Booked Services</h4>

@@ -1,15 +1,38 @@
-import React, { useState } from 'react';
-import AppointmentDrawer from './AppointmentDetails';
+import React, { useState, useEffect } from 'react';
+import AppointmentDrawer from './appointmentdrawer/AppointmentDrawer';
+
+const createDataHandler = async (url) => {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error("Failed to fetch doctors");
+  return await response.json();
+};
+
 
 const AppointmentScheduler = () => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false); // Drawer open state
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
+  const [doctors, setDoctors] = useState([]);
 
   const toggleDetails = () => {
     setIsExpanded(!isExpanded);
   };
+
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const data = await createDataHandler("https://mocki.io/v1/4519c325-7de2-432f-b770-096782070c7a");
+        const doctorNames = data.map((doc) => doc.Name);
+        setDoctors(doctorNames);
+      } catch (error) {
+        console.error("Error loading doctors:", error);
+        setDoctors([]);
+      }
+    };
+
+    fetchDoctors();
+  }, []);
 
   const handleDoubleClick = (time, doctor) => {
     console.log(time)
@@ -45,11 +68,7 @@ const AppointmentScheduler = () => {
     '09:40 PM', '09:45 PM', '09:50 PM', '09:55 PM', '10:00 PM'
   ];
 
-  const doctors = [
-    'Dr. Aisha Karim', 'Dr. Leila Siddiq', 'Dr. Samira Nadeem',
-    'Dr. Noor Hassan', 'Dr. Youssef Khan', 'Dr. Salman Qureshi',
-    'Dr. Zainab Chaudhry', 'Dr. Huda Yasin'
-  ];
+
 
   return (
     <section className="calsection">
@@ -105,13 +124,12 @@ const AppointmentScheduler = () => {
 
       {/* Render AppointmentDrawer when isDrawerOpen is true */}
       {isDrawerOpen && (
-        <AppointmentDrawer 
-                  className={isDrawerOpen ? "expand" : ""} // Add the 'expand' class if drawer is open
-          isOpen={isDrawerOpen} 
-          onClose={() => setIsDrawerOpen(false)} 
-          timeSlot={selectedTimeSlot} 
-          doctor={selectedDoctor}
-        />
+       <AppointmentDrawer
+  isOpen={isDrawerOpen}
+  onClose={() => setIsDrawerOpen(false)}
+  timeSlot={selectedTimeSlot}
+  doctor={selectedDoctor}
+/>
       )}
     </section>
   );

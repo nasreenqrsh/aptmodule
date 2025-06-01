@@ -1243,6 +1243,7 @@ table {
   display: flex;
   font: 400 12px/15px 'Lato', sans-serif;
   border-bottom: 1px solid #E9EDF5;
+  /* margin: 70px 0 0; */
 }
 
 .rgtcol {
@@ -1273,7 +1274,23 @@ table {
   padding: 10px;
   font-weight: 600;
   height: 50px;
+  /* position: fixed;
+  width: 160px;
+  border-right: 3px solid #E9EDF5;
+  border-bottom: 1px solid #E9EDF5;
+  background: #fff;
+  font-size: 12px; */
 }
+/* 
+.clnctm.cldrttl{padding: 10px;
+  font-weight: 600;
+  height: 50px;
+  position: fixed;
+  width: 160px;
+  border-right: 3px solid #E9EDF5;
+  border-bottom: 1px solid #E9EDF5;
+  background: #fff;
+  font-size: 12px;} */
 
 .hrtxt{text-align: right;}
 

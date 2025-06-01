@@ -7,7 +7,7 @@ const createDataHandler = async (url) => {
   return await res.json();
 };
 
-const ServiceRequestForm = ({ onAddService, resetKey, initialData, lastEndTime }) => {
+const ServiceRequestForm = ({ onAddService, resetKey, initialData, lastEndTime, selectedDoctor, selectedTime }) => {
   const [formData, setFormData] = useState({
     servicename: "",
     servicecode: "",
@@ -51,7 +51,7 @@ const ServiceRequestForm = ({ onAddService, resetKey, initialData, lastEndTime }
     if (initialData) {
       setFormData(initialData);
     } else {
-      const defaultStart = lastEndTime || "10:00 AM";
+      const defaultStart = selectedTime || lastEndTime || "10:00 AM";
       const defaultDuration = "5";
       const defaultEnd = calculateEndTime(defaultStart, defaultDuration);
 
@@ -59,7 +59,7 @@ const ServiceRequestForm = ({ onAddService, resetKey, initialData, lastEndTime }
         servicename: "",
         servicecode: "",
         preference: "any",
-        practitioner: "",
+        practitioner: selectedDoctor?.id || "", 
         startTime: defaultStart,
         duration: defaultDuration,
         endTime: defaultEnd,
@@ -68,7 +68,7 @@ const ServiceRequestForm = ({ onAddService, resetKey, initialData, lastEndTime }
       });
     }
     setErrors({});
-  }, [resetKey, initialData, lastEndTime]);
+  }, [resetKey, initialData, lastEndTime, selectedDoctor, selectedTime]);
 
   const handleServiceChange = (e) => {
     const { value } = e.target;
