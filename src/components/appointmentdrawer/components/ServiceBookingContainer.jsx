@@ -90,7 +90,7 @@ const handleCancel = () => {
     EndTime: entry.service.end,
     Duration: entry.service.duration,
     LineNo: index + 1,
-    ServiceCode: entry.service.servicename, // or actual code if available
+    ServiceCode: entry.service.servicecode, // or actual code if available
     Practioner: entry.service.practitioner,
     Preference: entry.service.preference,
     Notes: entry.service.note,

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 
 const CreateDataHandler = async () => {
-  const res = await fetch("/GetCustomerHandler.ashx?firstname=${encodeURIComponent(firstname)});"); //Mock API : https://mocki.io/v1/b714b9e0-ecdd-48a6-84d2-39703495d1ac
+  const res = await fetch(`/GetCustomerHandler.ashx?firstname=${encodeURIComponent(firstname)}`); //Mock API : https://mocki.io/v1/b714b9e0-ecdd-48a6-84d2-39703495d1ac
   if (!res.ok) throw new Error("Failed to fetch");
   return await res.json();
 };
