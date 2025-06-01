@@ -37,7 +37,7 @@ const CustomerForm = ({ prefillData, setCustomerData, setLoading, customerFormDa
       prefillData &&
       typeof prefillData === "object" &&
       !prefillActive &&
-      (prefillData.name || prefillData.mobile || prefillData.number)
+      (prefillData.firstname || prefillData.mobile || prefillData.number)
     ) {
       const data = {
         number: prefillData.number || prefillData.mobile || "",

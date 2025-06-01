@@ -10,6 +10,7 @@ const createDataHandler = async (url) => {
 const ServiceRequestForm = ({ onAddService, resetKey, initialData, lastEndTime }) => {
   const [formData, setFormData] = useState({
     servicename: "",
+    servicecode: "",
     preference: "any",
     practitioner: "",
     startTime: "10:00 AM",
@@ -27,11 +28,10 @@ const ServiceRequestForm = ({ onAddService, resetKey, initialData, lastEndTime }
   const [rooms, setRooms] = useState([]);
 
   useEffect(() => {
-    const fetchServicesDoctorsRooms = async () => {
+    const fetchServicesAndRooms = async () => {
       try {
-        const [services, doctors, roomData] = await Promise.all([
+        const [services, roomData] = await Promise.all([
           createDataHandler("/GetServiceHandler.ashx"),
-          createDataHandler("/GetPractitionerHandler.ashx"),
           createDataHandler("/GetRoomHandler.ashx")
 
           /* createDataHandler("https://mocki.io/v1/2ad352d1-db23-4a86-824e-4cb5904f4478"),
@@ -39,13 +39,12 @@ const ServiceRequestForm = ({ onAddService, resetKey, initialData, lastEndTime }
           createDataHandler("https://mocki.io/v1/cdd90edf-6eb8-4061-8dfe-c5217cee9ffa") */
         ]);
         setServicesList(services);
-        setPractitioners(doctors);
         setRooms(roomData);
       } catch (error) {
-        console.error("Failed to load services, practitioners, or rooms:", error);
+        console.error("Failed to load services or rooms:", error);
       }
     };
-    fetchServicesDoctorsRooms();
+    fetchServicesAndRooms();
   }, []);
 
   useEffect(() => {
@@ -58,6 +57,7 @@ const ServiceRequestForm = ({ onAddService, resetKey, initialData, lastEndTime }
 
       setFormData({
         servicename: "",
+        servicecode: "",
         preference: "any",
         practitioner: "",
         startTime: defaultStart,
@@ -81,9 +81,28 @@ const ServiceRequestForm = ({ onAddService, resetKey, initialData, lastEndTime }
     );
   };
 
-  const handleServiceSelect = (servicename) => {
-    setFormData((prevData) => ({ ...prevData, servicename }));
+  const handleServiceSelect = async (servicename) => {
+    const selectedService = servicesList.find((s) => s.servicename === servicename);
+    const servicecode = selectedService?.servicecode || "";
+
+    setFormData((prevData) => ({
+      ...prevData,
+      servicename,
+      servicecode,
+      practitioner: ""
+    }));
+
     setFilteredServices([]);
+
+    if (!servicecode) return;
+
+    try {
+      const doctors = await createDataHandler(`/GetPractitionerHandler.ashx?servicecode=${encodeURIComponent(servicecode)}`);
+      setPractitioners(doctors);
+    } catch (error) {
+      console.error("Failed to fetch practitioners for selected service code:", error);
+      setPractitioners([]);
+    }
   };
 
   const handleChange = (e) => {
@@ -111,6 +130,7 @@ const ServiceRequestForm = ({ onAddService, resetKey, initialData, lastEndTime }
     if (isValid) {
       const newService = {
         servicename: formData.servicename,
+        servicecode: formData.servicecode,
         preference: formData.preference.charAt(0).toUpperCase() + formData.preference.slice(1),
         practitioner: formData.practitioner,
         amount: 100,
@@ -168,7 +188,6 @@ const ServiceRequestForm = ({ onAddService, resetKey, initialData, lastEndTime }
   };
 
   const handleBlur = (e) => validateField(e.target.id);
-
 
   const calculateEndTime = (startTime, duration) => {
     const startTimeInMinutes = convertToMinutes(startTime);
@@ -238,6 +257,17 @@ const ServiceRequestForm = ({ onAddService, resetKey, initialData, lastEndTime }
               </ul>
             )}
           </div>
+          {formData.servicecode && (
+            <div className="form-group">
+              <input
+                type="hidden"
+                id="servicecode"
+                placeholder=" "
+                value={formData.servicecode}
+                readOnly
+              />
+            </div>
+          )}
 
           <div className="form-group radgrp">
             <label>Preference</label>
@@ -300,15 +330,15 @@ const ServiceRequestForm = ({ onAddService, resetKey, initialData, lastEndTime }
 
           <div className="lstfrmsect">
             <div className="form-group slctgrp">
-            <label>Room:</label>
-            <select id="room" value={formData.room} onChange={handleChange} onBlur={handleBlur}>
-              <option value="">Select Room</option>
-              {rooms.map((room, index) => (
-                <option key={index} value={room.RoomNo}>{room.RoomNo}</option>
-              ))}
-            </select>
-            {errors.room && <div className="error">{errors.room}</div>}
-          </div>
+              <label>Room:</label>
+              <select id="room" value={formData.room} onChange={handleChange} onBlur={handleBlur}>
+                <option value="">Select Room</option>
+                {rooms.map((room, index) => (
+                  <option key={index} value={room.RoomNo}>{room.RoomNo}</option>
+                ))}
+              </select>
+              {errors.room && <div className="error">{errors.room}</div>}
+            </div>
 
             <span className="notebtn tooltip" data-tooltip="Add Note" data-tooltip-pos="down" onClick={() => setShowAddNote(true)}>
               <img src="/images/notes.svg" alt="Add Note" />
