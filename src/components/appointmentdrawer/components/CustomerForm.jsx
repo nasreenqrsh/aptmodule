@@ -1,8 +1,7 @@
-// CustomerForm.jsx
 import React, { useState, useEffect } from "react";
 
-const CreateDataHandler = async () => {
-  const res = await fetch(`/GetCustomerHandler.ashx?firstname=${encodeURIComponent(firstname)}`); //Mock API : https://mocki.io/v1/b714b9e0-ecdd-48a6-84d2-39703495d1ac
+const CreateDataHandler = async (query) => {
+  const res = await fetch(`/GetCustomerHandler.ashx?firstname=${encodeURIComponent(query)}`);
   if (!res.ok) throw new Error("Failed to fetch");
   return await res.json();
 };
@@ -28,7 +27,6 @@ const CustomerForm = ({ prefillData, setCustomerData, setLoading, customerFormDa
   const [errors, setErrors] = useState({});
   const [suggestions, setSuggestions] = useState([]);
   const [isPrefilled, setIsPrefilled] = useState(false);
-  const [showToast, setShowToast] = useState(false);
   const [prefillActive, setPrefillActive] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
 
@@ -41,7 +39,7 @@ const CustomerForm = ({ prefillData, setCustomerData, setLoading, customerFormDa
     ) {
       const data = {
         number: prefillData.number || prefillData.mobile || "",
-        name: prefillData.name || "",
+        firstname: prefillData.firstname || "",
         lastname: prefillData.lastname || "",
         email: prefillData.email || "",
         gender: prefillData.gender || "",
@@ -51,7 +49,6 @@ const CustomerForm = ({ prefillData, setCustomerData, setLoading, customerFormDa
       setCustomerFormData?.(data);
       setIsPrefilled(true);
       setPrefillActive(true);
-      setShowToast(true);
     }
   }, [prefillData, prefillActive]);
 
@@ -62,33 +59,32 @@ const CustomerForm = ({ prefillData, setCustomerData, setLoading, customerFormDa
   };
 
   const handleChange = async (e) => {
-  const { id, value } = e.target;
-  const updated = { ...formData, [id]: value };
-  syncCustomerData(updated);
+    const { id, value } = e.target;
+    const updated = { ...formData, [id]: value };
+    syncCustomerData(updated);
 
-  if ((id === "number" && value.length >= 3) || (id === "firstname" && value.length >= 2)) {
-    try {
-      setIsFetching(true);
-      setLoading?.(true);
-      const data = await CreateDataHandler();
-      const matches = data.filter((item) =>
-        id === "number"
-          ? item.mobile.startsWith(value)
-          : item.firstname.toLowerCase().includes(value.toLowerCase())
-      );
-      setSuggestions(matches);
-    } catch (err) {
-      console.error("Suggestion fetch failed:", err);
+    if ((id === "number" && value.length >= 3) || (id === "firstname" && value.length >= 2)) {
+      try {
+        setIsFetching(true);
+        setLoading?.(true);
+        const data = await CreateDataHandler(value);
+        const matches = data.filter((item) =>
+          id === "number"
+            ? item.mobile.startsWith(value)
+            : item.firstname.toLowerCase().includes(value.toLowerCase())
+        );
+        setSuggestions(matches);
+      } catch (err) {
+        console.error("Suggestion fetch failed:", err);
+        setSuggestions([]);
+      } finally {
+        setIsFetching(false);
+        setLoading?.(false);
+      }
+    } else {
       setSuggestions([]);
-    } finally {
-      setIsFetching(false);
-      setLoading?.(false);
     }
-  } else {
-    setSuggestions([]);
-  }
-};
-
+  };
 
   const handleSuggestionSelect = (item) => {
     const selected = {
@@ -104,7 +100,6 @@ const CustomerForm = ({ prefillData, setCustomerData, setLoading, customerFormDa
     setIsPrefilled(true);
     setPrefillActive(true);
     setSuggestions([]);
-    setShowToast(true);
   };
 
   const handleBlur = (e) => validateField(e.target.id);
@@ -120,11 +115,11 @@ const CustomerForm = ({ prefillData, setCustomerData, setLoading, customerFormDa
           isValid = false;
         } else delete newErrors.number;
         break;
-      case "name":
-        if (!formData.name) {
-          newErrors.name = "First name is required.";
+      case "firstname":
+        if (!formData.firstname) {
+          newErrors.firstname = "First name is required.";
           isValid = false;
-        } else delete newErrors.name;
+        } else delete newErrors.firstname;
         break;
       case "lastname":
         if (!formData.lastname) {
@@ -154,11 +149,10 @@ const CustomerForm = ({ prefillData, setCustomerData, setLoading, customerFormDa
 
   return (
     <>
-      {showToast && <Toast message="Customer loaded successfully" onClose={() => setShowToast(false)} />}
-
       <div className="bscdetwrp">
         <div className="frmlgnd">Customer Details</div>
         <form autoComplete="off">
+          {/* Mobile Number */}
           <div className="form-group" style={{ position: "relative" }}>
             <input
               type="text"
@@ -171,27 +165,15 @@ const CustomerForm = ({ prefillData, setCustomerData, setLoading, customerFormDa
             />
             <label htmlFor="number" className="frmlbl">Mobile Number</label>
             {errors.number && <div className="error">{errors.number}</div>}
-          </div>
 
-          <div className="form-group" style={{ position: "relative" }}>
-            <input
-              type="text"
-              id="firstname"
-              placeholder=" "
-              value={formData.name}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              readOnly={isPrefilled && prefillActive}
-            />
-            <label htmlFor="firstname" className="frmlbl">First Name</label>
-            {errors.firstname && <div className="error">{errors.firstname}</div>}
             {isFetching && (
               <img
-                src="${import.meta.env.BASE_URL}images/loader.svg"
+                src={`${import.meta.env.BASE_URL}images/loader.svg`}
                 alt="Loading"
                 style={{ position: "absolute", right: 10, top: 10, width: 20 }}
               />
             )}
+
             {suggestions.length > 0 && (
               <ul className="suggestions">
                 {suggestions.map((item, index) => (
@@ -203,6 +185,22 @@ const CustomerForm = ({ prefillData, setCustomerData, setLoading, customerFormDa
             )}
           </div>
 
+          {/* First Name */}
+          <div className="form-group" style={{ position: "relative" }}>
+            <input
+              type="text"
+              id="firstname"
+              placeholder=" "
+              value={formData.firstname}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              readOnly={isPrefilled && prefillActive}
+            />
+            <label htmlFor="firstname" className="frmlbl">First Name</label>
+            {errors.firstname && <div className="error">{errors.firstname}</div>}
+          </div>
+
+          {/* Last Name */}
           <div className="form-group">
             <input
               type="text"
@@ -217,6 +215,7 @@ const CustomerForm = ({ prefillData, setCustomerData, setLoading, customerFormDa
             {errors.lastname && <div className="error">{errors.lastname}</div>}
           </div>
 
+          {/* Email */}
           <div className="form-group">
             <input
               type="email"
@@ -231,6 +230,7 @@ const CustomerForm = ({ prefillData, setCustomerData, setLoading, customerFormDa
             {errors.email && <div className="error">{errors.email}</div>}
           </div>
 
+          {/* Gender */}
           <div className="form-group radgrp">
             <label className="frmlbl">Gender</label>
             <div className="rdbox">
@@ -274,6 +274,11 @@ const CustomerForm = ({ prefillData, setCustomerData, setLoading, customerFormDa
           )}
         </form>
       </div>
+
+      {/* Toast */}
+      {isPrefilled && (
+        <Toast message="Customer loaded successfully" onClose={() => setIsPrefilled(false)} />
+      )}
     </>
   );
 };
