@@ -286,8 +286,8 @@ const ServiceRequestForm = ({ onAddService, resetKey, initialData, lastEndTime }
           </div>
 
           <div className="form-group slctgrp">
-            <label>Practitioner:</label>
-            <select id="practitioner" value={formData.practitioner} onChange={handleChange} onBlur={handleBlur}>
+            <label>Practitioner:</label><br></br>
+            <select id="practitioner" value={formData.practitioner} className="pract" onChange={handleChange} onBlur={handleBlur}>
               <option value="">Select Practitioner</option>
               {practitioners.map((doc, index) => (
                 <option key={index} value={doc.Name}>{doc.Name} ({doc.Type})</option>

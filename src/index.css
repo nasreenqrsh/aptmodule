@@ -576,6 +576,8 @@ table {
             width: auto;
         }
 
+        .form-group.slctgrp .pract{margin:10px 0 0;width: 100%;}
+
         .srvlist {
             width: 54%;
         }
