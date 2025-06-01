@@ -138,7 +138,8 @@ const ServiceRequestForm = ({ onAddService, resetKey, initialData, lastEndTime }
         end: formData.endTime,
         duration: `${formData.duration} mins`,
         note: formData.note,
-        equipment: formData.equipment
+        equipment: formData.equipment, 
+        room:formData.room
       };
       onAddService?.(newService);
     }
@@ -334,7 +335,7 @@ const ServiceRequestForm = ({ onAddService, resetKey, initialData, lastEndTime }
               <select id="room" value={formData.room} onChange={handleChange} onBlur={handleBlur}>
                 <option value="">Select Room</option>
                 {rooms.map((room, index) => (
-                  <option key={index} value={room.RoomNo}>{room.RoomNo}</option>
+                  <option key={index} value={room.id}>{room.RoomNo}</option>
                 ))}
               </select>
               {errors.room && <div className="error">{errors.room}</div>}
