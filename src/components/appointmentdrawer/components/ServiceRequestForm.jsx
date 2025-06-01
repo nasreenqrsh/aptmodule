@@ -1,123 +1,160 @@
 import React, { useState, useEffect } from "react";
 import AddNoteModal from "../../AddNoteModal";
 
-const ServiceRequestForm = ({ onAddService, resetKey, initialData }) => {
+const createDataHandler = async (url) => {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Failed to fetch data");
+  return await res.json();
+};
 
+const ServiceRequestForm = ({ onAddService, resetKey, initialData, lastEndTime }) => {
   const [formData, setFormData] = useState({
-    service: "",
+    servicename: "",
     preference: "any",
     practitioner: "",
-    startTime: "10:00 AM", // Default value for start time
-    duration: "5", // Default duration (5 mins)
-    endTime: "10:05 AM", // Default value for end time (5 mins after 10:00 AM)
+    startTime: "10:00 AM",
+    duration: "5",
+    endTime: "10:05 AM",
     room: "",
-      note: "" // ✅ Add this line
-
+    note: ""
   });
 
-  const [errors, setErrors] = useState({
-    service: "",
-    preference: "",
-    practitioner: "",
-    startTime: "",
-    duration: "",
-    room: "",
-  });
-
+  const [errors, setErrors] = useState({});
   const [showAddNote, setShowAddNote] = useState(false);
-
-  // For auto-suggestion
   const [filteredServices, setFilteredServices] = useState([]);
-  const [servicesList] = useState([
-    "PRP",
-    "Laser treatment",
-    "Hair Fall Consultation",
-    "Skin Treatment",
-    "Facial",
-    "Botox",
-    "Acne Treatment",
-    "Teeth Whitening",
-  ]);
+  const [servicesList, setServicesList] = useState([]);
+  const [practitioners, setPractitioners] = useState([]);
+  const [rooms, setRooms] = useState([]);
 
-  // Filter services based on input
+  useEffect(() => {
+    const fetchServicesDoctorsRooms = async () => {
+      try {
+        const [services, doctors, roomData] = await Promise.all([
+          createDataHandler("https://mocki.io/v1/2ad352d1-db23-4a86-824e-4cb5904f4478"),
+          createDataHandler("https://mocki.io/v1/aa41a3f4-c489-43d5-81d1-d8daf1bc4ebd"),
+          createDataHandler("https://mocki.io/v1/cdd90edf-6eb8-4061-8dfe-c5217cee9ffa")
+        ]);
+        setServicesList(services);
+        setPractitioners(doctors);
+        setRooms(roomData);
+      } catch (error) {
+        console.error("Failed to load services, practitioners, or rooms:", error);
+      }
+    };
+    fetchServicesDoctorsRooms();
+  }, []);
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData(initialData);
+    } else {
+      const defaultStart = lastEndTime || "10:00 AM";
+      const defaultDuration = "5";
+      const defaultEnd = calculateEndTime(defaultStart, defaultDuration);
+
+      setFormData({
+        servicename: "",
+        preference: "any",
+        practitioner: "",
+        startTime: defaultStart,
+        duration: defaultDuration,
+        endTime: defaultEnd,
+        room: "",
+        note: ""
+      });
+    }
+    setErrors({});
+  }, [resetKey, initialData, lastEndTime]);
+
   const handleServiceChange = (e) => {
     const { value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      service: value,
-    }));
-
-    // Filter services based on the input
-    if (value) {
-      setFilteredServices(
-        servicesList.filter((service) =>
-          service.toLowerCase().includes(value.toLowerCase())
+    setFormData((prevData) => ({ ...prevData, servicename: value }));
+    setFilteredServices(value
+      ? servicesList.filter((item) =>
+          item.servicename.toLowerCase().includes(value.toLowerCase())
         )
-      );
+      : []
+    );
+  };
+
+  const handleServiceSelect = (servicename) => {
+    setFormData((prevData) => ({ ...prevData, servicename }));
+    setFilteredServices([]);
+  };
+
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    if (id === "room") {
+      const selectedRoom = rooms.find((room) => room.RoomNo === value);
+      setFormData((prevData) => ({
+        ...prevData,
+        room: value,
+        equipment: selectedRoom?.Equipment || "N/A"
+      }));
     } else {
-      setFilteredServices([]);
+      setFormData((prevData) => ({ ...prevData, [id]: value }));
     }
   };
 
-  const handleServiceSelect = (service) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      service,
-    }));
-    setFilteredServices([]); // Clear suggestions after selection
+  const handleRadioChange = (e) => {
+    const { value } = e.target;
+    setFormData((prevData) => ({ ...prevData, preference: value }));
   };
 
-  // Validation function for form fields
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const isValid = Object.keys(formData).every((field) => validateField(field));
+    if (isValid) {
+      const newService = {
+        servicename: formData.servicename,
+        preference: formData.preference.charAt(0).toUpperCase() + formData.preference.slice(1),
+        practitioner: formData.practitioner,
+        amount: 100,
+        start: formData.startTime,
+        end: formData.endTime,
+        duration: `${formData.duration} mins`,
+        note: formData.note,
+        equipment: formData.equipment
+      };
+      onAddService?.(newService);
+    }
+  };
+
   const validateField = (field) => {
     let formErrors = { ...errors };
     let isValid = true;
 
     switch (field) {
-      case "service":
-        if (!formData.service) {
-          formErrors.service = "Service is required.";
+      case "servicename":
+        if (!formData.servicename) {
+          formErrors.servicename = "Service is required.";
           isValid = false;
-        } else {
-          formErrors.service = "";
-        }
+        } else formErrors.servicename = "";
         break;
-
       case "practitioner":
         if (!formData.practitioner) {
           formErrors.practitioner = "Please select a practitioner.";
           isValid = false;
-        } else {
-          formErrors.practitioner = "";
-        }
+        } else formErrors.practitioner = "";
         break;
-
       case "startTime":
         if (!formData.startTime) {
           formErrors.startTime = "Start time is required.";
           isValid = false;
-        } else {
-          formErrors.startTime = "";
-        }
+        } else formErrors.startTime = "";
         break;
-
       case "duration":
         if (!formData.duration) {
           formErrors.duration = "Duration is required.";
           isValid = false;
-        } else {
-          formErrors.duration = "";
-        }
+        } else formErrors.duration = "";
         break;
-
       case "room":
         if (!formData.room) {
           formErrors.room = "Please select a room.";
           isValid = false;
-        } else {
-          formErrors.room = "";
-        }
+        } else formErrors.room = "";
         break;
-
       default:
         break;
     }
@@ -126,106 +163,12 @@ const ServiceRequestForm = ({ onAddService, resetKey, initialData }) => {
     return isValid;
   };
 
-  // Handle change for other fields
-  const handleChange = (e) => {
-    const { id, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [id]: value,
-    }));
-  };
+  const handleBlur = (e) => validateField(e.target.id);
 
-  const handleRadioChange = (e) => {
-    const { value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      preference: value,
-    }));
-  };
-
-  const handleSubmit = (e) => {
-  e.preventDefault();
-  const isValid = Object.keys(formData).every((field) => validateField(field));
-  console.log(formData)
-  if (isValid) {
-    const newService = {
-      service: formData.service,
-      preference: formData.preference.charAt(0).toUpperCase() + formData.preference.slice(1),
-      practitioner: formData.practitioner || "Dr. Aaliya",
-      amount: 100,
-      start: formData.startTime,
-      end: formData.endTime,
-      duration: `${formData.duration} mins`,
-      note: formData.note
-    };
-
-    if (typeof onAddService === "function") {
-      onAddService(newService); // ✅ Parent will merge with customerData
-    }
-
-    // Optionally reset formData
-  }
-};
-
-
-  // Handle blur validation
-  const handleBlur = (e) => {
-    const { id } = e.target;
-    validateField(id);
-  };
-useEffect(() => {
-  if (initialData) {
-    setFormData(initialData);
-  } else {
-    setFormData({
-      service: "",
-      preference: "any",
-      practitioner: "",
-      startTime: "10:00 AM",
-      duration: "5",
-      endTime: "10:05 AM",
-      room: "",
-      note: ""
-    });
-  }
-  setErrors({});
-}, [resetKey]);
-  useEffect(() => {
-    // Populating Start Time (from 10:00 AM to 10:00 PM with 5 mins interval)
-    const timeSelect = document.getElementById("timeSelect");
-    const durationSelect = document.getElementById("durationSelect");
-
-    if (timeSelect) {
-      const startTime = 10 * 60; // 10:00 AM
-      const endTime = 22 * 60; // 10:00 PM
-      for (let minutes = startTime; minutes <= endTime; minutes += 5) {
-        const hours = Math.floor(minutes / 60);
-        const mins = minutes % 60;
-        const period = hours >= 12 ? "PM" : "AM";
-        const displayHours = hours % 12 === 0 ? 12 : hours % 12;
-        const displayMins = mins.toString().padStart(2, "0");
-        const timeString = `${displayHours}:${displayMins} ${period}`;
-        const option = new Option(timeString, timeString);
-        timeSelect.appendChild(option);
-      }
-    }
-
-    // Populating Duration (from 5 mins to 12 hours with 5 mins interval)
-    if (durationSelect) {
-      for (let minutes = 5; minutes <= 720; minutes += 5) {
-        const hrs = Math.floor(minutes / 60);
-        const mins = minutes % 60;
-        const label = hrs > 0 ? `${hrs} hr${mins ? ` ${mins} mins` : ""}` : `${mins} mins`;
-        const option = new Option(label, minutes);
-        durationSelect.appendChild(option);
-      }
-    }
-  }, []);
 
   const calculateEndTime = (startTime, duration) => {
     const startTimeInMinutes = convertToMinutes(startTime);
     const endTimeInMinutes = startTimeInMinutes + parseInt(duration, 10);
-
     return convertToTime(endTimeInMinutes);
   };
 
@@ -233,15 +176,8 @@ useEffect(() => {
     const [hours, minutesPeriod] = time.split(":");
     const [minutes, period] = minutesPeriod.split(" ");
     let totalMinutes = parseInt(hours) * 60 + parseInt(minutes);
-
-    if (period === "PM" && hours !== "12") {
-      totalMinutes += 12 * 60;
-    }
-
-    if (period === "AM" && hours === "12") {
-      totalMinutes -= 12 * 60;
-    }
-
+    if (period === "PM" && hours !== "12") totalMinutes += 12 * 60;
+    if (period === "AM" && hours === "12") totalMinutes -= 12 * 60;
     return totalMinutes;
   };
 
@@ -272,175 +208,105 @@ useEffect(() => {
     }));
   };
 
-  const handleTimeSlotDoubleClick = (time) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      startTime: time,
-      endTime: calculateEndTime(time, formData.duration),
-    }));
-  };
-
-  
-
   return (
     <>
       <div className="srvwrp">
         <div className="frmlgnd">Requesting Services</div>
-        
-
         <form onSubmit={handleSubmit}>
-          {/* Service */}
           <div className="form-group">
             <input
               type="text"
-              id="service"
+              id="servicename"
               placeholder=" "
-              value={formData.service}
+              value={formData.servicename}
               onChange={handleServiceChange}
               onBlur={handleBlur}
             />
-            <label htmlFor="service" className="frmlbl">Service</label>
-            {errors.service && <div className="error">{errors.service}</div>}
-
-            {/* Auto-suggestions for Service */}
+            <label htmlFor="servicename" className="frmlbl">Service</label>
+            {errors.servicename && <div className="error">{errors.servicename}</div>}
             {filteredServices.length > 0 && (
               <ul className="suggestions">
-                {filteredServices.map((service, index) => (
-                  <li key={index} onClick={() => handleServiceSelect(service)}>
-                    {service}
+                {filteredServices.map((item, index) => (
+                  <li key={index} onClick={() => handleServiceSelect(item.servicename)}>
+                    {item.servicename}
                   </li>
                 ))}
               </ul>
             )}
           </div>
 
-          {/* Preference */}
           <div className="form-group radgrp">
             <label>Preference</label>
             <div className="rdbox">
-              <input
-                type="radio"
-                id="pref_any"
-                name="preference"
-                value="any"
-                checked={formData.preference === "any"}
-                onChange={handleRadioChange}
-              />
+              <input type="radio" id="pref_any" name="preference" value="any" checked={formData.preference === "any"} onChange={handleRadioChange} />
               <label htmlFor="pref_any">Any</label>
             </div>
             <div className="rdbox">
-              <input
-                type="radio"
-                id="pref_male"
-                name="preference"
-                value="male"
-                checked={formData.preference === "male"}
-                onChange={handleRadioChange}
-              />
+              <input type="radio" id="pref_male" name="preference" value="male" checked={formData.preference === "male"} onChange={handleRadioChange} />
               <label htmlFor="pref_male">Male</label>
             </div>
             <div className="rdbox">
-              <input
-                type="radio"
-                id="pref_female"
-                name="preference"
-                value="female"
-                checked={formData.preference === "female"}
-                onChange={handleRadioChange}
-              />
+              <input type="radio" id="pref_female" name="preference" value="female" checked={formData.preference === "female"} onChange={handleRadioChange} />
               <label htmlFor="pref_female">Female</label>
             </div>
           </div>
 
-          {/* Practitioner */}
           <div className="form-group slctgrp">
             <label>Practitioner:</label>
-            <select
-              id="practitioner"
-              value={formData.practitioner}
-              onChange={handleChange}
-              onBlur={handleBlur}
-            >
+            <select id="practitioner" value={formData.practitioner} onChange={handleChange} onBlur={handleBlur}>
               <option value="">Select Practitioner</option>
-              {[...Array(7)].map((_, i) => (
-                <option key={i} value={i + 1}>Dr. Aaliya</option>
+              {practitioners.map((doc, index) => (
+                <option key={index} value={doc.Name}>{doc.Name} ({doc.Type})</option>
               ))}
             </select>
             {errors.practitioner && <div className="error">{errors.practitioner}</div>}
           </div>
 
-          {/* Start Time */}
           <div className="form-group slctgrp">
-            <label htmlFor="timeSelect">Start Time:</label>
-            <select
-              id="timeSelect"
-              value={formData.startTime}
-              onChange={handleStartTimeChange}
-              onBlur={handleBlur}
-            >
-              {[...Array(13)].map((_, index) => (
-                <option key={index} value={`10:${(index * 5).toString().padStart(2, "0")} AM`}>
-                  10:{(index * 5).toString().padStart(2, "0")} AM
-                </option>
-              ))}
+            <label htmlFor="startTime">Start Time:</label>
+            <select id="startTime" value={formData.startTime} onChange={handleStartTimeChange} onBlur={handleBlur}>
+              {[...Array(144)].map((_, i) => {
+                const minutes = 600 + i * 5;
+                const hours = Math.floor(minutes / 60);
+                const mins = minutes % 60;
+                const period = hours >= 12 ? "PM" : "AM";
+                const displayHours = hours % 12 === 0 ? 12 : hours % 12;
+                const displayMins = mins.toString().padStart(2, "0");
+                const timeString = `${displayHours}:${displayMins} ${period}`;
+                return <option key={i} value={timeString}>{timeString}</option>;
+              })}
             </select>
             {errors.startTime && <div className="error">{errors.startTime}</div>}
           </div>
 
-          {/* Duration */}
           <div className="form-group slctgrp">
-            <label htmlFor="durationSelect">Duration:</label>
-            <select
-              id="durationSelect"
-              value={formData.duration}
-              onChange={handleDurationChange}
-              onBlur={handleBlur}
-            >
+            <label htmlFor="duration">Duration:</label>
+            <select id="duration" value={formData.duration} onChange={handleDurationChange} onBlur={handleBlur}>
               {[...Array(144)].map((_, i) => (
-                <option key={i} value={i * 5 + 5}>
-                  {i * 5 + 5} mins
-                </option>
+                <option key={i} value={i * 5 + 5}>{i * 5 + 5} mins</option>
               ))}
             </select>
             {errors.duration && <div className="error">{errors.duration}</div>}
           </div>
 
-          {/* End Time */}
           <div className="form-group">
-            <input
-              type="text"
-              id="endtm"
-              placeholder=" "
-              value={formData.endTime}
-              readOnly
-            />
+            <input type="text" id="endtm" placeholder=" " value={formData.endTime} readOnly />
             <label htmlFor="endtm" className="frmlbl">End Time</label>
           </div>
 
-          {/* Room */}
           <div className="lstfrmsect">
-            <div className="form-group slctgrp rmgrp">
-              <label>Room:</label>
-              <select
-                value={formData.room}
-                onChange={handleChange}
-                id="room"
-                onBlur={handleBlur}
-              >
-                <option value="">Select Room</option>
-                {[...Array(4)].map((_, i) => (
-                  <option key={i} value={i + 1}>Room {i + 1}</option>
-                ))}
-              </select>
-              {errors.room && <div className="error">{errors.room}</div>}
-            </div>
+            <div className="form-group slctgrp">
+            <label>Room:</label>
+            <select id="room" value={formData.room} onChange={handleChange} onBlur={handleBlur}>
+              <option value="">Select Room</option>
+              {rooms.map((room, index) => (
+                <option key={index} value={room.RoomNo}>{room.RoomNo}</option>
+              ))}
+            </select>
+            {errors.room && <div className="error">{errors.room}</div>}
+          </div>
 
-            <span
-              className="notebtn tooltip"
-              data-tooltip="Add Note"
-              data-tooltip-pos="down"
-              onClick={() => setShowAddNote(true)}
-            >
+            <span className="notebtn tooltip" data-tooltip="Add Note" data-tooltip-pos="down" onClick={() => setShowAddNote(true)}>
               <img src="/images/notes.svg" alt="Add Note" />
             </span>
 
@@ -452,16 +318,14 @@ useEffect(() => {
       </div>
 
       {showAddNote && (
-  <AddNoteModal
-    onClose={() => setShowAddNote(false)}
-    onSubmit={(noteContent) => {
-      setFormData((prev) => ({ ...prev, note: noteContent }));
-      setShowAddNote(false);
-    }}
-  />
-)}
-
-
+        <AddNoteModal
+          onClose={() => setShowAddNote(false)}
+          onSubmit={(noteContent) => {
+            setFormData((prev) => ({ ...prev, note: noteContent }));
+            setShowAddNote(false);
+          }}
+        />
+      )}
     </>
   );
 };

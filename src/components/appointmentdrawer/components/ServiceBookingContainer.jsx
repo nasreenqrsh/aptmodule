@@ -4,22 +4,16 @@ import ServiceRequestForm from "./ServiceRequestForm";
 import ServiceList from "./ServiceList";
 import FormFooter from "./FormFooter";
 
-// ✅ Inline POST submission function
 const createDataHandler = async (payload) => {
-  console.log(payload)
+  console.log(payload);
   try {
     const response = await fetch("https://mocki.io/v1/fe1da8d7-3afa-4866-bb24-553db358f743", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
 
-    if (!response.ok) {
-      throw new Error("Failed to submit data");
-    }
-
+    if (!response.ok) throw new Error("Failed to submit data");
     return await response.json();
   } catch (error) {
     console.error("createDataHandler error:", error);
@@ -34,18 +28,15 @@ const ServiceBookingContainer = ({ prefillData }) => {
   const [resetKey, setResetKey] = useState(Date.now());
   const [editingIndex, setEditingIndex] = useState(null);
   const [editingService, setEditingService] = useState(null);
+  const [lastEndTime, setLastEndTime] = useState("10:00 AM");
 
-  // ✅ Add or Edit service
   const handleAddService = (serviceData) => {
     if (!customerFormData) {
       alert("Customer data is missing.");
       return;
     }
 
-    const combinedData = {
-      customer: customerFormData,
-      service: serviceData,
-    };
+    const combinedData = { customer: customerFormData, service: serviceData };
 
     if (editingIndex !== null) {
       const updatedList = [...serviceList];
@@ -57,25 +48,23 @@ const ServiceBookingContainer = ({ prefillData }) => {
       setServiceList((prev) => [...prev, combinedData]);
     }
 
-    setResetKey(Date.now()); // Reset form after submit
+    setLastEndTime(serviceData.end); // ⏱ update next start time
+    setResetKey(Date.now());
   };
 
-  // ✅ Delete service with confirmation
   const handleDelete = (index) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this service?");
     if (!confirmDelete) return;
     setServiceList((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // ✅ Edit service (populate form)
   const handleEdit = (index) => {
     const entry = serviceList[index];
     setEditingService(entry.service);
     setEditingIndex(index);
-    setResetKey(Date.now()); // trigger repopulation
+    setResetKey(Date.now());
   };
 
-  // ✅ Submit all to backend
   const handleSubmitAll = async () => {
     if (!customerFormData || serviceList.length === 0) {
       alert("Missing customer or service data.");
@@ -99,30 +88,30 @@ const ServiceBookingContainer = ({ prefillData }) => {
 
   return (
     <>
-    <div className="service-booking apptfrmflx">
-      <CustomerForm
-        prefillData={prefillData}
-        setCustomerData={setCustomerFormData}
-        setLoading={setLoading}
-        customerFormData={customerFormData}
-        setCustomerFormData={setCustomerFormData}
-      />
+      <div className="service-booking apptfrmflx">
+        <CustomerForm
+          prefillData={prefillData}
+          setCustomerData={setCustomerFormData}
+          setLoading={setLoading}
+          customerFormData={customerFormData}
+          setCustomerFormData={setCustomerFormData}
+        />
 
-      <ServiceRequestForm
-        onAddService={handleAddService}
-        resetKey={resetKey}
-        initialData={editingService}
-      />
+        <ServiceRequestForm
+          onAddService={handleAddService}
+          resetKey={resetKey}
+          initialData={editingService}
+          lastEndTime={lastEndTime}
+        />
 
-      <ServiceList
-        data={serviceList}
-        onDelete={handleDelete}
-        onEdit={handleEdit}
-      />
+        <ServiceList
+          data={serviceList}
+          onDelete={handleDelete}
+          onEdit={handleEdit}
+        />
+      </div>
 
-     
-    </div>
-     <div style={{ marginTop: "1rem" }}>
+      <div style={{ marginTop: "1rem" }}>
         <button className="submitbtn" onClick={handleSubmitAll}>
           Submit All Services
         </button>
