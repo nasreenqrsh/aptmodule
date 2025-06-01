@@ -1749,3 +1749,19 @@ table {
 .suggestions li:hover{
     background: #ccc;
 }
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #receipt, #receipt * {
+    visibility: visible;
+  }
+  #receipt {
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: 2rem;
+    background: white;
+  }
+}

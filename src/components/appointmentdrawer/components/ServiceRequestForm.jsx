@@ -30,9 +30,13 @@ const ServiceRequestForm = ({ onAddService, resetKey, initialData, lastEndTime }
     const fetchServicesDoctorsRooms = async () => {
       try {
         const [services, doctors, roomData] = await Promise.all([
-          createDataHandler("https://mocki.io/v1/2ad352d1-db23-4a86-824e-4cb5904f4478"),
+          createDataHandler("/GetServiceHandler.ashx"),
+          createDataHandler("/GetPractitionerHandler.ashx"),
+          createDataHandler("/GetRoomHandler.ashx")
+
+          /* createDataHandler("https://mocki.io/v1/2ad352d1-db23-4a86-824e-4cb5904f4478"),
           createDataHandler("https://mocki.io/v1/aa41a3f4-c489-43d5-81d1-d8daf1bc4ebd"),
-          createDataHandler("https://mocki.io/v1/cdd90edf-6eb8-4061-8dfe-c5217cee9ffa")
+          createDataHandler("https://mocki.io/v1/cdd90edf-6eb8-4061-8dfe-c5217cee9ffa") */
         ]);
         setServicesList(services);
         setPractitioners(doctors);

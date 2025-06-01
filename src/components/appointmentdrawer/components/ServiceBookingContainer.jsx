@@ -7,7 +7,7 @@ import FormFooter from "./FormFooter";
 const createDataHandler = async (payload) => {
   console.log(payload);
   try {
-    const response = await fetch("https://mocki.io/v1/fe1da8d7-3afa-4866-bb24-553db358f743", {
+    const response = await fetch("/SaveAppointmentHandler.ashx", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -66,25 +66,35 @@ const ServiceBookingContainer = ({ prefillData }) => {
   };
 
   const handleSubmitAll = async () => {
-    if (!customerFormData || serviceList.length === 0) {
-      alert("Missing customer or service data.");
-      return;
-    }
+  if (!customerFormData || serviceList.length === 0) {
+    alert("Missing customer or service data.");
+    return;
+  }
 
-    const payload = {
-      customer: customerFormData,
-      services: serviceList.map((entry) => entry.service),
-    };
+  const payload = serviceList.map((entry, index) => ({
+    CustID: customerFormData.number || `TEMP${index + 1}`,
+    AppointmentDate: new Date().toISOString().split("T")[0], // today as example
+    StartTime: entry.service.start,
+    EndTime: entry.service.end,
+    Duration: entry.service.duration,
+    LineNo: index + 1,
+    ServiceCode: entry.service.servicename, // or actual code if available
+    Practioner: entry.service.practitioner,
+    Preference: entry.service.preference,
+    Notes: entry.service.note,
+    Amount: entry.service.amount
+  }));
 
-    try {
-      const result = await createDataHandler(payload);
-      alert("✅ Data submitted successfully!");
-      console.log("Response:", result);
-      setServiceList([]);
-    } catch (error) {
-      alert("❌ Submission failed. Check console for details.");
-    }
-  };
+  try {
+    const result = await createDataHandler(payload);
+    alert("✅ Data submitted successfully!");
+    console.log("Response:", result);
+    setServiceList([]);
+  } catch (error) {
+    alert("❌ Submission failed. Check console for details.");
+  }
+};
+
 
   return (
     <>
