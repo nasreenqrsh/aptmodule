@@ -37,17 +37,17 @@ const ServiceList = ({ data, onDelete, onEdit }) => {
                 <td>{entry.service.duration}</td>
                 <td>{entry.service.note}</td>
                 <td>
-                  <button
+                 {/*  <button
                     className="tblbtn edit"
                     onClick={() => onEdit(index)}
                   >
                     Edit
-                  </button>
+                  </button> */}
                   <button
                     className="tblbtn delete"
                     onClick={() => onDelete(index)}
                   >
-                    Delete
+                    Del
                   </button>
                 </td>
               </tr>

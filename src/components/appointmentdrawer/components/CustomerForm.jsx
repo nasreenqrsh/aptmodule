@@ -187,7 +187,7 @@ const CustomerForm = ({ prefillData, setCustomerData, setLoading, customerFormDa
             {errors.firstname && <div className="error">{errors.firstname}</div>}
             {isFetching && (
               <img
-                src="/images/loader.svg"
+                src="${import.meta.env.BASE_URL}/images/loader.svg"
                 alt="Loading"
                 style={{ position: "absolute", right: 10, top: 10, width: 20 }}
               />

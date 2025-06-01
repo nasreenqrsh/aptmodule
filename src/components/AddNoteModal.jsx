@@ -16,7 +16,7 @@ const AddNoteModal = ({ onClose, onSubmit }) => {
         <div className="popuphdr">
           Add Note
           <span className="clsbtn" onClick={onClose}>
-            <img src="/images/clsic.svg" alt="Close" />
+            <img src="${import.meta.env.BASE_URL}/images/clsic.svg" alt="Close" />
           </span>
         </div>
 

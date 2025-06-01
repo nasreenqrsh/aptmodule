@@ -97,7 +97,7 @@ const AppointmentHeader = ({ onAddAppointment, onAddCustomer }) => {
             data-tooltip-pos="down"
             onClick={onAddAppointment}
           >
-            <img src="/images/addappt.svg" alt="Add Appointment" />
+            <img src="${import.meta.env.BASE_URL}/images/addappt.svg" alt="Add Appointment" />
           </div>
 
           <div
@@ -105,7 +105,7 @@ const AppointmentHeader = ({ onAddAppointment, onAddCustomer }) => {
             data-tooltip="Settings"
             data-tooltip-pos="down"
           >
-            <img src="/images/settings.svg" alt="Settings" />
+            <img src="${import.meta.env.BASE_URL}/images/settings.svg" alt="Settings" />
           </div>
 
           <span
@@ -114,7 +114,7 @@ const AppointmentHeader = ({ onAddAppointment, onAddCustomer }) => {
             data-tooltip-pos="down"
             onClick={onAddCustomer}
           >
-            <img src="/images/addcustwhite.svg" alt="Add Customer" />
+            <img src="${import.meta.env.BASE_URL}/images/addcustwhite.svg" alt="Add Customer" />
           </span>
 
           <div
@@ -122,7 +122,7 @@ const AppointmentHeader = ({ onAddAppointment, onAddCustomer }) => {
             data-tooltip="View Reports"
             data-tooltip-pos="down"
           >
-            <img src="/images/reports.svg" alt="View Reports" />
+            <img src="${import.meta.env.BASE_URL}/images/reports.svg" alt="View Reports" />
           </div>
 
           {/* Search Field */}
@@ -171,7 +171,7 @@ const AppointmentHeader = ({ onAddAppointment, onAddCustomer }) => {
                         }}
                         className="bookappt"
                       >
-                        <img src="/images/addapptblk.svg" alt="" />
+                        <img src="${import.meta.env.BASE_URL}/images/addapptblk.svg" alt="" />
                       </span>
                     </li>
                   ))}

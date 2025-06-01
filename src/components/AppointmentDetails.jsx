@@ -21,7 +21,7 @@ const AppointmentDrawer = ({ isOpen, onClose }) => {
     <div ref={drawerRef} className="appointdrwr">
       <div className="">
         <span className="clpse" onClick={onClose}>
-          <img src="/images/collpase.svg" alt="Collapse" />
+          <img src="${import.meta.env.BASE_URL}/images/collpase.svg" alt="Collapse" />
         </span>
 
         <CustomerForm />

@@ -28,7 +28,7 @@ const AppointmentDrawer = ({ isOpen, onClose, customer }) => {
       <div ref={drawerRef} className="appointdrwr">
         <div className="apptfrmflxwrp">
           <span className="clpse" onClick={resetAllForms}>
-            <img src="/images/collpase.svg" alt="Collapse" />
+            <img src="${import.meta.env.BASE_URL}/images/collpase.svg" alt="Collapse" />
           </span>
 
           <ServiceBookingContainer key={resetKey} prefillData={customer} onClose={resetAllForms} />
