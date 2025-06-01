@@ -119,7 +119,7 @@ const handleCancel = () => {
           setCustomerFormData={setCustomerFormData}
         />
 
-      {/*   <ServiceRequestForm
+        <ServiceRequestForm
           onAddService={handleAddService}
           resetKey={resetKey}
           initialData={editingService}
@@ -130,7 +130,7 @@ const handleCancel = () => {
           data={serviceList}
           onDelete={handleDelete}
           onEdit={handleEdit}
-        /> */}
+        />
       </div>
 
       <div style={{ marginTop: "1rem", display: "flex", gap:"15px", justifyContent: "center", borderTop:"1px solid #ccc", paddingTop: "20px" }}>
