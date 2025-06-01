@@ -341,11 +341,11 @@ const ServiceRequestForm = ({ onAddService, resetKey, initialData, lastEndTime }
             </div>
 
             <span className="notebtn tooltip" data-tooltip="Add Note" data-tooltip-pos="down" onClick={() => setShowAddNote(true)}>
-              <img src="${import.meta.env.BASE_URL}/images/notes.svg" alt="Add Note" />
+              <img src="${import.meta.env.BASE_URL}images/notes.svg" alt="Add Note" />
             </span>
 
             <button className="lnkbtn" type="submit">
-              <img src="${import.meta.env.BASE_URL}/images/addservice.svg" alt="Add Service" /> Add Service
+              <img src="${import.meta.env.BASE_URL}images/addservice.svg" alt="Add Service" /> Add Service
             </button>
           </div>
         </form>
