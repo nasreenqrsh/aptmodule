@@ -146,7 +146,8 @@ const AddCustomerModal = ({ onClose }) => {
         <div className="popuphdr">
           Add Customer
           <span className="clsbtn" onClick={onClose}>
-            <img src="${import.meta.env.BASE_URL}images/clsic.svg" alt="Close" />
+            <img src={`${import.meta.env.BASE_URL}images/clsic.svg`} alt="Close" />
+
           </span>
         </div>
 

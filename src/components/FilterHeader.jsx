@@ -14,7 +14,8 @@ const FilterHeader = () => {
           <div className="apptstatus">
             <div className="completed statcell">
               <div className="stimg">
-                <img src="${import.meta.env.BASE_URL}images/completed.svg" alt="Completed" />
+               <img src={`${import.meta.env.BASE_URL}images/completed.svg`} alt="Completed" />
+
                 Completed
               </div>
               <div className="statno">10</div>
@@ -22,7 +23,8 @@ const FilterHeader = () => {
 
             <div className="pndpay statcell">
               <div className="stimg">
-                <img src="${import.meta.env.BASE_URL}images/paymentpend.svg" alt="Payment Pending" />
+                <img src={`${import.meta.env.BASE_URL}images/paymentpend.svg`} alt="Payment Pending" />
+
                 Payment Pending
               </div>
               <div className="statno">5</div>
@@ -30,7 +32,8 @@ const FilterHeader = () => {
 
             <div className="ongngappt statcell">
               <div className="stimg">
-                <img src="${import.meta.env.BASE_URL}images/ongoing.png" alt="Active/Ongoing" />
+               <img src={`${import.meta.env.BASE_URL}images/ongoing.png`} alt="Active/Ongoing" />
+
                 Active/Ongoing
               </div>
               <div className="statno">5</div>
@@ -38,7 +41,8 @@ const FilterHeader = () => {
 
             <div className="checkin statcell">
               <div className="stimg">
-                <img src="${import.meta.env.BASE_URL}images/checkin.svg" alt="Checked In" />
+               <img src={`${import.meta.env.BASE_URL}images/checkin.svg`} alt="Checked In" />
+
                 Checked In
               </div>
               <div className="statno">25</div>
@@ -46,7 +50,8 @@ const FilterHeader = () => {
 
             <div className="confirmed statcell">
               <div className="stimg">
-                <img src="${import.meta.env.BASE_URL}images/confirmed.png" alt="Confirmed" />
+               <img src={`${import.meta.env.BASE_URL}images/confirmed.png`} alt="Confirmed" />
+
                 Confirmed
               </div>
               <div className="statno">25</div>
@@ -54,7 +59,8 @@ const FilterHeader = () => {
 
             <div className="booked statcell">
               <div className="stimg">
-                <img src="${import.meta.env.BASE_URL}images/booked.svg" alt="Booked" />
+                <img src={`${import.meta.env.BASE_URL}images/booked.svg`} alt="Booked" />
+
                 Booked
               </div>
               <div className="statno">40</div>

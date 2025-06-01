@@ -1,13 +1,6 @@
 import React, { useState, useRef } from "react";
 import "../index.css";
 
-// Fetches suggestions
-const CreateDataHandler = async () => {
-  const response = await fetch("/GetCustomerHandler.ashx");
-  if (!response.ok) throw new Error("Failed to fetch data");
-  return await response.json();
-};
-
 const AppointmentHeader = ({ onAddAppointment, onAddCustomer }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState([]);
@@ -22,11 +15,15 @@ const AppointmentHeader = ({ onAddAppointment, onAddCustomer }) => {
     }
 
     try {
-      const data = await CreateDataHandler();
+      const response = await fetch(`/GetCustomerHandler.ashx?firstname=${encodeURIComponent(query)}`);
+      if (!response.ok) throw new Error("Failed to fetch data");
+      const data = await response.json();
+
       const filtered = data.filter((item) =>
         item.firstname.toLowerCase().includes(query.toLowerCase()) ||
         item.mobile.includes(query)
       );
+
       setSuggestions(filtered);
       setActiveIndex(0);
     } catch (err) {
@@ -66,20 +63,20 @@ const AppointmentHeader = ({ onAddAppointment, onAddCustomer }) => {
   };
 
   const handleSuggestionClick = (item) => {
-    const fullText = `${item.name} - ${item.mobile}`;
+    const fullText = `${item.firstname} - ${item.mobile}`;
     setSearchTerm(fullText);
     setSuggestions([]);
     setActiveIndex(-1);
-    console.log("Selected:", item); // Replace with search action
+    console.log("Selected:", item);
   };
 
   const handleBookAppointment = (item) => {
-  console.log("Booking appointment for:", item);
-  setSuggestions([]);        //  Close suggestions
-  setActiveIndex(-1);        //  Reset active index
-  setSearchTerm("");         // (Optional) clear search bar
-  if (onAddAppointment) onAddAppointment(item);
-};
+    console.log("Booking appointment for:", item);
+    setSuggestions([]);
+    setActiveIndex(-1);
+    setSearchTerm("");
+    if (onAddAppointment) onAddAppointment(item);
+  };
 
   return (
     <header className="appthdr">
@@ -97,7 +94,10 @@ const AppointmentHeader = ({ onAddAppointment, onAddCustomer }) => {
             data-tooltip-pos="down"
             onClick={onAddAppointment}
           >
-            <img src="${import.meta.env.BASE_URL}images/addappt.svg" alt="Add Appointment" />
+            <img
+              src={`${import.meta.env.BASE_URL}images/addappt.svg`}
+              alt="Add Appointment"
+            />
           </div>
 
           <div
@@ -105,7 +105,10 @@ const AppointmentHeader = ({ onAddAppointment, onAddCustomer }) => {
             data-tooltip="Settings"
             data-tooltip-pos="down"
           >
-            <img src="${import.meta.env.BASE_URL}images/settings.svg" alt="Settings" />
+            <img
+              src={`${import.meta.env.BASE_URL}images/settings.svg`}
+              alt="Settings"
+            />
           </div>
 
           <span
@@ -114,16 +117,16 @@ const AppointmentHeader = ({ onAddAppointment, onAddCustomer }) => {
             data-tooltip-pos="down"
             onClick={onAddCustomer}
           >
-            <img src="${import.meta.env.BASE_URL}images/addcustwhite.svg" alt="Add Customer" />
+            <img
+              src={`${import.meta.env.BASE_URL}images/addcustwhite.svg`}
+              alt="Add Customer"
+            />
           </span>
 
-          <div
-            className="apptstgs tooltip"
-            data-tooltip="View Reports"
-            data-tooltip-pos="down"
-          >
-            <img src="${import.meta.env.BASE_URL}images/reports.svg" alt="View Reports" />
-          </div>
+          <img
+            src={`${import.meta.env.BASE_URL}images/reports.svg`}
+            alt="View Reports"
+          />
 
           {/* Search Field */}
           <div className="search-container" style={{ position: "relative" }}>
@@ -136,16 +139,8 @@ const AppointmentHeader = ({ onAddAppointment, onAddCustomer }) => {
                 onChange={handleSearchChange}
                 onKeyDown={handleKeyDown}
               />
-              <button
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  cursor: "pointer",
-                  padding: "6px",
-                }}
-              >
-              </button>
             </div>
+
             {suggestions.length > 0 && (
               <div className="suggestionssrc" ref={suggestionsRef}>
                 <ul>
@@ -155,7 +150,8 @@ const AppointmentHeader = ({ onAddAppointment, onAddCustomer }) => {
                       onClick={() => handleSuggestionClick(item)}
                       style={{
                         cursor: "pointer",
-                        backgroundColor: index === activeIndex ? "#eef" : "transparent",
+                        backgroundColor:
+                          index === activeIndex ? "#eef" : "transparent",
                         padding: "4px 8px",
                         display: "flex",
                         justifyContent: "space-between",
@@ -166,12 +162,14 @@ const AppointmentHeader = ({ onAddAppointment, onAddCustomer }) => {
                       <span
                         onClick={(e) => {
                           e.stopPropagation();
-                          console.log(item)
                           handleBookAppointment(item);
                         }}
                         className="bookappt"
                       >
-                        <img src="${import.meta.env.BASE_URL}images/addapptblk.svg" alt="" />
+                        <img
+                          src={`${import.meta.env.BASE_URL}images/addapptblk.svg`}
+                          alt="Book"
+                        />
                       </span>
                     </li>
                   ))}

@@ -13,7 +13,12 @@ const AppointmentDetails = ({ appointment, onClose }) => {
     <div className={`smdiv expand ${isExpanded ? "expand" : ""}`}>
       <div className="resizable" id="resizableDiv">
         <div className="rightcls" onClick={onClose}>
-          <img src="images/dblrigh.svg" alt="Close" width="16" height="16" />
+          <img
+  src={`${import.meta.env.BASE_URL}images/dblrigh.svg`}
+  alt="Close"
+  width="16"
+  height="16"
+/>
         </div>
 
         <div className="apptcdet custdiv">
@@ -50,12 +55,14 @@ const AppointmentDetails = ({ appointment, onClose }) => {
             <div className="acticons">
               <a href="#" className="edit tooltip" title="Edit Appointment">
                 <span className="stimg">
-                  <img src="images/edtwht.svg" alt="Edit Appointment" />
+                 <img src={`${import.meta.env.BASE_URL}images/edtwht.svg`} alt="Edit Appointment" />
+
                 </span>
               </a>
               <a href="#" className="delete tooltip" title="Delete Appointment">
                 <span className="stimg">
-                  <img src="images/deletewt.svg" alt="Delete Appointment" />
+                  <img src={`${import.meta.env.BASE_URL}images/deletewt.svg`} alt="Delete Appointment" />
+
                 </span>
               </a>
             </div>
@@ -95,7 +102,8 @@ const AppointmentDetails = ({ appointment, onClose }) => {
             <div className="aptdetailwrp">
               <div className="dtntime">
                 <div className="icondiv">
-                  <img src="images/Datentime.svg" alt="Date and Time" />
+                  <img src={`${import.meta.env.BASE_URL}images/Datentime.svg`} alt="Date and Time" />
+
                 </div>
                 <div className="detaildiv">
                   <div className="dtlbl">Date & Time</div>
@@ -105,7 +113,7 @@ const AppointmentDetails = ({ appointment, onClose }) => {
 
               <div className="dtntime">
                 <div className="icondiv">
-                  <img src="images/services.svg" alt="Services" />
+<img src={`${import.meta.env.BASE_URL}images/services.svg`} alt="Services" />
                 </div>
                 <div className="detaildiv">
                   <div className="dtlbl">Services</div>
@@ -115,7 +123,7 @@ const AppointmentDetails = ({ appointment, onClose }) => {
 
               <div className="dtntime">
                 <div className="icondiv">
-                  <img src="images/noteslist.svg" alt="Notes" />
+<img src={`${import.meta.env.BASE_URL}images/noteslist.svg`} alt="Notes" />
                 </div>
                 <div className="detaildiv">
                   <div className="dtlbl">Notes</div>
@@ -133,11 +141,11 @@ const AppointmentDetails = ({ appointment, onClose }) => {
 
           <div className="apptcdet">
             <a href="#" className="cstlnk">
-              <img src="images/medical.svg" alt="Medical History" />
+<img src={`${import.meta.env.BASE_URL}images/medical.svg`} alt="Medical History" />
               Medical History
             </a>
             <a href="#" className="cstlnk">
-              <img src="images/consent.svg" alt="Consent and Treatment Forms" />
+<img src={`${import.meta.env.BASE_URL}images/consent.svg`} alt="Consent and Treatment Forms" />
               Consent and Treatment forms
             </a>
           </div>
