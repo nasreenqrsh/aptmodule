@@ -98,7 +98,7 @@ const ServiceRequestForm = ({ onAddService, resetKey, initialData, lastEndTime }
 
     try {
       const doctors = await createDataHandler(`/GetPractitionerHandler.ashx?servicecode=${encodeURIComponent(servicecode)}`);
-      setPractitioners(doctors);
+     setPractitioners(doctors);
     } catch (error) {
       console.error("Failed to fetch practitioners for selected service code:", error);
       setPractitioners([]);
@@ -290,7 +290,7 @@ const ServiceRequestForm = ({ onAddService, resetKey, initialData, lastEndTime }
             <select id="practitioner" value={formData.practitioner} className="pract" onChange={handleChange} onBlur={handleBlur}>
               <option value="">Select Practitioner</option>
               {practitioners.map((doc, index) => (
-                <option key={index} value={doc.Name}>{doc.Name} ({doc.Type})</option>
+                <option key={index} value={doc.id}>{doc.Name} </option>
               ))}
             </select>
             {errors.practitioner && <div className="error">{errors.practitioner}</div>}
