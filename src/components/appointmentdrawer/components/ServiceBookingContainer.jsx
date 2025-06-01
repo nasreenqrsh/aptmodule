@@ -21,7 +21,7 @@ const createDataHandler = async (payload) => {
   }
 };
 
-const ServiceBookingContainer = ({ prefillData }) => {
+const ServiceBookingContainer = ({ prefillData, onClose }) => {
   const [customerFormData, setCustomerFormData] = useState(null);
   const [serviceList, setServiceList] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -29,6 +29,16 @@ const ServiceBookingContainer = ({ prefillData }) => {
   const [editingIndex, setEditingIndex] = useState(null);
   const [editingService, setEditingService] = useState(null);
   const [lastEndTime, setLastEndTime] = useState("10:00 AM");
+const handleCancel = () => {
+  setServiceList([]);
+  setCustomerFormData(null);
+  setResetKey(Date.now());
+  setEditingIndex(null);
+  setEditingService(null);
+  setLastEndTime("10:00 AM");
+
+  onClose?.(); // ✅ close drawer via parent if provided
+};
 
   const handleAddService = (serviceData) => {
     if (!customerFormData) {
@@ -70,6 +80,8 @@ const ServiceBookingContainer = ({ prefillData }) => {
     alert("Missing customer or service data.");
     return;
   }
+
+  
 
   const payload = serviceList.map((entry, index) => ({
     CustID: customerFormData.number || `TEMP${index + 1}`,
@@ -121,10 +133,15 @@ const ServiceBookingContainer = ({ prefillData }) => {
         />
       </div>
 
-      <div style={{ marginTop: "1rem" }}>
-        <button className="submitbtn" onClick={handleSubmitAll}>
-          Submit All Services
+      <div style={{ marginTop: "1rem", display: "flex", gap:"15px", justifyContent: "center", borderTop:"1px solid #ccc", paddingTop: "20px" }}>
+        <button className="submitbtn editbtn" onClick={handleSubmitAll}>
+          Save Appointment
         </button>
+
+        <button className="restbtn" onClick={handleCancel}>
+    Cancel
+  </button>
+        
       </div>
     </>
   );

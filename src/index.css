@@ -1716,16 +1716,19 @@ table {
   margin-top: 5px;
 }
 .submitbtn {
-  background-color: #4CAF50;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  cursor: pointer;
+  background: #334B71;
+    color: #fff;
+    display: inline-block;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
 }
 .submitbtn:hover {
   background-color: #45a049;
 }
 
+.noadded{ font-size: 14px; font-weight: 600; padding: 15px 0; }
 
 .suggestions{
     background: #fff;

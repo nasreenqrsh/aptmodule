@@ -5,7 +5,7 @@ const ServiceList = ({ data, onDelete, onEdit }) => {
     <div className="service-list srvlist">
       <h4 className="frmlgnd">Booked Services</h4>
 
-      <div>No services added.</div>
+      <div className="noadded">No services added.</div>
       </div>
   );
 

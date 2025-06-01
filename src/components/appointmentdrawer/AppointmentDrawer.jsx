@@ -31,10 +31,9 @@ const AppointmentDrawer = ({ isOpen, onClose, customer }) => {
             <img src="/images/collpase.svg" alt="Collapse" />
           </span>
 
-          <ServiceBookingContainer key={resetKey} prefillData={customer} />
+          <ServiceBookingContainer key={resetKey} prefillData={customer} onClose={resetAllForms} />
         </div>
 
-        <FormFooter onCancel={resetAllForms} />
       </div>
     </>
   );
