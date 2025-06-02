@@ -1,16 +1,19 @@
 import React, { useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
 import AppointmentHeader from "./components/AppointmentHeader";
 import AddCustomerModal from "./components/AddCustomerModal"; 
 import AppointmentDrawer from "./components/appointmentdrawer/AppointmentDrawer";
 import FilterHeader from "./components/FilterHeader";
 import SchedulerGrid from "./components/SchedulerGrid";
 import AppointmentDetails from "./components/Sidebar";
+import PaymentPage from "./pages/PaymentPage";
 
 const App = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [showAddCustomer, setShowAddCustomer] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
-  const [selectedCustomer, setSelectedCustomer] = useState(null); //  New state
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
 
   const appointment = {
     customerName: "Jane Doe",
@@ -27,39 +30,48 @@ const App = () => {
   };
 
   const handleBookAppointment = (customer) => {
-    setSelectedCustomer(customer); //  Set selected customer
-    setDrawerOpen(true);           //  Open appointment drawer
+    setSelectedCustomer(customer);
+    setDrawerOpen(true);
   };
 
   return (
-    <>
-      <AppointmentHeader
-        onAddAppointment={handleBookAppointment} //  Handle book with data
-        onAddCustomer={() => setShowAddCustomer(true)}
-      />
+    <Router>
+      <Routes>
+        {/* Default Scheduler + Drawer UI */}
+        <Route path="/" element={
+          <>
+            <AppointmentHeader
+              onAddAppointment={handleBookAppointment}
+              onAddCustomer={() => setShowAddCustomer(true)}
+            />
+            <FilterHeader />
+            <SchedulerGrid />
 
-      <FilterHeader />
-      <SchedulerGrid />
+            <AppointmentDrawer
+              isOpen={drawerOpen}
+              onClose={() => setDrawerOpen(false)}
+              customer={selectedCustomer}
+            />
 
-      <AppointmentDrawer
-        isOpen={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        customer={selectedCustomer} //  Pass customer prop
-      />
+            <button onClick={toggleDetails}>Show Appointment Details</button>
 
-      <button onClick={toggleDetails}>Show Appointment Details</button>
+            {showDetails && (
+              <AppointmentDetails
+                appointment={appointment}
+                onClose={toggleDetails}
+              />
+            )}
 
-      {showDetails && (
-        <AppointmentDetails
-          appointment={appointment}
-          onClose={toggleDetails}
-        />
-      )}
+            {showAddCustomer && (
+              <AddCustomerModal onClose={() => setShowAddCustomer(false)} />
+            )}
+          </>
+        } />
 
-      {showAddCustomer && (
-        <AddCustomerModal onClose={() => setShowAddCustomer(false)} />
-      )}
-    </>
+        {/* Payment Page Route */}
+        <Route path="/payment-page" element={<PaymentPage />} />
+      </Routes>
+    </Router>
   );
 };
 

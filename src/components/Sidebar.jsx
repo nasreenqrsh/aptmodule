@@ -150,15 +150,20 @@ const AppointmentDetails = ({ appointment, onClose }) => {
             </a>
           </div>
 
-          <a href="#" className="pndpay">
-            <span className="stimg">
-              <img
-                src="images/paymentpend.svg"
-                alt="Make Payment"
-              />{" "}
-              Make Payment
-            </span>
-          </a>
+          <a
+  href={`/payment-page?aptid=${appointment.id}&custname=${encodeURIComponent(appointment.customerName)}`}
+  target="_blank"
+  rel="noopener noreferrer"
+  className="pndpay"
+>
+  <span className="stimg">
+    <img
+      src={`${import.meta.env.BASE_URL}images/paymentpend.svg`}
+      alt="Make Payment"
+    />
+    Make Payment
+  </span>
+</a>
         </div>
       </div>
     </div>

@@ -112,6 +112,7 @@ input {
 
 body {
   line-height: 1;
+  background: #fff;
 }
 
 ol,
@@ -381,30 +382,6 @@ table {
   cursor: pointer;
 }
 
-.toast {
-  position: fixed;
-  top: 150px;
-  right: 0;
-  left:0;
-  margin: 0 auto;
-  background: #000;
-  color: white;
-  padding: 12px 20px;
-  max-width: 200px;
-  border-radius: 6px;
-  display:none;
-  font-size: 14px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  z-index: 9999;
-  animation: fadeInOut 3s ease forwards;
-}
-
-@keyframes fadeInOut {
-  0% { opacity: 0; transform: translateY(-10px); }
-  10% { opacity: 1; transform: translateY(0); }
-  90% { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(-10px); }
-}
 /*Appointment Drawer*/
 .appointdrwr {
             position: fixed;
@@ -1749,7 +1726,7 @@ table {
 
 .noadded{ font-size: 14px; font-weight: 600; padding: 15px 0; }
 
-.suggestions{
+.suggestions, .suggestion-list{
     background: #fff;
     border: 1px solid #666;
     border-radius: 2px;
@@ -1762,13 +1739,13 @@ table {
     z-index: 20;
 }
 
-.suggestions li{
+.suggestions li, .suggestion-list li{
     margin: 0 0 5px;
     padding:5px 2px;
     cursor: pointer;
 }
 
-.suggestions li:hover{
+.suggestions li:hover, .suggestion-list li:hover{
     background: #ccc;
 }
 
@@ -1787,3 +1764,54 @@ table {
     background: white;
   }
 }
+
+.toast {
+  position: fixed;
+  top: 30px;
+  right: 0;
+  left:0;
+  margin: 0 auto;
+  max-width: 320px;
+  text-align: center;
+  padding: 14px 24px;
+  background-color: #323232;
+  color: #fff;
+  border-radius: 6px;
+  z-index: 9999;
+  font-size: 16px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  opacity: 1;
+  animation: slideIn 0.3s ease forwards, fadeOut 10.5s ease 10.5s forwards;
+}
+
+.toast.success {
+  background-color: #1f5e2e;
+}
+
+.toast.error {
+  background-color: #dc3545;
+}
+
+.toast.info {
+  background-color: #171717;
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0%);
+    opacity: 1;
+  }
+}
+
+ @keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+ .manualdisc.popin{width: 900px;}
+.validbtn{ display: inline-block; padding: 5px 10px;background: #2D3250; color: #fff; border: none;  }
