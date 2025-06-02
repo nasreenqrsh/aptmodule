@@ -50,12 +50,7 @@ const InvoiceSummary = ({
   };
 
   const handlePrint = () => {
-    const element = document.getElementById('invoice-section');
-    if (element) {
-      import('html2pdf.js').then(html2pdf => {
-        html2pdf.default().from(element).save('invoice.pdf');
-      });
-    }
+   
   };
 
   const handleEmail = async () => {
