@@ -17,6 +17,7 @@ const Toast = ({ message, onClose }) => {
 
 const CustomerForm = ({ prefillData, setCustomerData, setLoading, customerFormData, setCustomerFormData }) => {
   const [formData, setFormData] = useState({
+    custid:"",
     number: "",
     firstname: "",
     lastname: "",
@@ -30,27 +31,27 @@ const CustomerForm = ({ prefillData, setCustomerData, setLoading, customerFormDa
   const [prefillActive, setPrefillActive] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
 
-  useEffect(() => {
-    if (
-      prefillData &&
-      typeof prefillData === "object" &&
-      !prefillActive &&
-      (prefillData.firstname || prefillData.mobile || prefillData.number)
-    ) {
-      const data = {
-        number: prefillData.number || prefillData.mobile || "",
-        firstname: prefillData.firstname || "",
-        lastname: prefillData.lastname || "",
-        email: prefillData.email || "",
-        gender: prefillData.gender || "",
-      };
-      setFormData(data);
-      setCustomerData?.(data);
-      setCustomerFormData?.(data);
-      setIsPrefilled(true);
-      setPrefillActive(true);
-    }
-  }, [prefillData, prefillActive]);
+ useEffect(() => {
+  if (
+    prefillData &&
+    typeof prefillData === "object" &&
+    !prefillActive &&
+    (prefillData.firstname || prefillData.mobile || prefillData.number)
+  ) {
+    const data = {
+      number: prefillData.number || prefillData.mobile || "",
+      firstname: prefillData.firstname || "",
+      lastname: prefillData.lastname || "",
+      email: prefillData.email || "",
+      gender: prefillData.gender || "",
+      custid: prefillData.custid || ""
+    };
+    syncCustomerData(data); // ✅ Use sync here to reflect gender properly
+    setIsPrefilled(true);
+    setPrefillActive(true);
+  }
+}, [prefillData, prefillActive]);
+
 
   const syncCustomerData = (updated) => {
     setFormData(updated);
@@ -93,6 +94,7 @@ const CustomerForm = ({ prefillData, setCustomerData, setLoading, customerFormDa
       lastname: item.lastname || "",
       email: item.email || "",
       gender: item.gender || "",
+      custid: item.custid || item.id || ""
     };
     setFormData(selected);
     setCustomerData?.(selected);
@@ -153,6 +155,7 @@ const CustomerForm = ({ prefillData, setCustomerData, setLoading, customerFormDa
         <div className="frmlgnd">Customer Details</div>
         <form autoComplete="off">
           {/* Mobile Number */}
+          <input type="hidden" id="custid" value={formData.custid} />
           <div className="form-group" style={{ position: "relative" }}>
             <input
               type="text"
@@ -232,33 +235,35 @@ const CustomerForm = ({ prefillData, setCustomerData, setLoading, customerFormDa
 
           {/* Gender */}
           <div className="form-group radgrp">
-            <label className="frmlbl">Gender</label>
-            <div className="rdbox">
-              <input
-                type="radio"
-                id="gender_male"
-                name="gender"
-                value="male"
-                checked={formData.gender === "male"}
-                onChange={(e) => syncCustomerData({ ...formData, gender: e.target.value })}
-                disabled={isPrefilled && prefillActive}
-              />
-              <label htmlFor="gender_male">Male</label>
-            </div>
-            <div className="rdbox">
-              <input
-                type="radio"
-                id="gender_female"
-                name="gender"
-                value="female"
-                checked={formData.gender === "female"}
-                onChange={(e) => syncCustomerData({ ...formData, gender: e.target.value })}
-                disabled={isPrefilled && prefillActive}
-              />
-              <label htmlFor="gender_female">Female</label>
-            </div>
-            {errors.gender && <div className="error">{errors.gender}</div>}
-          </div>
+  <label className="frmlbl">Gender</label>
+  <div className="rdbox">
+    <input
+      type="radio"
+      id="gender_male"
+      name="gender"
+      value="male"
+      checked={formData.gender?.toLowerCase() === "male"}
+      onChange={(e) => syncCustomerData({ ...formData, gender: e.target.value })}
+      disabled={isPrefilled && prefillActive}
+    />
+    <label htmlFor="gender_male">Male</label>
+  </div>
+  <div className="rdbox">
+    <input
+      type="radio"
+      id="gender_female"
+      name="gender"
+      value="female"
+      checked={formData.gender?.toLowerCase() === "female"}
+      onChange={(e) => syncCustomerData({ ...formData, gender: e.target.value })}
+      disabled={isPrefilled && prefillActive}
+    />
+    <label htmlFor="gender_female">Female</label>
+  </div>
+  {errors.gender && <div className="error">{errors.gender}</div>}
+</div>
+
+
 
           {isPrefilled && (
             <button

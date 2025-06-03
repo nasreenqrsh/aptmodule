@@ -76,6 +76,7 @@ const handleCancel = () => {
   };
 
   const handleSubmitAll = async () => {
+    console.log(customerFormData)
   if (!customerFormData || serviceList.length === 0) {
     alert("Missing customer or service data.");
     return;
@@ -84,7 +85,7 @@ const handleCancel = () => {
   
 
   const payload = serviceList.map((entry, index) => ({
-    CustID: customerFormData.number || `TEMP${index + 1}`,
+    CustID: customerFormData.custid || " ",
     AppointmentDate: new Date().toISOString().split("T")[0], // today as example
     StartTime: entry.service.start,
     EndTime: entry.service.end,
@@ -94,7 +95,8 @@ const handleCancel = () => {
     Practioner: entry.service.practitioner,
     Preference: entry.service.preference,
     Notes: entry.service.note,
-    Amount: entry.service.amount
+    Amount: entry.service.amount,
+    Room:entry.service.room
   }));
 
   try {
