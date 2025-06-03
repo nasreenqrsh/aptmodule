@@ -841,7 +841,7 @@ table {
                     gap: 10px;
                     justify-content: center;
                 }
-
+                .acticons a.edit{padding: 0;}
                 .acticons a {
                     font-size: 10px;
                     text-decoration: none;

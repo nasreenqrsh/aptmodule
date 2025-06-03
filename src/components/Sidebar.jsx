@@ -24,7 +24,7 @@ const AppointmentDetails = ({ appointment, onClose }) => {
         <div className="apptcdet custdiv">
           <div className="csttopdiv">
             <img
-              src="images/usericon.png"
+              src={`${import.meta.env.BASE_URL}images/usericon.png`}
               width="30"
               title="User Icon"
               alt="User Icon"
@@ -39,7 +39,7 @@ const AppointmentDetails = ({ appointment, onClose }) => {
           <div className="cdtprof">
             <a href="#" title="" className="cstlnk">
               <img
-                src="images/custome.svg"
+                src={`${import.meta.env.BASE_URL}images/custome.svg`}
                 width="16"
                 title="Customer Profile"
                 alt="Customer Profile"
@@ -53,7 +53,7 @@ const AppointmentDetails = ({ appointment, onClose }) => {
           <div className="hdflx">
             <h2 className="dethead">Appointment Details</h2>
             <div className="acticons">
-              <a href="#" className="edit tooltip" title="Edit Appointment">
+              <a href="#" className="edit tooltip" data-tooltip="Edit Appointment" title="Edit Appointment">
                 <span className="stimg">
                  <img src={`${import.meta.env.BASE_URL}images/edtwht.svg`} alt="Edit Appointment" />
 
