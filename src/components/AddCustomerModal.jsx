@@ -105,7 +105,7 @@ const AddCustomerModal = ({ onClose }) => {
     // Log data before sending to check if it's correct
     console.log("Sending customer data:", formData);
     
-    const response = await fetch("/CustomerHandler.ashx", { //mock API: ttps://6839de246561b8d882b1fc2e.mockapi.io/api/customer/customers
+    const response = await fetch("/CustomerHandler.ashx", { //mock API: https://6839de246561b8d882b1fc2e.mockapi.io/api/customer/customers
       method: "POST",
       headers: {
         "Content-Type": "application/json",

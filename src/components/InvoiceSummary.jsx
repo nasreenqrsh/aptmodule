@@ -90,7 +90,7 @@ const InvoiceSummary = ({
 
           <ManualDiscountPopup
             isActive={showPopup}
-            onClose={() => setShowPopup(false)}
+              onClose={() => setShowPopup(false)}
             onApplyDiscount={onManualDiscount}
             items={items}
             onPriceChange={onPriceChange}

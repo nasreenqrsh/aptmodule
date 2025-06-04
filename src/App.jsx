@@ -44,7 +44,10 @@ const App = () => {
           <>
             <AppointmentHeader
               onAddAppointment={handleBookAppointment}
-              onAddCustomer={() => setShowAddCustomer(true)}
+              onAddCustomer={() => {
+  console.log("Add customer clicked");
+  setShowAddCustomer(true);
+}}
             />
             <FilterHeader />
             <SchedulerGrid />
@@ -66,6 +69,7 @@ const App = () => {
 
             {showAddCustomer && (
               <AddCustomerModal onClose={() => setShowAddCustomer(false)} />
+
             )}
           </>
         } />
