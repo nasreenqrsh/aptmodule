@@ -5,7 +5,7 @@ import ServiceList from "./ServiceList";
 import FormFooter from "./FormFooter";
 
 const createDataHandler = async (payload) => {
-  console.log(payload);
+  console.log("Sending payload:", payload);
   try {
     const response = await fetch("/SaveAppointmentHandler.ashx", {
       method: "POST",
@@ -13,13 +13,23 @@ const createDataHandler = async (payload) => {
       body: JSON.stringify(payload),
     });
 
-    if (!response.ok) throw new Error("Failed to submit data");
-    return await response.json();
+    const data = await response.json();
+
+    if (!response.ok || data.success === false) {
+      console.error("Server Error:", data.message || "Unknown error");
+      alert(`❌ Error: ${data.message || 'Failed to submit data'}`);
+      return { success: false, message: data.message || "Submission failed" };
+    }
+
+    alert("✅ Appointment submitted successfully!");
+    return data;
   } catch (error) {
-    console.error("createDataHandler error:", error);
-    throw error;
+    console.error("createDataHandler error:", error.message);
+    alert(`❌ Network or server error: ${error.message}`);
+    return { success: false, message: error.message };
   }
 };
+
 
 const ServiceBookingContainer = ({ prefillData, doctor, timeSlot, onClose }) => {
   const [customerFormData, setCustomerFormData] = useState(null);
