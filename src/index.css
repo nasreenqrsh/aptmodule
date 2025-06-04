@@ -830,6 +830,10 @@ table {
                     text-decoration: none;
                     margin: 0 0 15px;
                     display: block;
+                    background: none;
+                    border: none;
+                    width: 100%;
+                    cursor: pointer;
                 }
 
                 .acticons .delete .stimg {

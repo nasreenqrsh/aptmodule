@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router';
+
 import AppointmentDrawer from './appointmentdrawer/AppointmentDrawer';
 
 const createDataHandler = async (url) => {
@@ -121,6 +123,9 @@ const AppointmentScheduler = () => {
           ))}
         </div>
       </div>
+
+{/*       <Link to="/payment-page">Go to Payment Page</Link>
+ */}
 
       {/* Render AppointmentDrawer when isDrawerOpen is true */}
       {isDrawerOpen && (

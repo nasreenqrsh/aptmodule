@@ -1,13 +1,28 @@
 import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
+
 
 // The AppointmentDetails component
 const AppointmentDetails = ({ appointment, onClose }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const navigate = useNavigate();
+const goToPaymentPage = () => {
+  const queryParams = new URLSearchParams();
+  if (appointment.id) queryParams.append("aptid", appointment.id);
+  if (appointment.customerName) queryParams.append("custname", appointment.customerName);
+
+  navigate(`/payment-page${queryParams.toString() ? `?${queryParams.toString()}` : ""}`);
+};
+
 
   // Function to handle expanding the appointment drawer
   const toggleDetails = () => {
     setIsExpanded(!isExpanded);
   };
+  let queryParams = new URLSearchParams();
+if (appointment.id) queryParams.append("aptid", appointment.id);
+if (appointment.customerName) queryParams.append("custname", appointment.customerName);
+
 
   return (
     <div className={`smdiv expand ${isExpanded ? "expand" : ""}`}>
@@ -149,13 +164,9 @@ const AppointmentDetails = ({ appointment, onClose }) => {
               Consent and Treatment forms
             </a>
           </div>
+         
 
-          <a
-  href={`/payment-page?aptid=${appointment.id}&custname=${encodeURIComponent(appointment.customerName)}`}
-  target="_blank"
-  rel="noopener noreferrer"
-  className="pndpay"
->
+         <button onClick={goToPaymentPage} className="pndpay">
   <span className="stimg">
     <img
       src={`${import.meta.env.BASE_URL}images/paymentpend.svg`}
@@ -163,7 +174,8 @@ const AppointmentDetails = ({ appointment, onClose }) => {
     />
     Make Payment
   </span>
-</a>
+</button>
+
         </div>
       </div>
     </div>
