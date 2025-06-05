@@ -8,6 +8,26 @@ const fetchData = async (url) => {
   return await response.json();
 };
 
+const createDataHandler = async (payload) => {
+  try {
+    const response = await fetch("/GetAppointmentsHandler.ashx", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      console.log("Data sent successfully:", data);
+    } else {
+      alert(`Failed to send data: ${data.message || "Unknown error"}`);
+    }
+  } catch (error) {
+    alert("An error occurred. Please try again later.");
+    console.error(error);
+  }
+};
+
 const AppointmentScheduler = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
@@ -39,7 +59,15 @@ const AppointmentScheduler = () => {
     '09:05 PM', '09:10 PM', '09:15 PM', '09:20 PM', '09:25 PM', '09:30 PM', '09:35 PM', 
     '09:40 PM', '09:45 PM', '09:50 PM', '09:55 PM', '10:00 PM'
   ];
-
+useEffect(() => {
+  const today = new Date();
+  const formattedDate = today.toISOString().split("T")[0]; // Formats date as 'YYYY-MM-DD'
+  const payload = {
+    appointmentdate: formattedDate,
+    searchtext: "", // Optional: Replace with actual search text if available
+  };
+  createDataHandler(payload);
+}, []);
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
