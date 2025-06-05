@@ -1,53 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router';
-
 import AppointmentDrawer from './appointmentdrawer/AppointmentDrawer';
+import AppointmentDetails from './Sidebar';
 
-const createDataHandler = async (url) => {
+const fetchData = async (url) => {
   const response = await fetch(url);
-  if (!response.ok) throw new Error("Failed to fetch doctors");
+  if (!response.ok) throw new Error("Fetch error");
   return await response.json();
 };
 
-
 const AppointmentScheduler = () => {
-  const [isExpanded, setIsExpanded] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [doctors, setDoctors] = useState([]);
+  const [appointments, setAppointments] = useState([]);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const toggleDetails = () => {
-    setIsExpanded(!isExpanded);
-  };
-
-  useEffect(() => {
-    const fetchDoctors = async () => {
-      try {
-        const data = await createDataHandler("https://mocki.io/v1/4519c325-7de2-432f-b770-096782070c7a");
-        const doctorNames = data.map((doc) => doc.Name);
-        setDoctors(doctorNames);
-      } catch (error) {
-        console.error("Error loading doctors:", error);
-        setDoctors([]);
-      }
-    };
-
-    fetchDoctors();
-  }, []);
-
-  const handleDoubleClick = (time, doctor) => {
-    console.log(time)
-    console.log(doctor)
-    if (!isDrawerOpen) { // Prevent opening the drawer again if it's already open
-      setSelectedTimeSlot(time);
-      setSelectedDoctor(doctor);
-      setIsDrawerOpen(true);  // Open the AppointmentDrawer on double-click
-    }
-  };
-
-  const timeSlots = [
-    '10:00 AM', '10:05 AM', '10:10 AM', '10:15 AM', '10:20 AM', '10:25 AM', '10:30 AM',
+ const timeSlots = ['10:00 AM', '10:05 AM', '10:10 AM', '10:15 AM', '10:20 AM', '10:25 AM', '10:30 AM',
     '10:35 AM', '10:40 AM', '10:45 AM', '10:50 AM', '10:55 AM', '11:00 AM', '11:05 AM', 
     '11:10 AM', '11:15 AM', '11:20 AM', '11:25 AM', '11:30 AM', '11:35 AM', '11:40 AM', 
     '11:45 AM', '11:50 AM', '11:55 AM', '12:00 PM', '12:05 PM', '12:10 PM', '12:15 PM', 
@@ -70,32 +40,119 @@ const AppointmentScheduler = () => {
     '09:40 PM', '09:45 PM', '09:50 PM', '09:55 PM', '10:00 PM'
   ];
 
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const data = await fetchData("https://mocki.io/v1/4519c325-7de2-432f-b770-096782070c7a");
+        const doctorNames = data.map((doc) => doc.Name);
+        setDoctors(doctorNames);
+      } catch (error) {
+        console.error("Error loading doctors:", error);
+      }
+    };
+
+    const fetchAppointments = async () => {
+      try {
+        const data = await fetchData("https://mocki.io/v1/9fa85172-871a-452a-a862-62dc98c53126");
+        setAppointments(data);
+      } catch (error) {
+        console.error("Error loading appointments:", error);
+      }
+    };
+
+    fetchDoctors();
+    fetchAppointments();
+  }, []);
+
+  const handleDoubleClick = (time, doctor) => {
+    setSelectedTimeSlot(time);
+    setSelectedDoctor(doctor);
+    setIsDrawerOpen(true);
+  };
+
+  const handleAppointmentSave = (newAppt) => {
+    setAppointments((prev) => [...prev, newAppt]);
+    setIsDrawerOpen(false);
+  };
+
+  const getStatusClass = (status) => {
+    switch (status?.toLowerCase()) {
+      case "booked": return "bked";
+      case "confirmed": return "cnfrmd";
+      case "completed": return "donest";
+      case "active": return "active";
+      case "checked in": return "chkinst";
+      case "no show": return "noshow";
+      case "cancelled": return "cancelled";
+      default: return "";
+    }
+  };
+
+ const renderAppointments = (time, doctor) => {
+  return appointments
+    .filter(appt =>
+      appt.StartTime?.trim().toLowerCase() === time.trim().toLowerCase() &&
+      appt.Practioner?.trim().toLowerCase() === doctor.trim().toLowerCase()
+    )
+    .map((appt, idx) => {
+      const rawDuration = appt.Duration || "";
+      const duration = parseInt(rawDuration.replace(/\D/g, ""), 10) || 5;
+      const width = duration * 14;
+      const statusClass = getStatusClass(appt.status);
+
+      const extraClass = duration === 5 ? "smllappt" : ""; // ✅ Add this line
+
+      return (
+        <div
+          key={idx}
+          className={`appcell ${statusClass} ${extraClass}`} // ✅ Apply class
+          style={{ width: `${width}px`, minWidth: '50px' }}
+        >
+          <div className="ptflx">
+            <div className="ptnm">{appt.firstname} {appt.lastname}</div>
+            <div className={`aptst ${statusClass}`}>
+              <span></span>
+              {appt.status}
+            </div>
+          </div>
+
+          <div className="apptype">
+            <strong>{appt.ServiceCode}</strong><br />
+          </div>
+
+          <span className="expopup" onClick={() => {
+            setSelectedAppointment(appt);
+            setIsSidebarOpen(true);
+          }}>
+            <img
+              src={`${import.meta.env.BASE_URL}images/expand.svg`}
+              alt="Expand"
+            />
+          </span>
+        </div>
+      );
+    });
+};
+
 
 
   return (
     <section className="calsection">
       <div className="msttbl">
         <div className="lfthrdiv">
-          <div className="lftcol">
+          <div className="lftcol sticky-header">
             <div className="lftmin lgndiv">
               <div className="lgndth">
-                <div className="vertxt">
-                  Doctors
-                </div>
-
-                <div className="hrtxt">
-                  Time
-                </div>
+                <div className="vertxt">Doctors</div>
+                <div className="hrtxt">Time</div>
               </div>
             </div>
           </div>
 
-          <div className="lftcol">
+          <div className="lftcol sticky-header">
             <div className="lftmin">
               {doctors.map((doctor, index) => (
-                <div key={index} className="lfttm tblcell">
-                  {doctor}
-                </div>
+                <div key={index} className="lfttm tblcell">{doctor}</div>
               ))}
             </div>
           </div>
@@ -104,19 +161,14 @@ const AppointmentScheduler = () => {
         <div className="rgtcol">
           {timeSlots.map((time, index) => (
             <div className="cldrrow" key={index}>
-              <div
-                className="cldrttl clnctm"
-                onDoubleClick={() => handleDoubleClick(time, doctors[index % doctors.length])} // Handle double click and set time and doctor
-              >
-                {time}
-              </div>
+              <div className="cldrttl clnctm sticky-time">{time}</div>
               {doctors.map((doctor, colIndex) => (
                 <div
                   key={colIndex}
                   className="cldrcol clncoff"
-                  onDoubleClick={() => handleDoubleClick(time, doctor)} // Handle double click and set time and doctor
+                  onDoubleClick={() => handleDoubleClick(time, doctor)}
                 >
-                  {/* Appointment cells */}
+                  {renderAppointments(time, doctor)}
                 </div>
               ))}
             </div>
@@ -124,17 +176,21 @@ const AppointmentScheduler = () => {
         </div>
       </div>
 
-{/*       <Link to="/payment-page">Go to Payment Page</Link>
- */}
+      {isSidebarOpen && selectedAppointment && (
+        <AppointmentDetails
+          appointment={selectedAppointment}
+          onClose={() => setIsSidebarOpen(false)}
+        />
+      )}
 
-      {/* Render AppointmentDrawer when isDrawerOpen is true */}
       {isDrawerOpen && (
-       <AppointmentDrawer
-  isOpen={isDrawerOpen}
-  onClose={() => setIsDrawerOpen(false)}
-  timeSlot={selectedTimeSlot}
-  doctor={selectedDoctor}
-/>
+        <AppointmentDrawer
+          isOpen={isDrawerOpen}
+          onClose={() => setIsDrawerOpen(false)}
+          timeSlot={selectedTimeSlot}
+          doctor={selectedDoctor}
+          onSave={handleAppointmentSave}
+        />
       )}
     </section>
   );

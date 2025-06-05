@@ -495,8 +495,8 @@ table {
             height: 12px;
             background: #5076A7;
             position: absolute;
-            top: 4px;
-            left: 4px;
+            top: 3px;
+            left: 3px;
             border-radius: 100%;
             -webkit-transition: all 0.2s ease;
             transition: all 0.2s ease;
@@ -1136,6 +1136,7 @@ table {
             border-radius: 0 10px 10px 0;
         }
 
+
          .apptstatus {
                     display: flex;
                     gap: 20px;
@@ -1218,6 +1219,7 @@ table {
 
                 .msttbl {
   display: flex;
+  border-top:1px solid #666;
 }
 
 .lftcol {
@@ -1234,7 +1236,7 @@ table {
 }
 
 .tblcell {
-  height: 45px;
+  height: 80px;
   padding: 10px;
   border-bottom: 1px solid #E9EDF5;
 }
@@ -1252,9 +1254,9 @@ table {
 }
 
 .lgndth {
-  padding: 10px;
+  padding: 25px 10px 10px;
   font-weight: 600;
-  height: 50px;
+  height: 67px;
   /* position: fixed;
   width: 160px;
   border-right: 3px solid #E9EDF5;
@@ -1281,23 +1283,23 @@ table {
   border-right: 1px solid #E9EDF5;
   border-bottom: 1px solid #E9EDF5;
   padding: 10px 5px;
-  font-size: 9px;
-  height: 50px;
+  font-size: 10px;
+  height: 67px;
   text-align: center;
   position: sticky;
-  font-weight:700;
-  width: 50px;
+  font-weight:400;
+  width: 70px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
 }
 
 .cldrcol {
-  width: 50px;
-  height: 45px;
+  width: 70px;
+  height: 80px;
   border-right: 1px solid #E9EDF5;
   border-bottom: 1px solid #E9EDF5;
-  padding: 10px 5px;
+  padding: 10px;
   position: relative;
 }
 
@@ -1819,3 +1821,195 @@ table {
 }
  .manualdisc.popin{width: 900px;}
 .validbtn{ display: inline-block; padding: 5px 10px;background: #2D3250; color: #fff; border: none;  }
+
+.sticky-header {
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 10;
+}
+
+.sticky-time {
+ /*  position: sticky;
+  left: 0; */
+  background: white;
+  z-index: 10;
+}
+
+.appt-block {
+  background-color: #b2f0c2;
+  border: 1px solid #3a7d44;
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: 12px;
+  margin: 2px 0;
+}
+.appcell {
+                                    border-left: 4px solid #ccc;
+                                    box-shadow: 1px 1px 2px #ccc;
+                                    position: absolute;
+                                    top: 0;
+                                    left: 0;
+                                    background: #fff;
+                                    z-index: 1;
+                                    padding: 5px 0;
+                                }
+
+                                .appcell.active {
+                                    border-left: 4px solid #394561;
+                                }
+
+                                .appcell.donest {
+                                    border-left: 4px solid green;
+                                }
+
+                                .appcell.ppending {
+                                    border-left: 4px solid #db1313;
+                                }
+
+                                .appcell.chkinst{
+                                    border-left: 4px solid #4d674d;
+                                }
+
+                                .appcell.cnfrmd {
+                                    border-left: 4px solid #e4af44;
+                                }
+
+                                .appcell.noshow{
+                                    opacity: 0.4
+                                }
+
+                                .appcell.cancelled{
+                                    border:2px solid red;
+                                }
+
+                                .appcell.bked {
+                                    border-left: 4px solid #ccc;
+                                }
+
+                                .appcell.smllappt .ptflx{
+                                    flex-direction: column;
+                                    align-items: flex-start;
+                                    gap: 3px;
+                                }
+
+                                .appcell.smllappt .ptnm {width: 50px; text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}
+                                .appcell.smllappt .apptype{width: 50px; text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}
+                                .ptflx {
+                                    display: flex;
+                                    padding: 0 5px;
+                                    justify-content: space-between;
+                                    align-items: center;
+
+                                }
+
+                                .ptnm {
+                                    font-size: 12px;
+                                    font-weight: 600;
+                                }
+
+                                .aptst {
+                                    border: 1px solid #011c59;
+                                    background: #90b1fe;
+                                    color: #011c59;
+                                    font-size: 9px;
+                                    padding: 4px;
+                                    border-radius: 8px;
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 2px;
+                                    text-transform: capitalize;
+                                    white-space: nowrap;
+                                }
+
+                                .apst.active {
+                                    border: 1px solid #011c59;
+                                    background: #90b1fe;
+                                    color: #011c59;
+                                }
+
+                                .expopup {
+                                    position: absolute;
+                                    right: 5px;
+                                    bottom: 5px;
+                                }
+
+                                .expopup img {
+                                    width: 16px;
+                                    height: 16px;
+                                }
+
+                                .aptst.cnfrmd {
+                                    border: 1px solid #e4af44;
+                                    background: #fcf6eb;
+                                    color: #e4af44;
+                                    text-transform: capitalize;
+                                }
+
+                                .aptst.bked {
+                                    border: 1px solid #666;
+                                    background: #eee;
+                                    color: #666;
+                                }
+
+                                .aptst.donest {
+                                    border: 1px solid #06864a;
+                                    background: #aaf8d3;
+                                    color: #06864a;
+                                }
+
+                                .aptst span {
+                                    width: 4px;
+                                    height: 4px;
+                                    display: inline-block;
+                                    border-radius: 50%;
+
+                                }
+
+                                .aptst.donest span {
+                                    background: #011c59;
+                                }
+
+                                .aptst.chkinst  {
+                                    background: #a3dea3;
+                                    border: 1px solid #4d674d;
+                                    color: #4d674d;
+
+                                }
+
+                                .apst.active span {
+                                    background: #011c59;
+                                    animation: blink 900ms linear infinite;
+                                }
+
+                                .apptype {
+                                    font-size: 11px;
+                                    line-height: 18px;
+                                    margin: 7px 0;
+                                    padding: 0 5px;
+                                }
+
+                                .pymt {
+                                    font-size: 11px;
+                                    line-height: 18px;
+                                    padding: 0 5px;
+                                }
+
+                                .appcell:hover {
+                                    box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.2);
+                                    cursor: pointer;
+                                }
+
+                                @keyframes blink {
+                                    0% {
+                                        opacity: 0;
+                                    }
+
+                                    50% {
+                                        opacity: .5;
+                                    }
+
+                                    100% {
+                                        opacity: 1;
+                                    }
+                                }

@@ -1,39 +1,33 @@
 import React, { useState } from "react";
-import { useNavigate } from 'react-router-dom';
+  import { useNavigate } from 'react-router-dom';
 
-
-// The AppointmentDetails component
 const AppointmentDetails = ({ appointment, onClose }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const navigate = useNavigate();
-const goToPaymentPage = () => {
-  const queryParams = new URLSearchParams();
-  if (appointment.id) queryParams.append("aptid", appointment.id);
-  if (appointment.customerName) queryParams.append("custname", appointment.customerName);
 
-  navigate(`/payment-page${queryParams.toString() ? `?${queryParams.toString()}` : ""}`);
-};
-
-
-  // Function to handle expanding the appointment drawer
   const toggleDetails = () => {
     setIsExpanded(!isExpanded);
   };
-  let queryParams = new URLSearchParams();
-if (appointment.id) queryParams.append("aptid", appointment.id);
-if (appointment.customerName) queryParams.append("custname", appointment.customerName);
 
+  const goToPaymentPage = () => {
+    const queryParams = new URLSearchParams();
+    if (appointment?.CustId) queryParams.append("custid", appointment.CustId);
+    if (appointment?.firstname || appointment?.lastname) {
+      queryParams.append("custname", `${appointment.firstname || ""} ${appointment.lastname || ""}`);
+    }
+    navigate(`/payment-page${queryParams.toString() ? `?${queryParams.toString()}` : ""}`);
+  };
 
   return (
     <div className={`smdiv expand ${isExpanded ? "expand" : ""}`}>
       <div className="resizable" id="resizableDiv">
         <div className="rightcls" onClick={onClose}>
           <img
-  src={`${import.meta.env.BASE_URL}images/dblrigh.svg`}
-  alt="Close"
-  width="16"
-  height="16"
-/>
+            src={`${import.meta.env.BASE_URL}images/dblrigh.svg`}
+            alt="Close"
+            width="16"
+            height="16"
+          />
         </div>
 
         <div className="apptcdet custdiv">
@@ -45,18 +39,17 @@ if (appointment.customerName) queryParams.append("custname", appointment.custome
               alt="User Icon"
             />
             <h3 className="cstnm">
-              {appointment.customerName}
-              <div className="cstno">{appointment.customerPhone}</div>
-              <div className="cstid">{appointment.customerId}</div>
+              {appointment?.firstname || ""} {appointment?.lastname || ""}
+              <div className="cstno">{appointment?.mobile || "—"}</div>
+              <div className="cstid">{appointment?.CustID || "—"}</div>
             </h3>
           </div>
 
           <div className="cdtprof">
-            <a href="#" title="" className="cstlnk">
+            <a href="#" className="cstlnk">
               <img
                 src={`${import.meta.env.BASE_URL}images/custome.svg`}
                 width="16"
-                title="Customer Profile"
                 alt="Customer Profile"
               />
               Customer Profile
@@ -68,16 +61,14 @@ if (appointment.customerName) queryParams.append("custname", appointment.custome
           <div className="hdflx">
             <h2 className="dethead">Appointment Details</h2>
             <div className="acticons">
-              <a href="#" className="edit tooltip" data-tooltip="Edit Appointment" title="Edit Appointment">
+              <a href="#" className="edit tooltip" title="Edit Appointment">
                 <span className="stimg">
-                 <img src={`${import.meta.env.BASE_URL}images/edtwht.svg`} alt="Edit Appointment" />
-
+                  <img src={`${import.meta.env.BASE_URL}images/edtwht.svg`} alt="Edit" />
                 </span>
               </a>
-              <a href="#" className="delete tooltip" title="Delete Appointment">
+              <a href="#" className="delete tooltip" data-tooltip="Delete Appointment" data-tooltip-pos="left">
                 <span className="stimg">
-                  <img src={`${import.meta.env.BASE_URL}images/deletewt.svg`} alt="Delete Appointment" />
-
+                  <img src={`${import.meta.env.BASE_URL}images/deletewt.svg`} alt="Delete" />
                 </span>
               </a>
             </div>
@@ -86,29 +77,14 @@ if (appointment.customerName) queryParams.append("custname", appointment.custome
           <div className="apptsts">
             <div className="form-group slctgrp">
               <label>Status</label>
-              <select id="docSelect" value={appointment.status}>
-                <option value="0">New</option>
-                <option value="1" selected={appointment.status === "Booked"}>
-                  Booked
-                </option>
-                <option value="2" selected={appointment.status === "Confirmed"}>
-                  Confirmed
-                </option>
-                <option value="3" selected={appointment.status === "Checked In"}>
-                  Checked In
-                </option>
-                <option value="4" selected={appointment.status === "Active"}>
-                  Active
-                </option>
-                <option value="5" selected={appointment.status === "Completed"}>
-                  Completed
-                </option>
-                <option value="6" selected={appointment.status === "Cancelled"}>
-                  Cancelled
-                </option>
-                <option value="7" selected={appointment.status === "No Show"}>
-                  No Show
-                </option>
+              <select id="docSelect" value={appointment?.Status || "0"} readOnly>
+                <option value="Booked">Booked</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Checked In">Checked In</option>
+                <option value="Active">Active</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+                <option value="No Show">No Show</option>
               </select>
             </div>
           </div>
@@ -118,31 +94,32 @@ if (appointment.customerName) queryParams.append("custname", appointment.custome
               <div className="dtntime">
                 <div className="icondiv">
                   <img src={`${import.meta.env.BASE_URL}images/Datentime.svg`} alt="Date and Time" />
-
                 </div>
                 <div className="detaildiv">
                   <div className="dtlbl">Date & Time</div>
-                  <div className="dtval">{appointment.dateTime}</div>
+                  <div className="dtval">
+                    {appointment?.StartTime || ""} - {appointment?.EndTime || ""}
+                  </div>
                 </div>
               </div>
 
               <div className="dtntime">
                 <div className="icondiv">
-<img src={`${import.meta.env.BASE_URL}images/services.svg`} alt="Services" />
+                  <img src={`${import.meta.env.BASE_URL}images/services.svg`} alt="Services" />
                 </div>
                 <div className="detaildiv">
                   <div className="dtlbl">Services</div>
-                  <div className="dtval">{appointment.services}</div>
+                  <div className="dtval">{appointment?.ServiceCode || "—"}</div>
                 </div>
               </div>
 
               <div className="dtntime">
                 <div className="icondiv">
-<img src={`${import.meta.env.BASE_URL}images/noteslist.svg`} alt="Notes" />
+                  <img src={`${import.meta.env.BASE_URL}images/noteslist.svg`} alt="Notes" />
                 </div>
                 <div className="detaildiv">
                   <div className="dtlbl">Notes</div>
-                  <div className="dtval">{appointment.notes}</div>
+                  <div className="dtval">{appointment?.Notes || "—"}</div>
                 </div>
               </div>
             </div>
@@ -156,26 +133,24 @@ if (appointment.customerName) queryParams.append("custname", appointment.custome
 
           <div className="apptcdet">
             <a href="#" className="cstlnk">
-<img src={`${import.meta.env.BASE_URL}images/medical.svg`} alt="Medical History" />
+              <img src={`${import.meta.env.BASE_URL}images/medical.svg`} alt="Medical History" />
               Medical History
             </a>
             <a href="#" className="cstlnk">
-<img src={`${import.meta.env.BASE_URL}images/consent.svg`} alt="Consent and Treatment Forms" />
-              Consent and Treatment forms
+              <img src={`${import.meta.env.BASE_URL}images/consent.svg`} alt="Consent Forms" />
+              Consent and Treatment Forms
             </a>
           </div>
-         
 
-         <button onClick={goToPaymentPage} className="pndpay">
-  <span className="stimg">
-    <img
-      src={`${import.meta.env.BASE_URL}images/paymentpend.svg`}
-      alt="Make Payment"
-    />
-    Make Payment
-  </span>
-</button>
-
+          <button onClick={goToPaymentPage} className="pndpay">
+            <span className="stimg">
+              <img
+                src={`${import.meta.env.BASE_URL}images/paymentpend.svg`}
+                alt="Make Payment"
+              />
+              Make Payment
+            </span>
+          </button>
         </div>
       </div>
     </div>
