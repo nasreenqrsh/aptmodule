@@ -15,7 +15,7 @@ const AppointmentDetails = ({ appointment, onClose }) => {
     if (appointment?.firstname || appointment?.lastname) {
       queryParams.append("custname", `${appointment.firstname || ""} ${appointment.lastname || ""}`);
     }
-    navigate(`/payment-page${queryParams.toString() ? `?${queryParams.toString()}` : ""}`);
+    navigate(`/payment${queryParams.toString() ? `?${queryParams.toString()}` : ""}`);
   };
 
   return (

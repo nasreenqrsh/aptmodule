@@ -83,6 +83,7 @@ const handleCancel = () => {
     setEditingService(entry.service);
     setEditingIndex(index);
     setResetKey(Date.now());
+    console.log(serviceList)
   };
 
   const handleSubmitAll = async () => {

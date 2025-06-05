@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import AppointmentHeader from "./components/AppointmentHeader";
 import AddCustomerModal from "./components/AddCustomerModal"; 
@@ -36,48 +36,40 @@ const App = () => {
   };
 
   return (
-    <Router basename="/ReactClient">
+    <BrowserRouter basename="/ReactClient/">
+  <Routes>
+    <Route
+      path="/"
+      element={
+        <>
+          <AppointmentHeader
+            onAddAppointment={handleBookAppointment}
+            onAddCustomer={() => setShowAddCustomer(true)}
+          />
+          <FilterHeader />
+          <SchedulerGrid />
 
-      <Routes>
-        {/* Default Scheduler + Drawer UI */}
-        <Route path="/" element={
-          <>
-            <AppointmentHeader
-              onAddAppointment={handleBookAppointment}
-              onAddCustomer={() => {
-  console.log("Add customer clicked");
-  setShowAddCustomer(true);
-}}
-            />
-            <FilterHeader />
-            <SchedulerGrid />
+          <AppointmentDrawer
+            isOpen={drawerOpen}
+            onClose={() => setDrawerOpen(false)}
+            customer={selectedCustomer}
+          />
 
-            <AppointmentDrawer
-              isOpen={drawerOpen}
-              onClose={() => setDrawerOpen(false)}
-              customer={selectedCustomer}
-            />
+          <button onClick={toggleDetails}>Show Appointment Details</button>
 
-            <button onClick={toggleDetails}>Show Appointment Details</button>
 
-            {showDetails && (
-              <AppointmentDetails
-                appointment={appointment}
-                onClose={toggleDetails}
-              />
-            )}
+          {showAddCustomer && (
+            <AddCustomerModal onClose={() => setShowAddCustomer(false)} />
+          )}
+        </>
+      }
+    />
+    <Route path="/payment" element={<PaymentPage />} />
+  </Routes>
+</BrowserRouter>
 
-            {showAddCustomer && (
-              <AddCustomerModal onClose={() => setShowAddCustomer(false)} />
 
-            )}
-          </>
-        } />
-
-        {/* Payment Page Route */}
-        <Route path="/payment-page" element={<PaymentPage />} />
-      </Routes>
-    </Router>
+      
   );
 };
 
