@@ -81,7 +81,7 @@ const AppointmentScheduler = () => {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const data = await fetchData('https://mocki.io/v1/bebfd48f-2e85-4f61-bb35-e09a1644354a');
+        const data = await fetchData('/LoadAllPractionerHandler.ashx');
         const doctorNames = data.map((doc) => doc.Name);
         setDoctors(doctorNames);
       } catch (error) {
@@ -91,7 +91,7 @@ const AppointmentScheduler = () => {
 
     const fetchAppointments = async () => {
       try {
-        const data = await fetchData('https://mocki.io/v1/474447d6-1f97-46e2-8f55-dc3a9a952fae');
+        const data = await fetchData('/AppointmentDetailsHandler.ashx');
         setAppointments(data);
       } catch (error) {
         console.error('Error loading appointments:', error);
