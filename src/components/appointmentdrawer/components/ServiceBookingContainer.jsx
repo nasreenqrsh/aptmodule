@@ -3,6 +3,7 @@ import CustomerForm from "./CustomerForm";
 import ServiceRequestForm from "./ServiceRequestForm";
 import ServiceList from "./ServiceList";
 import FormFooter from "./FormFooter";
+import Toast from "../../Toast";
 
 const createDataHandler = async (payload) => {
   console.log("Sending payload:", payload);
@@ -17,19 +18,15 @@ const createDataHandler = async (payload) => {
 
     if (!response.ok || data.success === false) {
       console.error("Server Error:", data.message || "Unknown error");
-      alert(`❌ Error: ${data.message || 'Failed to submit data'}`);
       return { success: false, message: data.message || "Submission failed" };
     }
 
-    alert("✅ Appointment submitted successfully!");
-    return data;
+    return { success: true, message: "Appointment submitted successfully!" };
   } catch (error) {
     console.error("createDataHandler error:", error.message);
-    alert(`❌ Network or server error: ${error.message}`);
     return { success: false, message: error.message };
   }
 };
-
 
 const ServiceBookingContainer = ({ prefillData, doctor, timeSlot, onClose }) => {
   const [customerFormData, setCustomerFormData] = useState(null);
@@ -39,20 +36,21 @@ const ServiceBookingContainer = ({ prefillData, doctor, timeSlot, onClose }) => 
   const [editingIndex, setEditingIndex] = useState(null);
   const [editingService, setEditingService] = useState(null);
   const [lastEndTime, setLastEndTime] = useState("10:00 AM");
-const handleCancel = () => {
-  setServiceList([]);
-  setCustomerFormData(null);
-  setResetKey(Date.now());
-  setEditingIndex(null);
-  setEditingService(null);
-  setLastEndTime("10:00 AM");
+  const [toast, setToast] = useState(null); // ✅ Toast state
 
-  onClose?.(); // ✅ close drawer via parent if provided
-};
+  const handleCancel = () => {
+    setServiceList([]);
+    setCustomerFormData(null);
+    setResetKey(Date.now());
+    setEditingIndex(null);
+    setEditingService(null);
+    setLastEndTime("10:00 AM");
+    onClose?.();
+  };
 
   const handleAddService = (serviceData) => {
     if (!customerFormData) {
-      alert("Customer data is missing.");
+      setToast({ message: "Customer data is missing.", type: "error" });
       return;
     }
 
@@ -68,7 +66,7 @@ const handleCancel = () => {
       setServiceList((prev) => [...prev, combinedData]);
     }
 
-    setLastEndTime(serviceData.end); // ⏱ update next start time
+    setLastEndTime(serviceData.end);
     setResetKey(Date.now());
   };
 
@@ -76,6 +74,7 @@ const handleCancel = () => {
     const confirmDelete = window.confirm("Are you sure you want to delete this service?");
     if (!confirmDelete) return;
     setServiceList((prev) => prev.filter((_, i) => i !== index));
+    setToast({ message: "Service removed.", type: "info" });
   };
 
   const handleEdit = (index) => {
@@ -83,43 +82,38 @@ const handleCancel = () => {
     setEditingService(entry.service);
     setEditingIndex(index);
     setResetKey(Date.now());
-    console.log(serviceList)
   };
 
   const handleSubmitAll = async () => {
-    console.log(customerFormData)
-  if (!customerFormData || serviceList.length === 0) {
-    alert("Missing customer or service data.");
-    return;
-  }
+    if (!customerFormData || serviceList.length === 0) {
+      setToast({ message: "Missing customer or service data.", type: "error" });
+      return;
+    }
 
-  
+    const payload = serviceList.map((entry, index) => ({
+      CustID: customerFormData.custid || " ",
+      AppointmentDate: new Date().toISOString().split("T")[0],
+      StartTime: entry.service.start,
+      EndTime: entry.service.end,
+      Duration: entry.service.duration,
+      LineNo: index + 1,
+      ServiceCode: entry.service.servicecode,
+      Practioner: entry.service.practitioner,
+      Preference: entry.service.preference,
+      Notes: entry.service.note,
+      Amount: entry.service.amount,
+      Room: entry.service.room
+    }));
 
-  const payload = serviceList.map((entry, index) => ({
-    CustID: customerFormData.custid || " ",
-    AppointmentDate: new Date().toISOString().split("T")[0], // today as example
-    StartTime: entry.service.start,
-    EndTime: entry.service.end,
-    Duration: entry.service.duration,
-    LineNo: index + 1,
-    ServiceCode: entry.service.servicecode, // or actual code if available
-    Practioner: entry.service.practitioner,
-    Preference: entry.service.preference,
-    Notes: entry.service.note,
-    Amount: entry.service.amount,
-    Room:entry.service.room
-  }));
-
-  try {
     const result = await createDataHandler(payload);
-    alert("✅ Data submitted successfully!");
-    console.log("Response:", result);
-    setServiceList([]);
-  } catch (error) {
-    alert("❌ Submission failed. Check console for details.");
-  }
-};
 
+    if (result.success) {
+      setToast({ message: result.message, type: "success" });
+      setServiceList([]);
+    } else {
+      setToast({ message: result.message, type: "error" });
+    }
+  };
 
   return (
     <>
@@ -137,8 +131,8 @@ const handleCancel = () => {
           resetKey={resetKey}
           initialData={editingService}
           lastEndTime={lastEndTime}
-           selectedDoctor={doctor}     
-          selectedTime={timeSlot} 
+          selectedDoctor={doctor}
+          selectedTime={timeSlot}
         />
 
         <ServiceList
@@ -148,16 +142,22 @@ const handleCancel = () => {
         />
       </div>
 
-      <div style={{ marginTop: "1rem", display: "flex", gap:"15px", justifyContent: "center", borderTop:"1px solid #ccc", paddingTop: "20px" }}>
+      <div style={{ marginTop: "1rem", display: "flex", gap: "15px", justifyContent: "center", borderTop: "1px solid #ccc", paddingTop: "20px" }}>
         <button className="submitbtn editbtn" onClick={handleSubmitAll}>
           Save Appointment
         </button>
-
         <button className="restbtn" onClick={handleCancel}>
-    Cancel
-  </button>
-        
+          Cancel
+        </button>
       </div>
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </>
   );
 };

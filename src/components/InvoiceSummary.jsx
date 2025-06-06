@@ -102,7 +102,7 @@ const InvoiceSummary = ({
             <button key={index} className="pribtnblue" disabled={isFinalized}>{action}</button>
           ))}
 
-          <button className="spndbtn" onClick={handleSuspendCartClick} disabled={isFinalized}>Suspend</button>
+          {/* <button className="spndbtn" onClick={handleSuspendCartClick} disabled={isFinalized}>Suspend</button> */}
           <button className="clrbtn" onClick={handleClearCartClick} disabled={isFinalized}>Clear Cart</button>
           <button className="pribtnblue" onClick={handlePrint}>Print Invoice</button>
           <button className="pribtnblue" onClick={handleEmail}>Email Invoice</button>

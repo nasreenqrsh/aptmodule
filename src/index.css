@@ -2013,3 +2013,7 @@ table {
                                         opacity: 1;
                                     }
                                 }
+.outpymnt{
+    display: flex;
+    margin: 10px 0;
+}

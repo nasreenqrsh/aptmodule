@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Toast from "./Toast"; // Adjust the path as needed
 
 const AddCustomerModal = ({ onClose }) => {
   const [formData, setFormData] = useState({
@@ -14,8 +15,8 @@ const AddCustomerModal = ({ onClose }) => {
 
   const [errors, setErrors] = useState({});
   const [countryOptions, setCountryOptions] = useState([]);
+  const [toast, setToast] = useState(null);
 
-  // Assuming the clinic is located in Saudi Arabia
   const clinicCountryCode = "SA";
 
   const allCountries = {
@@ -40,8 +41,8 @@ const AddCustomerModal = ({ onClose }) => {
   };
 
   useEffect(() => {
-    const sortedCountries = Object.entries(allCountries).sort(([, aName], [, bName]) =>
-      aName.localeCompare(bName)
+    const sortedCountries = Object.entries(allCountries).sort(([, a], [, b]) =>
+      a.localeCompare(b)
     );
     setCountryOptions(sortedCountries);
     setFormData((prev) => ({
@@ -62,46 +63,29 @@ const AddCustomerModal = ({ onClose }) => {
 
   const validateField = (fieldId, value) => {
     let error = "";
-
     switch (fieldId) {
       case "mobile":
-        if (!value || !/^\d{10}$/.test(value)) {
-          error = "Mobile number must be 10 digits.";
-        }
+        if (!value || !/^\d{10}$/.test(value)) error = "Mobile number must be 10 digits.";
         break;
       case "firstName":
-        if (!value) {
-          error = "First name is required.";
-        }
+        if (!value) error = "First name is required.";
         break;
       case "lastName":
-        if (!value) {
-          error = "Last name is required.";
-        }
+        if (!value) error = "Last name is required.";
         break;
       case "email":
-        if (!value || !/\S+@\S+\.\S+/.test(value)) {
-          error = "Please enter a valid email address.";
-        }
+        if (!value || !/\S+@\S+\.\S+/.test(value)) error = "Enter a valid email.";
         break;
       case "gender":
-        if (!value) {
-          error = "Please select gender.";
-        }
+        if (!value) error = "Select gender.";
         break;
       case "nationality":
-        if (!value) {
-          error = "Please select nationality.";
-        }
+        if (!value) error = "Select nationality.";
         break;
       default:
         break;
     }
-
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      [fieldId]: error,
-    }));
+    setErrors((prev) => ({ ...prev, [fieldId]: error }));
   };
 
   const validateForm = () => {
@@ -112,29 +96,24 @@ const AddCustomerModal = ({ onClose }) => {
       formErrors.mobile = "Mobile number must be 10 digits.";
       isValid = false;
     }
-
     if (!formData.firstName) {
       formErrors.firstName = "First name is required.";
       isValid = false;
     }
-
     if (!formData.lastName) {
       formErrors.lastName = "Last name is required.";
       isValid = false;
     }
-
     if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) {
-      formErrors.email = "Please enter a valid email address.";
+      formErrors.email = "Enter a valid email.";
       isValid = false;
     }
-
     if (!formData.gender) {
-      formErrors.gender = "Please select gender.";
+      formErrors.gender = "Select gender.";
       isValid = false;
     }
-
     if (!formData.nationality) {
-      formErrors.nationality = "Please select nationality.";
+      formErrors.nationality = "Select nationality.";
       isValid = false;
     }
 
@@ -146,13 +125,13 @@ const AddCustomerModal = ({ onClose }) => {
     const { id, value } = e.target;
 
     if (id === "nationality") {
-      setFormData((prevData) => ({
-        ...prevData,
+      setFormData((prev) => ({
+        ...prev,
         nationality: value,
         nationalityLabel: allCountries[value],
       }));
     } else {
-      setFormData((prevData) => ({ ...prevData, [id]: value }));
+      setFormData((prev) => ({ ...prev, [id]: value }));
     }
   };
 
@@ -170,15 +149,18 @@ const AddCustomerModal = ({ onClose }) => {
       });
 
       const data = await response.json();
-      if (response.ok) {
-        console.log("Customer added:", data);
-        onClose();
+      if (response.ok && data.success) {
+        setToast({ message: "Customer added successfully!", type: "success" });
+        setTimeout(() => onClose(), 2000);
       } else {
-        alert(`Failed to create customer: ${data.message || "Unknown error"}`);
+        setToast({
+          message: data.message || "Failed to add customer.",
+          type: "error",
+        });
       }
     } catch (error) {
-      alert("An error occurred. Please try again later.");
       console.error(error);
+      setToast({ message: "An error occurred. Try again later.", type: "error" });
     }
   };
 
@@ -282,6 +264,14 @@ const AddCustomerModal = ({ onClose }) => {
           </form>
         </div>
       </div>
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };

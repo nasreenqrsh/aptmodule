@@ -1,19 +1,51 @@
 import React, { useState } from "react";
-  import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import Toast from "./Toast";
 
 const AppointmentDetails = ({ appointment, onClose }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [status, setStatus] = useState(appointment?.status || "Booked");
+  const [toast, setToast] = useState(null);
   const navigate = useNavigate();
 
-  const toggleDetails = () => {
-    setIsExpanded(!isExpanded);
+  const createDataHandler = async (payload) => {
+    try {
+      const response = await fetch("/AppointmentOperationHandler.ashx", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!response.ok) throw new Error("Failed to update status");
+      const result = await response.json();
+      if (result?.success) {
+        setToast({ message: "Appointment status updated!", type: "success" });
+      } else {
+        setToast({ message: "Update failed. Please try again.", type: "error" });
+      }
+    } catch (error) {
+      console.error("Error updating appointment status:", error);
+      setToast({ message: "Error updating appointment.", type: "error" });
+    }
+  };
+
+  const handleStatusChange = (e) => {
+    const newStatus = e.target.value;
+    setStatus(newStatus);
+
+    const payload = {
+      appointmentid: appointment?.appointmentId,
+      status: newStatus,
+      operation: "STAUTSUPDATE",
+    };
+
+    createDataHandler(payload);
   };
 
   const goToPaymentPage = () => {
     const queryParams = new URLSearchParams();
-    if (appointment?.CustId) queryParams.append("custid", appointment.CustId);
-    if (appointment?.firstname || appointment?.lastname) {
-      queryParams.append("custname", `${appointment.firstname || ""} ${appointment.lastname || ""}`);
+    if (appointment?.custid) queryParams.append("custid", appointment.custid);
+    if (appointment?.fullname) {
+      queryParams.append("custname", `${appointment.fullname || ""}`);
     }
     navigate(`/payment${queryParams.toString() ? `?${queryParams.toString()}` : ""}`);
   };
@@ -39,7 +71,7 @@ const AppointmentDetails = ({ appointment, onClose }) => {
               alt="User Icon"
             />
             <h3 className="cstnm">
-              {appointment?.fullname || ""} 
+              {appointment?.fullname || ""}
               <div className="cstno">{appointment?.number || "—"}</div>
               <div className="cstid">{appointment?.custid || "—"}</div>
             </h3>
@@ -66,7 +98,7 @@ const AppointmentDetails = ({ appointment, onClose }) => {
                   <img src={`${import.meta.env.BASE_URL}images/edtwht.svg`} alt="Edit" />
                 </span>
               </a>
-              <a href="#" className="delete tooltip" data-tooltip="Delete Appointment" data-tooltip-pos="left">
+              <a href="#" className="delete tooltip" title="Delete Appointment">
                 <span className="stimg">
                   <img src={`${import.meta.env.BASE_URL}images/deletewt.svg`} alt="Delete" />
                 </span>
@@ -77,7 +109,7 @@ const AppointmentDetails = ({ appointment, onClose }) => {
           <div className="apptsts">
             <div className="form-group slctgrp">
               <label>Status</label>
-              <select id="docSelect" value={appointment?.status || "0"} >
+              <select id="stSelect" value={status} onChange={handleStatusChange}>
                 <option value="Booked">Booked</option>
                 <option value="Confirmed">Confirmed</option>
                 <option value="Checked In">Checked In</option>
@@ -153,6 +185,14 @@ const AppointmentDetails = ({ appointment, onClose }) => {
           </button>
         </div>
       </div>
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };

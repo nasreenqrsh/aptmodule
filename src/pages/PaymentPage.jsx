@@ -21,7 +21,6 @@ const InvoicePage = () => {
   const [suspendedCarts, setSuspendedCarts] = useState([]);
   const [isFinalized, setIsFinalized] = useState(false);
 
-
   useEffect(() => {
     createDataHandler('https://mocki.io/v1/4df5effa-1606-474c-9ba3-f54eb1142034')
       .then(setSuggestions)
@@ -31,7 +30,7 @@ const InvoicePage = () => {
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem('suspendedCarts') || '[]');
     setSuspendedCarts(saved);
-  }, [items]); // Refresh dropdown when items change
+  }, [items]);
 
   const handlePriceChange = (index, value) => {
     const updatedItems = [...items];
@@ -74,7 +73,7 @@ const InvoicePage = () => {
 
     const suspended = JSON.parse(localStorage.getItem('suspendedCarts') || '[]');
     const cartWithMeta = {
-      id: Date.now(), // unique ID
+      id: Date.now(),
       timestamp: new Date().toLocaleString(),
       items: items
     };
@@ -108,8 +107,7 @@ const InvoicePage = () => {
   const roundoff = 0;
   const total = net + tax + roundoff;
 
-
-  const todayDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+  const todayDate = new Date().toISOString().split('T')[0];
   const lastInvoiceNumber = parseInt(localStorage.getItem('lastInvoiceNumber') || '1000', 10);
   const currentInvoiceNumber = lastInvoiceNumber + 1;
   localStorage.setItem('lastInvoiceNumber', currentInvoiceNumber.toString());
@@ -121,38 +119,29 @@ const InvoicePage = () => {
       </header>
 
       <main className="invoicewrp">
-        
-
         <div className="invflex">
           <div className="leftsect">
             <div className="invtopwrp">
-          <h3 className="sectttl">Invoice details</h3>
-           <div className="invdetails">
-        {[
-          { label: 'Invoice No.', value: currentInvoiceNumber },
-          { label: 'Invoice Date', value: todayDate },
-          { label: 'Clinic Name', value: 'Bright Clinic' }
-        ].map(({ label, value }, index) => (
-          <div className="inventry" key={index}>
-            <label className="inlbl">{label}</label>
-            <input type="text" className="invinp" value={value} readOnly />
-          </div>
-        ))}
-      </div>
-          <div className="formdivwrp">
-            <InvoiceForm
-              suggestions={suggestions}
-              onAddItem={handleAddFormItem}
-              resetKey={formResetKey}
-            />
-
-            
-          </div>
-        </div>
+              <h3 className="sectttl">Invoice details</h3>
+              <div className="invdetails">
+                {[{ label: 'Invoice No.', value: currentInvoiceNumber }, { label: 'Invoice Date', value: todayDate }, { label: 'Clinic Name', value: 'Bright Clinic' }]
+                  .map(({ label, value }, index) => (
+                    <div className="inventry" key={index}>
+                      <label className="inlbl">{label}</label>
+                      <input type="text" className="invinp" value={value} readOnly />
+                    </div>
+                  ))}
+              </div>
+              <div className="formdivwrp">
+                <InvoiceForm
+                  suggestions={suggestions}
+                  onAddItem={handleAddFormItem}
+                  resetKey={formResetKey}
+                />
+              </div>
+            </div>
             <InvoiceTable
-              items={items}/* 
-              onPriceChange={handlePriceChange}
-              onDiscountChange={handleDiscountChange} */
+              items={items}
               onRemove={handleRemove}
               readOnlyInputs={true}
             />
@@ -169,7 +158,7 @@ const InvoicePage = () => {
               onDiscountChange={handleDiscountChange}
               onRemove={handleRemove}
               isFinalized={isFinalized}
-  setIsFinalized={setIsFinalized}
+              setIsFinalized={setIsFinalized}
             />
             <div className="invtotalblk">
               <CustomerSearch />
@@ -187,7 +176,7 @@ const InvoicePage = () => {
 
           <aside className="rgtsect">
             <CategoryTabs />
-            <PaymentBlock />
+            <PaymentBlock totalAmount={total.toFixed(2)} />
           </aside>
         </div>
       </main>
