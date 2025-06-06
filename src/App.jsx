@@ -36,7 +36,7 @@ const App = () => {
   };
 
   return (
-    <BrowserRouter basename="/ReactClient/">
+    <BrowserRouter basename="/Reactclient/">
   <Routes>
     <Route
       path="/"
