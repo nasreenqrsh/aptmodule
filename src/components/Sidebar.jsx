@@ -39,9 +39,9 @@ const AppointmentDetails = ({ appointment, onClose }) => {
               alt="User Icon"
             />
             <h3 className="cstnm">
-              {appointment?.firstname || ""} {appointment?.lastname || ""}
-              <div className="cstno">{appointment?.mobile || "—"}</div>
-              <div className="cstid">{appointment?.CustID || "—"}</div>
+              {appointment?.fullname || ""} 
+              <div className="cstno">{appointment?.number || "—"}</div>
+              <div className="cstid">{appointment?.custid || "—"}</div>
             </h3>
           </div>
 
@@ -77,7 +77,7 @@ const AppointmentDetails = ({ appointment, onClose }) => {
           <div className="apptsts">
             <div className="form-group slctgrp">
               <label>Status</label>
-              <select id="docSelect" value={appointment?.Status || "0"} readOnly>
+              <select id="docSelect" value={appointment?.status || "0"} >
                 <option value="Booked">Booked</option>
                 <option value="Confirmed">Confirmed</option>
                 <option value="Checked In">Checked In</option>
@@ -98,7 +98,7 @@ const AppointmentDetails = ({ appointment, onClose }) => {
                 <div className="detaildiv">
                   <div className="dtlbl">Date & Time</div>
                   <div className="dtval">
-                    {appointment?.StartTime || ""} - {appointment?.EndTime || ""}
+                    {appointment?.starttime || ""} - {appointment?.endtime || ""}
                   </div>
                 </div>
               </div>
@@ -109,7 +109,7 @@ const AppointmentDetails = ({ appointment, onClose }) => {
                 </div>
                 <div className="detaildiv">
                   <div className="dtlbl">Services</div>
-                  <div className="dtval">{appointment?.ServiceCode || "—"}</div>
+                  <div className="dtval">{appointment?.servicecode || "—"}</div>
                 </div>
               </div>
 
@@ -119,7 +119,7 @@ const AppointmentDetails = ({ appointment, onClose }) => {
                 </div>
                 <div className="detaildiv">
                   <div className="dtlbl">Notes</div>
-                  <div className="dtval">{appointment?.Notes || "—"}</div>
+                  <div className="dtval">{appointment?.notes || "—"}</div>
                 </div>
               </div>
             </div>

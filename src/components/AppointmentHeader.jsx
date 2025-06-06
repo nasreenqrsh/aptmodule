@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "../index.css";
 
 const AppointmentHeader = ({ onAddAppointment, onAddCustomer }) => {
@@ -6,6 +6,13 @@ const AppointmentHeader = ({ onAddAppointment, onAddCustomer }) => {
   const [suggestions, setSuggestions] = useState([]);
   const [activeIndex, setActiveIndex] = useState(-1);
   const suggestionsRef = useRef(null);
+  const [todayDate, setTodayDate] = useState("");
+
+  useEffect(() => {
+    const today = new Date();
+    const formattedDate = today.toISOString().split("T")[0]; // Formats date as 'YYYY-MM-DD'
+    setTodayDate(formattedDate);
+  }, []);
 
   const fetchSuggestions = async (query) => {
     if (!query || query.length < 2) {
@@ -84,7 +91,7 @@ const AppointmentHeader = ({ onAddAppointment, onAddCustomer }) => {
         <div style={{ width: "300px" }}></div>
 
         <div className="datepkrdiv">
-          <input type="date" id="date" />
+          <input type="date" id="date" defaultValue={todayDate}/>
         </div>
 
         <div className="actbtnsdiv">
