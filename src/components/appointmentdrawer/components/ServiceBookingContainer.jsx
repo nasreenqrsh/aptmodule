@@ -28,7 +28,7 @@ const createDataHandler = async (payload) => {
   }
 };
 
-const ServiceBookingContainer = ({ prefillData, doctor, timeSlot, onClose }) => {
+const ServiceBookingContainer = ({ prefillData, doctor, timeSlot, onClose, onRefreshAppointments }) => {
   const [customerFormData, setCustomerFormData] = useState(null);
   const [serviceList, setServiceList] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -36,7 +36,7 @@ const ServiceBookingContainer = ({ prefillData, doctor, timeSlot, onClose }) => 
   const [editingIndex, setEditingIndex] = useState(null);
   const [editingService, setEditingService] = useState(null);
   const [lastEndTime, setLastEndTime] = useState("10:00 AM");
-  const [toast, setToast] = useState(null); // ✅ Toast state
+  const [toast, setToast] = useState(null);
 
   const handleCancel = () => {
     setServiceList([]);
@@ -89,6 +89,32 @@ const ServiceBookingContainer = ({ prefillData, doctor, timeSlot, onClose }) => 
       setToast({ message: "Missing customer or service data.", type: "error" });
       return;
     }
+    useEffect(() => {
+  if (editAppointment) {
+    // prefill customer form
+    setCustomerFormData({
+      name: editAppointment.fullname,
+      number: editAppointment.number,
+      email: editAppointment.email,
+      gender: editAppointment.gender,
+      custid: editAppointment.custid,
+      // Add more fields as needed
+    });
+
+    // prefill service list
+    setServiceList([
+      {
+        servicename: editAppointment.servicecode,
+        practitioner: editAppointment.practitioner,
+        startTime: editAppointment.starttime,
+        endTime: editAppointment.endtime,
+        room: editAppointment.room,
+        note: editAppointment.notes,
+        duration: editAppointment.duration || "5",
+      }
+    ]);
+  }
+}, [editAppointment]);
 
     const payload = serviceList.map((entry, index) => ({
       CustID: customerFormData.custid || " ",
@@ -110,8 +136,14 @@ const ServiceBookingContainer = ({ prefillData, doctor, timeSlot, onClose }) => 
     if (result.success) {
       setToast({ message: result.message, type: "success" });
       setServiceList([]);
+      setCustomerFormData(null);
+      setEditingIndex(null);
+      setEditingService(null);
+      setLastEndTime("10:00 AM");
+      setResetKey(Date.now());
 
       if (onRefreshAppointments) onRefreshAppointments();
+      if (onClose) onClose();
     } else {
       setToast({ message: result.message, type: "error" });
     }

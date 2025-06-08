@@ -4,8 +4,9 @@ import CustomerForm from "./components/CustomerForm";
 import FormFooter from "./components/FormFooter";
 import ServiceBookingContainer from "./components/ServiceBookingContainer";
 
-const AppointmentDrawer = ({ isOpen, onClose, timeSlot, customer, doctor, onRefreshAppointments }) => {
+const AppointmentDrawer = ({ isOpen, onClose, timeSlot, customer, doctor, editAppointment, onRefreshAppointments }) => {
   const drawerRef = useRef(null);
+  const fetchAppointments = onRefreshAppointments;
   const [resetKey, setResetKey] = useState(0); // 👈 Used to trigger reset
 
   useEffect(() => {
@@ -31,8 +32,13 @@ const AppointmentDrawer = ({ isOpen, onClose, timeSlot, customer, doctor, onRefr
 <img src={`${import.meta.env.BASE_URL}images/collpase.svg`} alt="Collapse" />
           </span>
 
-          <ServiceBookingContainer key={resetKey} doctor={doctor}
-        timeSlot={timeSlot} prefillData={customer} onClose={resetAllForms} onRefreshAppointments={onRefreshAppointments}/>
+          <ServiceBookingContainer key={resetKey}
+  doctor={doctor}
+  timeSlot={timeSlot}
+  prefillData={customer}
+  editAppointment={editAppointment}
+  onClose={resetAllForms}
+  onRefreshAppointments={onRefreshAppointments}/>
         </div>
 
       </div>
