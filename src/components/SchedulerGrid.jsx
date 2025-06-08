@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AppointmentDrawer from './appointmentdrawer/AppointmentDrawer';
 import AppointmentDetails from './Sidebar';
+import FilterHeader from './FilterHeader';
 
 const fetchData = async (url, payload = null) => {
   const options = payload
@@ -37,28 +38,38 @@ const AppointmentScheduler = () => {
   const [appointments, setAppointments] = useState([]);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [editAppointment, setEditAppointment] = useState(null);
+  const [statusCounts, setStatusCounts] = useState({});
 
-const openEditDrawer = (appt) => {
-  setEditAppointment(appt);
-  setIsDrawerOpen(true);
-};
-
-
-  const timeSlots = [...Array(157).keys()].map(i => {
-    const date = new Date(2000, 0, 1, 10, i * 5);
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+  const timeSlots = [...Array(145)].map((_, i) => {
+    const base = new Date(`1970-01-01T10:00:00`);
+    base.setMinutes(base.getMinutes() + i * 5);
+    return base.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
   });
 
-  const fetchDoctors = async () => {
-    try {
-      const data = await fetchData('https://mocki.io/v1/1cf6b4f2-e470-48e8-a013-3ffd7b3e6f6f');
-      const doctorNames = data.map((doc) => doc.Name);
-      setDoctors(doctorNames);
-    } catch (error) {
-      console.error('Error loading doctors:', error);
-    }
-  };
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const data = await fetchData('/LoadAllPractionerHandler.ashx');
+        const doctorNames = data.map((doc) => doc.Name);
+        setDoctors(doctorNames);
+      } catch (error) {
+        console.error('Error loading doctors:', error);
+      }
+    };
+
+    const fetchStatusCounts = async () => {
+      try {
+        const data = await fetchData('/AppointmentOperationHandler.ashx');
+        setStatusCounts(data);
+      } catch (error) {
+        console.error('Error loading status counts:', error);
+      }
+    };
+
+    fetchDoctors();
+    fetchAppointments();
+    fetchStatusCounts();
+  }, []);
 
   const fetchAppointments = async () => {
     try {
@@ -69,36 +80,10 @@ const openEditDrawer = (appt) => {
     }
   };
 
-  useEffect(() => {
-    const today = new Date();
-    const formattedDate = today.toISOString().split('T')[0];
-    const payload = {
-      appointmentdate: formattedDate,
-      searchtext: '',
-    };
-    fetchData('https://mocki.io/v1/1191ce9b-b8e7-47c3-9545-a1bd22dfbb1d', payload)
-      .then((data) => {
-        console.log('Initial data sent successfully:', data);
-      })
-      .catch((error) => {
-        console.error('Error sending initial data:', error);
-      });
-  }, []);
-
-  useEffect(() => {
-    fetchDoctors();
-    fetchAppointments();
-  }, []);
-
   const handleDoubleClick = (time, doctor) => {
     setSelectedTimeSlot(time);
     setSelectedDoctor(doctor);
     setIsDrawerOpen(true);
-  };
-
-  const handleAppointmentSave = (newAppt) => {
-    setAppointments((prev) => [...prev, newAppt]);
-    setIsDrawerOpen(false);
   };
 
   const getStatusClass = (status) => {
@@ -122,8 +107,7 @@ const openEditDrawer = (appt) => {
           appt.doctorname?.trim().toLowerCase() === doctor.trim().toLowerCase()
       )
       .map((appt, idx) => {
-        const rawDuration = appt.duration || '';
-        const duration = parseInt(rawDuration.replace(/\D/g, ''), 10) || 5;
+        const duration = parseInt(appt.duration?.replace(/\D/g, ''), 10) || 5;
         const width = duration * 14;
         const statusClass = getStatusClass(appt.status || '');
         const extraClass = duration === 5 ? 'smllappt' : '';
@@ -136,14 +120,10 @@ const openEditDrawer = (appt) => {
           >
             <div className="ptflx">
               <div className="ptnm">{appt.fullname}</div>
-              <div className={`aptst ${statusClass}`}>
-                <span></span>
-                {appt.status || 'Booked'}
-              </div>
+              <div className={`aptst ${statusClass}`}><span></span>{appt.status || 'Booked'}</div>
             </div>
             <div className="apptype">
               <strong>{appt.servicecode}</strong>
-              <br />
             </div>
             <span
               className="expopup"
@@ -161,6 +141,8 @@ const openEditDrawer = (appt) => {
 
   return (
     <section className="calsection">
+      <FilterHeader counts={statusCounts} />
+
       <div className="msttbl">
         <div className="lfthrdiv">
           <div className="lftcol sticky-header">
@@ -174,14 +156,11 @@ const openEditDrawer = (appt) => {
           <div className="lftcol sticky-header">
             <div className="lftmin">
               {doctors.map((doctor, index) => (
-                <div key={index} className="lfttm tblcell">
-                  {doctor}
-                </div>
+                <div key={index} className="lfttm tblcell">{doctor}</div>
               ))}
             </div>
           </div>
         </div>
-
         <div className="rgtcol">
           {timeSlots.map((time, index) => (
             <div className="cldrrow" key={index}>
@@ -204,8 +183,6 @@ const openEditDrawer = (appt) => {
         <AppointmentDetails
           appointment={selectedAppointment}
           onClose={() => setIsSidebarOpen(false)}
-            onEditAppointment={openEditDrawer}
-
         />
       )}
 
@@ -215,9 +192,7 @@ const openEditDrawer = (appt) => {
           onClose={() => setIsDrawerOpen(false)}
           timeSlot={selectedTimeSlot}
           doctor={selectedDoctor}
-          onSave={handleAppointmentSave}
           onRefreshAppointments={fetchAppointments}
-           editAppointment={editAppointment}
         />
       )}
     </section>

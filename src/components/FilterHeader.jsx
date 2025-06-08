@@ -1,7 +1,48 @@
-// src/components/FilterHeader.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
+
+const createDataHandler = async (url, payload = null) => {
+  const options = payload
+    ? {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }
+    : {};
+  const response = await fetch(url, options);
+  if (!response.ok) throw new Error('Fetch error');
+  return await response.json();
+};
 
 const FilterHeader = () => {
+  const [counts, setCounts] = useState({});
+
+  useEffect(() => {
+    createDataHandler("/AppointmentCountHandler.ashx")
+      .then((res) => {
+        if (Array.isArray(res) && res.length > 0) {
+          const raw = res[0];
+          setCounts({
+            Completed: raw.Completed,
+            PaymentPending: raw.PaymentPending || 0,
+            Active: raw.Active,
+            CheckedIn: raw.CheckedIn,
+            Confirmed: raw.Confirm,
+            Booked: raw.Booked
+          });
+        }
+      })
+      .catch(console.error);
+  }, []);
+
+  const {
+    Completed = 0,
+    PaymentPending = 0,
+    Active = 0,
+    CheckedIn = 0,
+    Confirmed = 0,
+    Booked = 0,
+  } = counts;
+
   return (
     <header className="fltrhdr">
       <div className="fltroptflx">
@@ -14,56 +55,50 @@ const FilterHeader = () => {
           <div className="apptstatus">
             <div className="completed statcell">
               <div className="stimg">
-               <img src={`${import.meta.env.BASE_URL}images/completed.svg`} alt="Completed" />
-
+                <img src={`${import.meta.env.BASE_URL}images/completed.svg`} alt="Completed" />
                 Completed
               </div>
-              <div className="statno">10</div>
+              <div className="statno">{Completed}</div>
             </div>
 
             <div className="pndpay statcell">
               <div className="stimg">
                 <img src={`${import.meta.env.BASE_URL}images/paymentpend.svg`} alt="Payment Pending" />
-
                 Payment Pending
               </div>
-              <div className="statno">5</div>
+              <div className="statno">{PaymentPending}</div>
             </div>
 
             <div className="ongngappt statcell">
               <div className="stimg">
-               <img src={`${import.meta.env.BASE_URL}images/ongoing.png`} alt="Active/Ongoing" />
-
+                <img src={`${import.meta.env.BASE_URL}images/ongoing.png`} alt="Active/Ongoing" />
                 Active/Ongoing
               </div>
-              <div className="statno">5</div>
+              <div className="statno">{Active}</div>
             </div>
 
             <div className="checkin statcell">
               <div className="stimg">
-               <img src={`${import.meta.env.BASE_URL}images/checkin.svg`} alt="Checked In" />
-
+                <img src={`${import.meta.env.BASE_URL}images/checkin.svg`} alt="Checked In" />
                 Checked In
               </div>
-              <div className="statno">25</div>
+              <div className="statno">{CheckedIn}</div>
             </div>
 
             <div className="confirmed statcell">
               <div className="stimg">
-               <img src={`${import.meta.env.BASE_URL}images/confirmed.png`} alt="Confirmed" />
-
+                <img src={`${import.meta.env.BASE_URL}images/confirmed.png`} alt="Confirmed" />
                 Confirmed
               </div>
-              <div className="statno">25</div>
+              <div className="statno">{Confirmed}</div>
             </div>
 
             <div className="booked statcell">
               <div className="stimg">
                 <img src={`${import.meta.env.BASE_URL}images/booked.svg`} alt="Booked" />
-
                 Booked
               </div>
-              <div className="statno">40</div>
+              <div className="statno">{Booked}</div>
             </div>
           </div>
         </div>

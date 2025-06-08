@@ -46,7 +46,6 @@ const App = () => {
             onAddAppointment={handleBookAppointment}
             onAddCustomer={() => setShowAddCustomer(true)}
           />
-          <FilterHeader />
           <SchedulerGrid />
 
           <AppointmentDrawer
