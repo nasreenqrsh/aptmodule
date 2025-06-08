@@ -30,13 +30,15 @@ const convertTo24Hour = (time12h) => {
 };
 
 const AppointmentScheduler = () => {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+ const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [doctors, setDoctors] = useState([]);
   const [appointments, setAppointments] = useState([]);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  
 
   const timeSlots = [
     '10:00 AM', '10:05 AM', '10:10 AM', '10:15 AM', '10:20 AM', '10:25 AM', '10:30 AM',
@@ -90,13 +92,13 @@ const AppointmentScheduler = () => {
     };
 
     const fetchAppointments = async () => {
-      try {
-        const data = await fetchData('/AppointmentDetailsHandler.ashx');
-        setAppointments(data);
-      } catch (error) {
-        console.error('Error loading appointments:', error);
-      }
-    };
+    try {
+      const data = await fetchData('/AppointmentDetailsHandler.ashx');
+      setAppointments(data);
+    } catch (error) {
+      console.error('Error loading appointments:', error);
+    }
+  };
 
     fetchDoctors();
     fetchAppointments();
@@ -245,6 +247,7 @@ const renderAppointments = (time, doctor) => {
         timeSlot={selectedTimeSlot}
         doctor={selectedDoctor}
         onSave={handleAppointmentSave}
+        onRefreshAppointments={fetchAppointments}
       />
     )}
   </section>

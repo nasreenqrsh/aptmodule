@@ -22,7 +22,6 @@ const ServiceList = ({ data=[], onDelete, onEdit }) => {
               <th width="90">Start</th>
               <th width="90">End</th>
               <th>Duration</th>
-              <th>Note</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -35,7 +34,6 @@ const ServiceList = ({ data=[], onDelete, onEdit }) => {
                 <td>{entry.service.start}</td>
                 <td>{entry.service.end}</td>
                 <td>{entry.service.duration}</td>
-                <td>{entry.service.note}</td>
                 <td>
                  {/*  <button
                     className="tblbtn edit"
@@ -47,7 +45,7 @@ const ServiceList = ({ data=[], onDelete, onEdit }) => {
                     className="tblbtn delete"
                     onClick={() => onDelete(index)}
                   >
-                    Del
+                    <img src={`${import.meta.env.BASE_URL}images/deletewt.svg`} alt="Add Service" />
                   </button>
                 </td>
               </tr>

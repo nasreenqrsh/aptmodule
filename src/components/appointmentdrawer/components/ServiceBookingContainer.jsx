@@ -97,7 +97,7 @@ const ServiceBookingContainer = ({ prefillData, doctor, timeSlot, onClose }) => 
       EndTime: entry.service.end,
       Duration: entry.service.duration,
       LineNo: index + 1,
-      ServiceCode: entry.service.servicecode,
+      ServiceCode: entry.service.servicename,
       Practioner: entry.service.practitioner,
       Preference: entry.service.preference,
       Notes: entry.service.note,
@@ -110,6 +110,8 @@ const ServiceBookingContainer = ({ prefillData, doctor, timeSlot, onClose }) => 
     if (result.success) {
       setToast({ message: result.message, type: "success" });
       setServiceList([]);
+
+      if (onRefreshAppointments) onRefreshAppointments();
     } else {
       setToast({ message: result.message, type: "error" });
     }
