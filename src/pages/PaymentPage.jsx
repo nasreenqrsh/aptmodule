@@ -5,6 +5,7 @@ import CustomerSearch from '../components/CustomerSearch';
 import PaymentBlock from '../components/PaymentBlock';
 import CategoryTabs from '../components/CategoryTabs';
 import InvoiceTable from '../components/InvoiceTable';
+import Toast from '../components/Toast';
 import '../pages/styles/InvoicePage.css';
 
 const createDataHandler = async (url) => {
@@ -20,6 +21,8 @@ const InvoicePage = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [suspendedCarts, setSuspendedCarts] = useState([]);
   const [isFinalized, setIsFinalized] = useState(false);
+  const [toast, setToast] = useState(null);
+
 
   useEffect(() => {
     createDataHandler('https://mocki.io/v1/4df5effa-1606-474c-9ba3-f54eb1142034')
@@ -122,7 +125,10 @@ const InvoicePage = () => {
         <div className="invflex">
           <div className="leftsect">
             <div className="invtopwrp">
-              <h3 className="sectttl">Invoice details</h3>
+              <h3 className="sectttl">Invoice details  
+                
+                <a href="" title='' className='bckbtn'> <img src={`${import.meta.env.BASE_URL}images/back.svg`} alt="Collapse" />Back</a>
+                 </h3>
               <div className="invdetails">
                 {[{ label: 'Invoice No.', value: currentInvoiceNumber }, { label: 'Invoice Date', value: todayDate }, { label: 'Clinic Name', value: 'Bright Clinic' }]
                   .map(({ label, value }, index) => (
@@ -175,12 +181,21 @@ const InvoicePage = () => {
           </div>
 
           <aside className="rgtsect">
-            <CategoryTabs />
+            <CategoryTabs onAddItem={handleAddFormItem} showToast={(msg) => setToast({ message: msg, type: 'success' })}/>
+
             <PaymentBlock totalAmount={total.toFixed(2)} />
           </aside>
         </div>
       </main>
+      {toast && (
+  <Toast
+    message={toast.message}
+    type={toast.type}
+    onClose={() => setToast(null)}
+  />
+)}
     </div>
+    
   );
 };
 

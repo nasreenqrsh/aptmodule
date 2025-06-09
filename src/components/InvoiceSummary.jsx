@@ -14,8 +14,7 @@ const InvoiceSummary = ({
   onSuspendCart,
   onRecallCartById,
   suspendedCarts,
-  isFinalized,
-  setIsFinalized
+  isFinalized
 }) => {
   const [toast, setToast] = useState(null);
 
@@ -50,7 +49,7 @@ const InvoiceSummary = ({
   };
 
   const handlePrint = () => {
-   
+    window.print();
   };
 
   const handleEmail = async () => {
@@ -70,11 +69,6 @@ const InvoiceSummary = ({
     }
   };
 
-  const handleComplete = () => {
-    setIsFinalized(true);
-    setToast({ message: 'Invoice completed and locked.', type: 'success' });
-  };
-
   return (
     <div className="rghtdiv">
       <div className="actwrp">
@@ -90,7 +84,7 @@ const InvoiceSummary = ({
 
           <ManualDiscountPopup
             isActive={showPopup}
-              onClose={() => setShowPopup(false)}
+            onClose={() => setShowPopup(false)}
             onApplyDiscount={onManualDiscount}
             items={items}
             onPriceChange={onPriceChange}
@@ -99,14 +93,20 @@ const InvoiceSummary = ({
           />
 
           {['Issue Loyalty Card', 'Price Override', 'Apply Package', 'Coupon Code'].map((action, index) => (
-            <button key={index} className="pribtnblue" disabled={isFinalized}>{action}</button>
+            <button key={index} className="pribtnblue" disabled={isFinalized}>
+              {action}
+            </button>
           ))}
 
-          {/* <button className="spndbtn" onClick={handleSuspendCartClick} disabled={isFinalized}>Suspend</button> */}
-          <button className="clrbtn" onClick={handleClearCartClick} disabled={isFinalized}>Clear Cart</button>
-          <button className="pribtnblue" onClick={handlePrint}>Print Invoice</button>
-          <button className="pribtnblue" onClick={handleEmail}>Email Invoice</button>
-          <button className="pribtnblue" onClick={handleComplete} disabled={isFinalized}>Complete Invoice</button>
+          <button className="clrbtn" onClick={handleClearCartClick} disabled={isFinalized}>
+            Clear Cart
+          </button>
+          <button className="pribtnblue" onClick={handlePrint}>
+            Print Invoice
+          </button>
+          <button className="pribtnblue" onClick={handleEmail}>
+            Email Invoice
+          </button>
 
           {suspendedCarts.length > 0 && (
             <select className="recallselect" onChange={handleRecallChange} defaultValue="">

@@ -1,15 +1,49 @@
 import React, { useState, useEffect } from 'react';
 
-const InvoiceForm = ({ suggestions, onAddItem, resetKey }) => {
+const createDataHandler = async (url) => {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`Failed to fetch from ${url}`);
+  return await response.json();
+};
+
+const SERVICE_API = 'https://mocki.io/v1/1bc921e8-e308-4863-bdab-a865eea49874';
+const PRODUCT_API = 'https://mocki.io/v1/0e9466cb-00fe-4ed3-a324-e59c00cd6c81';
+const PACKAGE_API = 'https://mocki.io/v1/75459841-da63-456c-9a16-59a57c74197c';
+
+const InvoiceForm = ({ onAddItem, resetKey }) => {
   const [formData, setFormData] = useState({
     package: '',
     product: '',
     service: '',
     giftcard: ''
   });
+  const [suggestions, setSuggestions] = useState([]);
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
   const [fieldFocused, setFieldFocused] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
+
+  useEffect(() => {
+    const fetchAllSuggestions = async () => {
+      try {
+        const [services, products, packages] = await Promise.all([
+          createDataHandler(SERVICE_API),
+          createDataHandler(PRODUCT_API),
+          createDataHandler(PACKAGE_API)
+        ]);
+
+        const mergedSuggestions = [
+          ...services.map(item => ({ type: 'service', ...item })),
+          ...products.map(item => ({ type: 'product', ...item })),
+          ...packages.map(item => ({ type: 'package', ...item }))
+        ];
+        setSuggestions(mergedSuggestions);
+      } catch (error) {
+        console.error('Failed to fetch suggestions:', error);
+      }
+    };
+
+    fetchAllSuggestions();
+  }, []);
 
   useEffect(() => {
     setFormData({ package: '', product: '', service: '', giftcard: '' });
@@ -24,16 +58,16 @@ const InvoiceForm = ({ suggestions, onAddItem, resetKey }) => {
 
     let matches = [];
     if (field === 'package') {
-      matches = suggestions.filter((s) =>
-        s.packageName?.toLowerCase().includes(value.toLowerCase())
+      matches = suggestions.filter(
+        s => s.type === 'package' && s.packageName?.toLowerCase().includes(value.toLowerCase())
       );
     } else if (field === 'product') {
-      matches = suggestions.filter((s) =>
-        s.product?.toLowerCase().includes(value.toLowerCase())
+      matches = suggestions.filter(
+        s => s.type === 'product' && s.productname?.toLowerCase().includes(value.toLowerCase())
       );
     } else if (field === 'service') {
-      matches = suggestions.filter((s) =>
-        s.serviceName?.toLowerCase().includes(value.toLowerCase())
+      matches = suggestions.filter(
+        s => s.type === 'service' && s.servicename?.toLowerCase().includes(value.toLowerCase())
       );
     }
 
@@ -43,9 +77,9 @@ const InvoiceForm = ({ suggestions, onAddItem, resetKey }) => {
   const handleSelect = (item) => {
     setFormData({
       package: item.packageName || '',
-      product: item.product || '',
-      service: item.serviceName || '',
-      giftcard: '',
+      product: item.productname || '',
+      service: item.servicename || '',
+      giftcard: ''
     });
     setFilteredSuggestions([]);
     setFieldFocused(null);
@@ -55,8 +89,8 @@ const InvoiceForm = ({ suggestions, onAddItem, resetKey }) => {
   const handleAdd = () => {
     if (selectedItem) {
       const newItem = {
-        name: selectedItem.serviceName || selectedItem.packageName || 'Unnamed Item',
-        price: selectedItem.packageValue || 0,
+        name: selectedItem.servicename || selectedItem.productname || selectedItem.packageName || 'Unnamed Item',
+        price: selectedItem.price || selectedItem.packageValue || 0,
         discount: ''
       };
       onAddItem(newItem);
@@ -66,65 +100,27 @@ const InvoiceForm = ({ suggestions, onAddItem, resetKey }) => {
   return (
     <form className="invform">
       <div className="frmwrpinv">
-        <div className="form-group" style={{ position: 'relative' }}>
-          <input
-            type="text"
-            placeholder=" "
-            id="package"
-            value={formData.package}
-            onChange={(e) => handleChange('package', e.target.value)}
-          />
-          <label htmlFor="package" className="frmlbl">Package</label>
-          {filteredSuggestions.length > 0 && fieldFocused === 'package' && (
-            <ul className="suggestion-list">
-              {filteredSuggestions.map((item, idx) => (
-                <li key={idx} onClick={() => handleSelect(item)}>
-                  {item.packageName}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <div className="form-group" style={{ position: 'relative' }}>
-          <input
-            type="text"
-            placeholder=" "
-            id="product"
-            value={formData.product}
-            onChange={(e) => handleChange('product', e.target.value)}
-          />
-          <label htmlFor="product" className="frmlbl">Product</label>
-          {filteredSuggestions.length > 0 && fieldFocused === 'product' && (
-            <ul className="suggestion-list">
-              {filteredSuggestions.map((item, idx) => (
-                <li key={idx} onClick={() => handleSelect(item)}>
-                  {item.product}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <div className="form-group" style={{ position: 'relative' }}>
-          <input
-            type="text"
-            placeholder=" "
-            id="service"
-            value={formData.service}
-            onChange={(e) => handleChange('service', e.target.value)}
-          />
-          <label htmlFor="service" className="frmlbl">Service</label>
-          {filteredSuggestions.length > 0 && fieldFocused === 'service' && (
-            <ul className="suggestion-list">
-              {filteredSuggestions.map((item, idx) => (
-                <li key={idx} onClick={() => handleSelect(item)}>
-                  {item.serviceName}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+        {['package', 'product', 'service'].map((field) => (
+          <div className="form-group" style={{ position: 'relative' }} key={field}>
+            <input
+              type="text"
+              placeholder=" "
+              id={field}
+              value={formData[field]}
+              onChange={(e) => handleChange(field, e.target.value)}
+            />
+            <label htmlFor={field} className="frmlbl">{field.charAt(0).toUpperCase() + field.slice(1)}</label>
+            {filteredSuggestions.length > 0 && fieldFocused === field && (
+              <ul className="suggestion-list">
+                {filteredSuggestions.map((item, idx) => (
+                  <li key={idx} onClick={() => handleSelect(item)}>
+                    {item.packageName || item.productname || item.servicename}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ))}
 
         <div className="form-group">
           <input
@@ -135,15 +131,6 @@ const InvoiceForm = ({ suggestions, onAddItem, resetKey }) => {
             onChange={(e) => handleChange('giftcard', e.target.value)}
           />
           <label htmlFor="giftcard" className="frmlbl">Gift Card</label>
-        </div>
-
-        <div className="form-group slctgrp">
-          <select id="docSelect" value={selectedItem?.practitioner || ''} readOnly>
-            <option value="">Select Practitioner</option>
-            {suggestions.map((item, idx) => (
-              <option key={idx} value={item.practitioner}>{item.practitioner}</option>
-            ))}
-          </select>
         </div>
 
         <div className="form-group frmbtngrp">
