@@ -16,18 +16,19 @@ const fetchData = async (url, payload = null) => {
   return await response.json();
 };
 
-const normalizeTime = (timeStr) => {
-  if (!timeStr) return '';
-  const date = new Date(`1970-01-01T${convertTo24Hour(timeStr)}`);
-  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
-};
-
 const convertTo24Hour = (time12h) => {
+  if (!time12h) return '';
   const [time, modifier] = time12h.trim().split(' ');
   let [hours, minutes] = time.split(':');
   if (modifier === 'PM' && hours !== '12') hours = String(parseInt(hours) + 12);
   if (modifier === 'AM' && hours === '12') hours = '00';
   return `${hours.padStart(2, '0')}:${minutes}`;
+};
+
+const formatToHHMM = (t) => {
+  if (!t) return '';
+  const d = new Date(`1970-01-01T${convertTo24Hour(t)}`);
+  return d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
 };
 
 const AppointmentScheduler = () => {
@@ -57,23 +58,20 @@ const AppointmentScheduler = () => {
       }
     };
 
-    const fetchStatusCounts = async () => {
-      try {
-        const data = await fetchData('/AppointmentOperationHandler.ashx');
-        setStatusCounts(data);
-      } catch (error) {
-        console.error('Error loading status counts:', error);
-      }
-    };
-
+    const today = new Date().toISOString().split('T')[0];
     fetchDoctors();
-    fetchAppointments();
-    fetchStatusCounts();
+    fetchAppointments(today);
   }, []);
 
-  const fetchAppointments = async () => {
+  const fetchAppointments = async (date, cusID = null) => {
     try {
-      const data = await fetchData('/AppointmentDetailsHandler.ashx');
+      const payload = {
+        appointmentdate: date,
+        searchtext: '',
+        ...(cusID && { cusid: cusID }),
+      };
+      const data = await fetchData('/AppointmentDetailsHandler.ashx', payload);
+      console.log('Appointments response:', data);
       setAppointments(data);
     } catch (error) {
       console.error('Error loading appointments:', error);
@@ -100,30 +98,38 @@ const AppointmentScheduler = () => {
   };
 
   const renderAppointments = (time, doctor) => {
+    const slotTime = formatToHHMM(time);
     return appointments
-      .filter(
-        (appt) =>
-          normalizeTime(appt.starttime) === normalizeTime(time) &&
-          appt.doctorname?.trim().toLowerCase() === doctor.trim().toLowerCase()
-      )
+      .filter((appt) => {
+        const apptTime = formatToHHMM(appt.starttime);
+        const doctorMatch =
+          appt.doctorname?.trim().toLowerCase() === doctor.trim().toLowerCase();
+        return apptTime === slotTime && doctorMatch;
+      })
       .map((appt, idx) => {
         const duration = parseInt(appt.duration?.replace(/\D/g, ''), 10) || 5;
         const width = duration * 14;
-        const statusClass = getStatusClass(appt.status || '');
+        const statusClass = getStatusClass(appt.status);
         const extraClass = duration === 5 ? 'smllappt' : '';
 
         return (
           <div
             key={idx}
             className={`appcell ${statusClass} ${extraClass}`}
-            style={{ width: `${width}px`, minWidth: '50px' }}
+            style={{
+              width: `${width}px`,
+              minWidth: '50px',
+              boxSizing: 'border-box',
+            }}
           >
             <div className="ptflx">
               <div className="ptnm">{appt.fullname}</div>
-              <div className={`aptst ${statusClass}`}><span></span>{appt.status || 'Booked'}</div>
+              <div className={`aptst ${statusClass}`}>
+                <span></span>{appt.status || 'Booked'}
+              </div>
             </div>
             <div className="apptype">
-              <strong>{appt.servicecode}</strong>
+              <strong>{appt.servicename}</strong>
             </div>
             <span
               className="expopup"
@@ -170,6 +176,7 @@ const AppointmentScheduler = () => {
                   key={colIndex}
                   className="cldrcol clncoff"
                   onDoubleClick={() => handleDoubleClick(time, doctor)}
+                  style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}
                 >
                   {renderAppointments(time, doctor)}
                 </div>
@@ -192,7 +199,10 @@ const AppointmentScheduler = () => {
           onClose={() => setIsDrawerOpen(false)}
           timeSlot={selectedTimeSlot}
           doctor={selectedDoctor}
-          onRefreshAppointments={fetchAppointments}
+          onRefreshAppointments={() => {
+            const today = new Date().toISOString().split('T')[0];
+            fetchAppointments(today);
+          }}
         />
       )}
     </section>

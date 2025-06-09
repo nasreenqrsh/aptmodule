@@ -31,12 +31,12 @@ const ServiceRequestForm = ({ onAddService, resetKey, initialData, lastEndTime, 
     const fetchServicesAndRooms = async () => {
       try {
         const [services, roomData] = await Promise.all([
-          createDataHandler("/GetServiceHandler.ashx"),
-          createDataHandler("/GetRoomHandler.ashx")
+          /*createDataHandler("/GetServiceHandler.ashx"),
+          createDataHandler("/GetRoomHandler.ashx")*/
 
-          /* createDataHandler("https://mocki.io/v1/2ad352d1-db23-4a86-824e-4cb5904f4478"),
-          createDataHandler("https://mocki.io/v1/aa41a3f4-c489-43d5-81d1-d8daf1bc4ebd"),
-          createDataHandler("https://mocki.io/v1/cdd90edf-6eb8-4061-8dfe-c5217cee9ffa") */
+           createDataHandler("https://mocki.io/v1/2ad352d1-db23-4a86-824e-4cb5904f4478"),
+         /* createDataHandler("https://mocki.io/v1/aa41a3f4-c489-43d5-81d1-d8daf1bc4ebd"),*/
+          createDataHandler("https://mocki.io/v1/cdd90edf-6eb8-4061-8dfe-c5217cee9ffa") 
         ]);
         setServicesList(services);
         setRooms(roomData);
@@ -97,8 +97,10 @@ const ServiceRequestForm = ({ onAddService, resetKey, initialData, lastEndTime, 
     if (!servicecode) return;
 
     try {
-      const doctors = await createDataHandler(`/GetPractitionerHandler.ashx?servicecode=${encodeURIComponent(servicecode)}`);
-     setPractitioners(doctors);
+      // const doctors = await createDataHandler(`/GetPractitionerHandler.ashx?servicecode=${encodeURIComponent(servicecode)}`);
+     const doctors = await createDataHandler(`https://mocki.io/v1/694cad19-484a-45fa-90b8-44337eb45c54`);
+      
+      setPractitioners(doctors);
     } catch (error) {
       console.error("Failed to fetch practitioners for selected service code:", error);
       setPractitioners([]);

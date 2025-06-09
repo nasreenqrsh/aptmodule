@@ -10,12 +10,17 @@
 
     const createDataHandler = async (payload) => {
       try {
+        console.log("Sending payload:", payload);
         const response = await fetch("/AppointmentOperationHandler.ashx", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
-        if (!response.ok) throw new Error("Failed to update status");
+        if (!response.ok) {
+      const errorText = await response.text(); // 🔍 get server error message
+      console.error("Fetch failed:", errorText);
+      throw new Error("Failed to update status");
+    }
         const result = await response.json();
         if (result?.success) {
           setToast({ message: "Appointment status updated!", type: "success" });
@@ -30,6 +35,7 @@
 
     const handleStatusChange = (e) => {
       const newStatus = e.target.value;
+      console.log(newStatus);
       setStatus(newStatus);
 
       const payload = {
@@ -117,12 +123,12 @@ const handleEditAppointment = (appt) => {
             <div className="hdflx">
               <h2 className="dethead">Appointment Details</h2>
               <div className="acticons">
-                <a href="#" className="edit tooltip" title="Edit Appointment" onClick={() => handleEditAppointment(appointment)}>
+                <a href="#" className="edit tooltip"  data-tooltip="Edit Appointment" data-tooltip-pos="top" onClick={() => handleEditAppointment(appointment)}>
                   <span className="stimg">
                     <img src={`${import.meta.env.BASE_URL}images/edtwht.svg`} alt="Edit" />
                   </span>
                 </a>
-                <a href="#" className="delete tooltip" title="Delete Appointment" onClick={handleDeleteAppointment}>
+                <a href="#" className="delete tooltip" data-tooltip="Delete Appointment" data-tooltip-pos="left" onClick={handleDeleteAppointment}>
                   <span className="stimg">
                     <img src={`${import.meta.env.BASE_URL}images/deletewt.svg`} alt="Delete" />
                   </span>
@@ -165,7 +171,7 @@ const handleEditAppointment = (appt) => {
                   </div>
                   <div className="detaildiv">
                     <div className="dtlbl">Services</div>
-                    <div className="dtval">{appointment?.servicecode || "—"}</div>
+                    <div className="dtval">{appointment?.servicename || "—"}</div>
                   </div>
                 </div>
 

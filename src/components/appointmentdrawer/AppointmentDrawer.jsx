@@ -1,12 +1,9 @@
 // AppointmentDrawer.jsx
 import React, { useEffect, useRef, useState } from "react";
-import CustomerForm from "./components/CustomerForm";
-import FormFooter from "./components/FormFooter";
 import ServiceBookingContainer from "./components/ServiceBookingContainer";
 
 const AppointmentDrawer = ({ isOpen, onClose, timeSlot, customer, doctor, editAppointment, onRefreshAppointments }) => {
   const drawerRef = useRef(null);
-  const fetchAppointments = onRefreshAppointments;
   const [resetKey, setResetKey] = useState(0); // 👈 Used to trigger reset
 
   useEffect(() => {

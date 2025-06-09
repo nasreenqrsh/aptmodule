@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CustomerForm from "./CustomerForm";
 import ServiceRequestForm from "./ServiceRequestForm";
 import ServiceList from "./ServiceList";
@@ -28,7 +28,7 @@ const createDataHandler = async (payload) => {
   }
 };
 
-const ServiceBookingContainer = ({ prefillData, doctor, timeSlot, onClose, onRefreshAppointments }) => {
+const ServiceBookingContainer = ({ prefillData, doctor, timeSlot, onClose, onRefreshAppointments, editAppointment }) => {
   const [customerFormData, setCustomerFormData] = useState(null);
   const [serviceList, setServiceList] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -47,7 +47,32 @@ const ServiceBookingContainer = ({ prefillData, doctor, timeSlot, onClose, onRef
     setLastEndTime("10:00 AM");
     onClose?.();
   };
+useEffect(() => {
+  if (editAppointment) {
+    // prefill customer form
+    setCustomerFormData({
+      name: editAppointment.fullname,
+      number: editAppointment.number,
+      email: editAppointment.email,
+      gender: editAppointment.gender,
+      custid: editAppointment.custid,
+      // Add more fields as needed
+    });
 
+    // prefill service list
+    setServiceList([
+      {
+        servicename: editAppointment.servicecode,
+        practitioner: editAppointment.practitioner,
+        startTime: editAppointment.starttime,
+        endTime: editAppointment.endtime,
+        room: editAppointment.room,
+        note: editAppointment.notes,
+        duration: editAppointment.duration || "5",
+      }
+    ]);
+  }
+}, [editAppointment]);
   const handleAddService = (serviceData) => {
     if (!customerFormData) {
       setToast({ message: "Customer data is missing.", type: "error" });
@@ -89,32 +114,7 @@ const ServiceBookingContainer = ({ prefillData, doctor, timeSlot, onClose, onRef
       setToast({ message: "Missing customer or service data.", type: "error" });
       return;
     }
-    useEffect(() => {
-  if (editAppointment) {
-    // prefill customer form
-    setCustomerFormData({
-      name: editAppointment.fullname,
-      number: editAppointment.number,
-      email: editAppointment.email,
-      gender: editAppointment.gender,
-      custid: editAppointment.custid,
-      // Add more fields as needed
-    });
-
-    // prefill service list
-    setServiceList([
-      {
-        servicename: editAppointment.servicecode,
-        practitioner: editAppointment.practitioner,
-        startTime: editAppointment.starttime,
-        endTime: editAppointment.endtime,
-        room: editAppointment.room,
-        note: editAppointment.notes,
-        duration: editAppointment.duration || "5",
-      }
-    ]);
-  }
-}, [editAppointment]);
+    
 
     const payload = serviceList.map((entry, index) => ({
       CustID: customerFormData.custid || " ",

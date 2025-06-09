@@ -1301,6 +1301,11 @@ table {
   border-bottom: 1px solid #E9EDF5;
   padding: 10px;
   position: relative;
+
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
 }
 
 .cldrwrp {
@@ -1847,7 +1852,7 @@ table {
 .appcell {
                                     border-left: 4px solid #ccc;
                                     box-shadow: 1px 1px 2px #ccc;
-                                    position: absolute;
+                                    position: relative;
                                     top: 0;
                                     left: 0;
                                     background: #fff;

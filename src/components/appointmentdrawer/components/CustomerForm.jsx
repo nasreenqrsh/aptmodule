@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 const CreateDataHandler = async (query) => {
-  const res = await fetch(`/GetCustomerHandler.ashx?firstname=${encodeURIComponent(query)}`); //https://mocki.io/v1/fe1da8d7-3afa-4866-bb24-553db358f743
+  const res = await fetch(`https://mocki.io/v1/61470ee6-44fe-44a3-ac78-95d8009a8c07`); //https://mocki.io/v1/fe1da8d7-3afa-4866-bb24-553db358f743
   if (!res.ok) throw new Error("Failed to fetch");
   return await res.json();
 };
@@ -171,7 +171,7 @@ const CustomerForm = ({ prefillData, setCustomerData, setLoading, customerFormDa
 
             {isFetching && (
               <img
-                src={`${import.meta.env.BASE_URL}images/loader.svg`}
+                src={`${import.meta.env.BASE_URL}images/Loading_icon.gif`}
                 alt="Loading"
                 style={{ position: "absolute", right: 10, top: 10, width: 20 }}
               />
