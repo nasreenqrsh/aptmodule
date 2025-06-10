@@ -181,7 +181,7 @@
 
         .hdrclass {
         padding: 10px 20px;
-        background: #2d3250;
+        background: #334B71;
         color: #fff;
         box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.3);
         position: sticky;
@@ -225,7 +225,7 @@
     }
 
     .sectttl:before {
-        background: #2d3250;
+        background: #334B71;
         content: '';
         display: inline-block;
         position: absolute;
@@ -265,7 +265,7 @@
             }
 
             .form-group input:focus {
-                border-color: #2D3250;
+                border-color: #334B71;
                 outline: none;
             }
 
@@ -273,7 +273,7 @@
             .form-group input:not(:placeholder-shown)+label.frmlbl {
                 top: -6px;
                 font-size: 10px;
-                color: #2D3250;
+                color: #334B71;
                 background-color: #ffffff;
                 padding: 0 4px;
                 border-radius: 4px;
@@ -306,7 +306,7 @@
             }
 
             .addbtn {
-                background: #2D3250;
+                background: #334B71;
                 color: #fff;
                 font-size: 12px;
                 border: none;
@@ -452,7 +452,7 @@
 
 
             .pribtnblue {
-                background: #2D3250;
+                background: #334B71;
                 color: #fff;
                 font-size: 12px;
                 border: none;
@@ -514,6 +514,9 @@
                 min-width: auto;
             }
 
+            .horizontal-tabs{display: flex;gap: 5px;border-bottom: 1px solid #ccc;}
+            .maintab{ background: #ebebeb; color: #333; cursor: pointer; border: none; padding: 6px 10px; border-radius: 4px 4px 0 0;}
+            .maintab.active{ background: #334B71; color: #fff;}
             .srvlistdiv {
                     margin: 0 0 10px;
                     padding: 0 0 10px;
@@ -521,11 +524,12 @@
                 }
 
                 .ctflx {
-                    width: 24%;
-                    background: #E6A787;
+                    width: 49%;
+                    background: #c66752;
                     text-align: center;
                     cursor: pointer;
                     border-radius: 5px;
+                    font-size: 14px;color: #fff;
                 }
 
                 .ctlft {
@@ -551,6 +555,7 @@
                     max-height: 150px;
                     overflow-y: auto;
                     display: flex;
+                    flex-wrap: wrap;
                     gap: 5px;
                     margin : 5px 0 0;
                 }
@@ -566,7 +571,10 @@
                     display: flex;
                     gap: 2px;
                     flex-direction: column;
+                    width: 175px;
                 }
+
+                .tabwrpdiv{width: 380px;padding: 0 10px;}
 
                 .pymnttab img {
                     width: 20px;
@@ -584,7 +592,7 @@
                 }
 
                 .pymnttab.activetab {
-                    background: #2D3250;
+                    background: #334B71;
                     color: #fff;
                 }
                 .smlsect{margin: 0 0 8px;}
@@ -621,7 +629,7 @@
                 .frmlgnd {
                     font: 600 13px/20px 'Lato', sans-serif;
                     margin: 0 0 12px;
-                    background: #2D3250;
+                    background: #334B71;
                     padding: 5px 10px;
                     border-radius: 2px;
                     color: #fff;
@@ -798,10 +806,12 @@
 
 .invoice-actions{display: flex; justify-content: flex-end;gap: 10px;}
 
-.srchbtn{ background: #2d3250; display: inline-block;padding: 5px; border-radius: 4px; }
+.srchbtn{ background: #334B71; display: inline-block;padding: 5px; border-radius: 4px; }
 .srchdiv{display: flex;gap: 5px;}
 
-.bckbtn{background: #2D3250; color: #fff; text-decoration: none; font-size: 13px; display: flex; gap: 5px; cursor: pointer; padding: 5px; border-radius: 4px; align-items: center;}
+.bckbtn{background: #334B71; color: #fff; text-decoration: none; font-size: 13px; display: flex; gap: 5px; cursor: pointer; padding: 5px; border-radius: 4px; align-items: center;}
 .invtopwrp .sectttl{display: flex;align-items: center;justify-content: space-between;}
 
 .totalpaidrow{display: flex; justify-content: flex-end;margin: 10px 0;  }
+
+.btnflxinv.actwrp{display: flex; justify-content: space-between;flex-direction: row;}

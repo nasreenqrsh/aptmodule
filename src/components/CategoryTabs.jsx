@@ -13,17 +13,14 @@ const SERVICE_API = 'https://mocki.io/v1/a1e7901c-1fd0-4e47-8954-c1d9e5899c90';
 const PACKAGE_API = 'https://mocki.io/v1/75459841-da63-456c-9a16-59a57c74197c';
 
 const CategoryTabs = ({ onAddItem, showToast }) => {
-  const [activeTab, setActiveTab] = useState('all');
+  const [activeMainTab, setActiveMainTab] = useState('services');
+  const [activeSubTab, setActiveSubTab] = useState('all');
   const [categories, setCategories] = useState([
     { id: 'all', label: 'All', icon: 'images/cash.svg' }
   ]);
   const [allServices, setAllServices] = useState([]);
   const [allPackages, setAllPackages] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [showSearch, setShowSearch] = useState(false);
-
-  const [packageSearchTerm, setPackageSearchTerm] = useState('');
-  const [showPackageSearch, setShowPackageSearch] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,7 +47,7 @@ const CategoryTabs = ({ onAddItem, showToast }) => {
           ...mappedCategories
         ]);
         setAllServices(enrichedServices);
-        setAllPackages(packagesData.slice(0, 4)); // Limit to 4
+        setAllPackages(packagesData);
       } catch (error) {
         console.error('Data fetch failed:', error);
       }
@@ -77,32 +74,35 @@ const CategoryTabs = ({ onAddItem, showToast }) => {
     return 'uncategorized';
   };
 
-  const truncateName = (name, maxLength = 20) => {
+  const truncateName = (name, maxLength = 40) => {
     return name.length > maxLength ? name.slice(0, maxLength) + '...' : name;
   };
 
   const filteredServices = allServices.filter((svc) => {
-    const matchesTab = activeTab === 'all' || svc.categoryCode === activeTab;
-    const matchesSearch = svc.servicename
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
+    const matchesTab = activeSubTab === 'all' || svc.categoryCode === activeSubTab;
+    const matchesSearch = svc.servicename.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesTab && matchesSearch;
   });
 
-  const filteredPackages = allPackages.filter((pkg) =>
-    pkg.packageName.toLowerCase().includes(packageSearchTerm.toLowerCase())
-  );
+  const filteredPackages = allPackages.filter((pkg) => {
+    const matchesTab = activeSubTab === 'all' || mapServiceToCategory(pkg.packageName) === activeSubTab;
+    const matchesSearch = pkg.packageName.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesTab && matchesSearch;
+  });
 
   return (
     <div className="srvlistdiv">
       <h3 className="sectttl">Categories</h3>
+
+      
+
       <div className="pymntmode">
         <div className="pymttabswrp">
           {categories.map((cat) => (
             <div
               key={cat.id}
-              className={`pymnttab ${activeTab === cat.id ? 'activetab' : ''}`}
-              onClick={() => setActiveTab(cat.id)}
+              className={`pymnttab ${activeSubTab === cat.id ? 'activetab' : ''}`}
+              onClick={() => setActiveSubTab(cat.id)}
             >
               <img src={cat.icon} alt={cat.label} />
               <span className="pymttxt">{cat.label}</span>
@@ -110,125 +110,60 @@ const CategoryTabs = ({ onAddItem, showToast }) => {
           ))}
         </div>
 
-        <div className="pymntcnt actcont">
-          {/* Services Section */}
-          <div className="servcont">
-            <div className="servhead" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 className="sectttl smlsect">Services</h3>
-              <div className="srchdiv">
-                {showSearch && (
-                  <div className="searchbar">
-                    <input
-                      type="text"
-                      placeholder="Search services..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      style={{
-                        padding: '6px 10px',
-                        width: '100%',
-                        borderRadius: '6px',
-                        border: '1px solid #ccc'
-                      }}
-                    />
-                  </div>
-                )}
-                <span className='srchbtn'>
-                  <img
-                    src="images/searchn.svg"
-                    alt="Search"
-                    style={{ width: '20px', height: '20px', cursor: 'pointer' }}
-                    onClick={() => setShowSearch(!showSearch)}
-                  />
-                </span>
-              </div>
-            </div>
+        <div className='tabwrpdiv'>
+          <div className="horizontal-tabs">
+        <button
+          className={`maintab ${activeMainTab === 'services' ? 'active' : ''}`}
+          onClick={() => setActiveMainTab('services')}
+        >
+          Services
+        </button>
+        <button
+          className={`maintab ${activeMainTab === 'packages' ? 'active' : ''}`}
+          onClick={() => setActiveMainTab('packages')}
+        >
+          Packages
+        </button>
+      </div>
 
-            <div className="ctlistwrp">
-              {filteredServices.length > 0 ? (
-                filteredServices.map((service, idx) => (
-                  <div
-  className="ctflx"
-  key={idx}
-  onClick={() => {
-  onAddItem?.({
-    name: service.servicename,
-    price: parseFloat(service.price) || 0,
-    discount: 0,
-  });
-  showToast?.("Service added to invoice");
-}}
->
-  <div className="ctlft ctcell" title={service.servicename}>
-    {truncateName(service.servicename)}
-  </div>
-</div>
-                ))
-              ) : (
-                <div className="notext">No services found</div>
-              )}
-            </div>
+      <div className="subtabs">
+          <div className="servhead" style={{ marginTop: '10px', marginBottom: '10px' }}>
+            <input
+              type="text"
+              placeholder={`Search ${activeMainTab}...`}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{ padding: '6px 10px', width: '100%', borderRadius: '6px', border: '1px solid #ccc' }}
+            />
           </div>
 
-          {/* Packages Section */}
-          <div className="pkgcont" style={{ marginTop: '10px' }}>
-            <div className="servhead" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 className="sectttl smlsect">Packages</h3>
-              <div className="srchdiv">
-                {showPackageSearch && (
-                  <div className="searchbar">
-                    <input
-                      type="text"
-                      placeholder="Search packages..."
-                      value={packageSearchTerm}
-                      onChange={(e) => setPackageSearchTerm(e.target.value)}
-                      style={{
-                        padding: '6px 10px',
-                        width: '100%',
-                        borderRadius: '6px',
-                        border: '1px solid #ccc'
-                      }}
-                    />
-                  </div>
-                )}
-                <span className='srchbtn'>
-                  <img
-                    src="images/searchn.svg"
-                    alt="Search"
-                    style={{ width: '20px', height: '20px', cursor: 'pointer' }}
-                    onClick={() => setShowPackageSearch(!showPackageSearch)}
-                  />
-                </span>
+          <div className="ctlistwrp">
+            {(activeMainTab === 'services' ? filteredServices : filteredPackages).map((item, idx) => (
+              <div
+                className="ctflx"
+                key={idx}
+                onClick={() => {
+                  onAddItem?.({
+                    name: item.servicename || item.packageName,
+                    price: parseFloat(item.price) || 0,
+                    discount: 0,
+                  });
+                  showToast?.(`${activeMainTab === 'services' ? 'Service' : 'Package'} added to invoice`);
+                }}
+              >
+                <div className="ctlft ctcell" title={item.servicename || item.packageName}>
+                  {truncateName(item.servicename || item.packageName)}
+                </div>
               </div>
-            </div>
-
-            <div className="ctlistwrp">
-              {filteredPackages.length > 0 ? (
-                filteredPackages.map((pkg, idx) => (
-                  <div
-  className="ctflx"
-  key={idx}
-  onClick={() => {
-  onAddItem?.({
-    name: pkg.packageName,
-    price: parseFloat(pkg.price) || 0,
-    discount: 0,
-  });
-  showToast?.("Package added to invoice");
-}}
->
-  <div className="ctlft ctcell" title={pkg.packageName}>
-    {truncateName(pkg.packageName)}
-  </div>
-</div>
-
-                ))
-              ) : (
-                <div className="notext">No packages found</div>
-              )}
-            </div>
+            ))}
+            {(activeMainTab === 'services' ? filteredServices.length : filteredPackages.length) === 0 && (
+              <div className="notext">No {activeMainTab} found</div>
+            )}
           </div>
-
         </div>
+        </div>
+
+        
       </div>
     </div>
   );

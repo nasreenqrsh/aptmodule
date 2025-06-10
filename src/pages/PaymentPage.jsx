@@ -127,7 +127,7 @@ const InvoicePage = () => {
             <div className="invtopwrp">
               <h3 className="sectttl">Invoice details  
                 
-                <a href="" title='' className='bckbtn'> <img src={`${import.meta.env.BASE_URL}images/back.svg`} alt="Collapse" />Back</a>
+                <a href="" title='' className='bckbtn tooltip'  data-tooltip="Dashboard" data-tooltip-pos="down"> <img src={`${import.meta.env.BASE_URL}images/homeicon.svg`} alt="Home"  /></a>
                  </h3>
               <div className="invdetails">
                 {[{ label: 'Invoice No.', value: currentInvoiceNumber }, { label: 'Invoice Date', value: todayDate }, { label: 'Clinic Name', value: 'Bright Clinic' }]

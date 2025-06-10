@@ -71,7 +71,7 @@ const InvoiceSummary = ({
 
   return (
     <div className="rghtdiv">
-      <div className="actwrp">
+      <div className="actwrp btnflxinv">
         <div className="invlftdiv">
           <button
             onClick={handleManualDiscountClick}
@@ -98,15 +98,7 @@ const InvoiceSummary = ({
             </button>
           ))}
 
-          <button className="clrbtn" onClick={handleClearCartClick} disabled={isFinalized}>
-            Clear Cart
-          </button>
-          <button className="pribtnblue" onClick={handlePrint}>
-            Print Invoice
-          </button>
-          <button className="pribtnblue" onClick={handleEmail}>
-            Email Invoice
-          </button>
+         
 
           {suspendedCarts.length > 0 && (
             <select className="recallselect" onChange={handleRecallChange} defaultValue="">
@@ -119,6 +111,10 @@ const InvoiceSummary = ({
             </select>
           )}
         </div>
+
+         <button className="pribtnblue tooltip" onClick={handleClearCartClick} disabled={isFinalized} data-tooltip="Clear Cart" data-tooltip-pos="down">
+            <img src={`${import.meta.env.BASE_URL}images/shoppingcrt.svg`} alt="Clear Cart" width={16}  />
+          </button>
       </div>
 
       {toast && (

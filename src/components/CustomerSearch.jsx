@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const CUSTOMER_API = 'https://mocki.io/v1/61470ee6-44fe-44a3-ac78-95d8009a8c07';
+const CUSTOMER_API = 'https://mocki.io/v1/77b82e0b-1d53-4056-af18-6021cbd5b873';
 
 const createDataHandler = async (url) => {
   const response = await fetch(url);
