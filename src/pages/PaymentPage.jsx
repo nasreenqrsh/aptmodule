@@ -14,6 +14,11 @@ const createDataHandler = async (url) => {
   return await response.json();
 };
 
+const getVatRate = (nationalityId) => {
+  if (nationalityId === '10') return 0; // Exempt VAT for special nationality
+  return 0.15; // Default VAT
+};
+
 const InvoicePage = () => {
   const [items, setItems] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
@@ -22,7 +27,7 @@ const InvoicePage = () => {
   const [suspendedCarts, setSuspendedCarts] = useState([]);
   const [isFinalized, setIsFinalized] = useState(false);
   const [toast, setToast] = useState(null);
-
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
 
   useEffect(() => {
     createDataHandler('https://mocki.io/v1/4df5effa-1606-474c-9ba3-f54eb1142034')
@@ -106,7 +111,8 @@ const InvoicePage = () => {
   const subtotal = items.reduce((sum, i) => sum + (Number(i.price) || 0), 0);
   const discount = items.reduce((sum, i) => sum + (Number(i.discount) || 0), 0);
   const net = subtotal - discount;
-  const tax = net * 0.15;
+  const vatRate = getVatRate(selectedCustomer?.nationalityid);
+  const tax = net * vatRate;
   const roundoff = 0;
   const total = net + tax + roundoff;
 
@@ -126,9 +132,8 @@ const InvoicePage = () => {
           <div className="leftsect">
             <div className="invtopwrp">
               <h3 className="sectttl">Invoice details  
-                
-                <a href="" title='' className='bckbtn tooltip'  data-tooltip="Dashboard" data-tooltip-pos="down"> <img src={`${import.meta.env.BASE_URL}images/homeicon.svg`} alt="Home"  /></a>
-                 </h3>
+                <a href="" title='' className='bckbtn tooltip' data-tooltip="Dashboard" data-tooltip-pos="down"> <img src={`${import.meta.env.BASE_URL}images/homeicon.svg`} alt="Home" /></a>
+              </h3>
               <div className="invdetails">
                 {[{ label: 'Invoice No.', value: currentInvoiceNumber }, { label: 'Invoice Date', value: todayDate }, { label: 'Clinic Name', value: 'Bright Clinic' }]
                   .map(({ label, value }, index) => (
@@ -150,6 +155,7 @@ const InvoicePage = () => {
               items={items}
               onRemove={handleRemove}
               readOnlyInputs={true}
+              vatRate={vatRate}
             />
             <InvoiceSummary
               showPopup={showPopup}
@@ -167,7 +173,7 @@ const InvoicePage = () => {
               setIsFinalized={setIsFinalized}
             />
             <div className="invtotalblk">
-              <CustomerSearch />
+              <CustomerSearch onCustomerSelect={setSelectedCustomer} />
               <div className="invttlwrp">
                 {[{ label: 'Sub Total', value: subtotal }, { label: 'Discount', value: discount }, { label: 'Tax', value: tax }, { label: 'Round Off', value: roundoff }, { label: 'Total', value: total }]
                   .map(({ label, value }, idx) => (
@@ -182,20 +188,18 @@ const InvoicePage = () => {
 
           <aside className="rgtsect">
             <CategoryTabs onAddItem={handleAddFormItem} showToast={(msg) => setToast({ message: msg, type: 'success' })}/>
-
             <PaymentBlock totalAmount={total.toFixed(2)} />
           </aside>
         </div>
       </main>
       {toast && (
-  <Toast
-    message={toast.message}
-    type={toast.type}
-    onClose={() => setToast(null)}
-  />
-)}
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
-    
   );
 };
 

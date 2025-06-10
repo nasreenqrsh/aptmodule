@@ -7,7 +7,8 @@ const InvoiceTable = ({
   onDiscountPercentChange,
   onRemove,
   showDiscountPercent = false,
-  readOnlyInputs = false, // new prop
+  readOnlyInputs = false,
+  vatRate = 0.15
 }) => {
   return (
     <div className="invtable">
@@ -41,8 +42,10 @@ const InvoiceTable = ({
               const discount = parseFloat(item.discount) || 0;
               const discountPercent = price ? ((discount / price) * 100) : '';
               const total = price - discount;
-              const vat = total * 0.15;
+              const vat = total * vatRate;
               const finalTotal = total + vat;
+
+              console.log(vat)
 
               return (
                 <tr key={idx}>
@@ -70,9 +73,7 @@ const InvoiceTable = ({
                       <input
                         type="text"
                         value={discountPercent}
-                        onChange={(e) =>
-                          onDiscountPercentChange?.(idx, e.target.value)
-                        }
+                        onChange={(e) => onDiscountPercentChange?.(idx, e.target.value)}
                       />
                     </td>
                   )}
@@ -80,12 +81,7 @@ const InvoiceTable = ({
                   <td className="discno">{vat.toFixed(2)}</td>
                   <td className="discno">{finalTotal.toFixed(2)}</td>
                   <td className="actbtncell">
-                    <button
-                      className="delbtn tooltip"
-                      data-tooltip="Delete"
-                      data-tooltip-pos="left"
-                      onClick={() => onRemove?.(idx)}
-                    >
+                    <button className="delbtn tooltip" onClick={() => onRemove?.(idx)}>
                       <img src="images/rmove.svg" alt="Delete" />
                     </button>
                   </td>
