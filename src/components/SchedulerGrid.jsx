@@ -98,52 +98,66 @@ const AppointmentScheduler = () => {
   };
 
   const renderAppointments = (time, doctor) => {
-    const slotTime = formatToHHMM(time);
-    return appointments
-      .filter((appt) => {
-        const apptTime = formatToHHMM(appt.starttime);
-        const doctorMatch =
-          appt.doctorname?.trim().toLowerCase() === doctor.trim().toLowerCase();
-        return apptTime === slotTime && doctorMatch;
-      })
-      .map((appt, idx) => {
-        const duration = parseInt(appt.duration?.replace(/\D/g, ''), 10) || 5;
-        const width = duration * 14;
-        const statusClass = getStatusClass(appt.status);
-        const extraClass = duration === 5 ? 'smllappt' : '';
-
-        return (
-          <div
-            key={idx}
-            className={`appcell ${statusClass} ${extraClass}`}
-            style={{
-              width: `${width}px`,
-              minWidth: '50px',
-              boxSizing: 'border-box',
-            }}
-          >
-            <div className="ptflx">
-              <div className="ptnm">{appt.fullname}</div>
-              <div className={`aptst ${statusClass}`}>
-                <span></span>{appt.status || 'Booked'}
-              </div>
-            </div>
-            <div className="apptype">
-              <strong>{appt.servicename}</strong>
-            </div>
-            <span
-              className="expopup"
-              onClick={() => {
-                setSelectedAppointment(appt);
-                setIsSidebarOpen(true);
-              }}
-            >
-              <img src={`${import.meta.env.BASE_URL}images/expand.svg`} alt="Expand" />
-            </span>
-          </div>
-        );
-      });
+  const normalizeTime = (t) => {
+    if (!t) return '';
+    const d = new Date(`1970-01-01T${convertTo24Hour(t.trim())}`);
+    return d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
   };
+
+  const normalizeDoctorName = (name) =>
+    name?.replace(/^Dr\.?\s*/i, '').trim().toLowerCase();
+
+  const slotTime = normalizeTime(time);
+  const filteredAppointments = appointments.filter((appt) => {
+    const apptTime = normalizeTime(appt.starttime);
+    const doctorMatch =
+      normalizeDoctorName(appt.doctorname) === normalizeDoctorName(doctor);
+    return apptTime === slotTime && doctorMatch;
+  });
+
+  return filteredAppointments.map((appt, idx) => {
+    const duration = parseInt(appt.duration?.replace(/\D/g, ''), 10) || 5;
+    const width = duration * 14;
+    const statusClass = getStatusClass(appt.status);
+    const extraClass = duration === 5 ? 'smllappt' : '';
+
+    return (
+      <div
+        key={appt.appointmentId || idx}
+        className={`appcell ${statusClass} ${extraClass}`}
+        style={{
+          width: `${width}px`,
+          minWidth: '50px',
+          boxSizing: 'border-box',
+        }}
+      >
+        <div className="ptflx">
+          <div className="ptnm">{appt.fullname}</div>
+          <div className={`aptst ${statusClass}`}>
+            <span></span>
+            {appt.status || 'Booked'}
+          </div>
+        </div>
+        <div className="apptype">
+          <strong>{appt.servicename}</strong>
+        </div>
+        <span
+          className="expopup"
+          onClick={() => {
+            setSelectedAppointment(appt);
+            setIsSidebarOpen(true);
+          }}
+        >
+          <img
+            src={`${import.meta.env.BASE_URL}images/expand.svg`}
+            alt="Expand"
+          />
+        </span>
+      </div>
+    );
+  });
+};
+
 
   return (
     <section className="calsection">

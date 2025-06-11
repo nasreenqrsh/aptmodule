@@ -15,16 +15,6 @@ const App = () => {
   const [showDetails, setShowDetails] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
 
-  const appointment = {
-    customerName: "Jane Doe",
-    customerPhone: "+966-123456789",
-    customerId: "ABC123",
-    status: "Booked",
-    dateTime: "29/05/2025, 10:00 AM - 10:30 AM",
-    services: "PRP, Laser, Hair Fall Consultation",
-    notes: "Lorem ipsum dolor sit amet.",
-    id:"app123"
-  };
 
   const toggleDetails = () => {
     setShowDetails(!showDetails);
@@ -54,7 +44,6 @@ const App = () => {
             customer={selectedCustomer}
           />
 
-          <button onClick={toggleDetails}>Show Appointment Details</button>
 
 
           {showAddCustomer && (

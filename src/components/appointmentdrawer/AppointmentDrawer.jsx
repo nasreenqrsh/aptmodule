@@ -1,10 +1,16 @@
-// AppointmentDrawer.jsx
 import React, { useEffect, useRef, useState } from "react";
 import ServiceBookingContainer from "./components/ServiceBookingContainer";
 
-const AppointmentDrawer = ({ isOpen, onClose, timeSlot, customer, doctor, editAppointment, onRefreshAppointments }) => {
+const AppointmentDrawer = ({
+  isOpen,
+  onClose,
+  timeSlot,
+  doctor,
+  editAppointment,
+  onRefreshAppointments,
+}) => {
   const drawerRef = useRef(null);
-  const [resetKey, setResetKey] = useState(0); // 👈 Used to trigger reset
+  const [resetKey, setResetKey] = useState(0);
 
   useEffect(() => {
     if (drawerRef.current) {
@@ -16,30 +22,31 @@ const AppointmentDrawer = ({ isOpen, onClose, timeSlot, customer, doctor, editAp
     }
   }, [isOpen]);
 
-  const resetAllForms = () => {
-    setResetKey(prev => prev + 1); // 👈 Trigger reset
-    onClose(); // 👈 Also close the drawer
+  const handleClose = () => {
+    setResetKey((prev) => prev + 1); // Trigger form reset
+    onClose(); // Close the drawer
   };
 
   return (
-    <>
-      <div ref={drawerRef} className="appointdrwr">
-        <div className="apptfrmflxwrp">
-          <span className="clpse" onClick={resetAllForms}>
-<img src={`${import.meta.env.BASE_URL}images/collpase.svg`} alt="Collapse" />
-          </span>
+    <div ref={drawerRef} className="appointdrwr">
+      <div className="apptfrmflxwrp">
+        <span className="clpse" onClick={handleClose}>
+          <img
+            src={`${import.meta.env.BASE_URL}images/closeicon.svg`}
+            alt="Close"
+          />
+        </span>
 
-          <ServiceBookingContainer key={resetKey}
-  doctor={doctor}
-  timeSlot={timeSlot}
-  prefillData={customer}
-  editAppointment={editAppointment}
-  onClose={resetAllForms}
-  onRefreshAppointments={onRefreshAppointments}/>
-        </div>
-
+        <ServiceBookingContainer
+          key={resetKey}
+          prefillData={editAppointment} // ✅ prefill when editing
+          doctor={doctor}
+          timeSlot={timeSlot}
+          onClose={handleClose}
+          onRefreshAppointments={onRefreshAppointments}
+        />
       </div>
-    </>
+    </div>
   );
 };
 
