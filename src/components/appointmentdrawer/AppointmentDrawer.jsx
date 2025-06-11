@@ -44,6 +44,7 @@ const AppointmentDrawer = ({
           timeSlot={timeSlot}
           onClose={handleClose}
           onRefreshAppointments={onRefreshAppointments}
+          editAppointment={editAppointment} // ✅ pass for internal prefill
         />
       </div>
     </div>

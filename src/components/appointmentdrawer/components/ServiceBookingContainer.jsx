@@ -28,7 +28,7 @@ const createDataHandler = async (payload) => {
   }
 };
 
-const ServiceBookingContainer = ({ prefillData, doctor, timeSlot, onClose, onRefreshAppointments, editAppointment }) => {
+const ServiceBookingContainer = ({ prefillData, doctor, timeSlot, onClose, onRefreshAppointments }) => {
   const [customerFormData, setCustomerFormData] = useState(null);
   const [serviceList, setServiceList] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -38,41 +38,30 @@ const ServiceBookingContainer = ({ prefillData, doctor, timeSlot, onClose, onRef
   const [lastEndTime, setLastEndTime] = useState("10:00 AM");
   const [toast, setToast] = useState(null);
 
-  const handleCancel = () => {
-    setServiceList([]);
-    setCustomerFormData(null);
-    setResetKey(Date.now());
-    setEditingIndex(null);
-    setEditingService(null);
-    setLastEndTime("10:00 AM");
-    onClose?.();
-  };
-useEffect(() => {
-  if (editAppointment) {
-    // prefill customer form
-    setCustomerFormData({
-      name: editAppointment.fullname,
-      number: editAppointment.number,
-      email: editAppointment.email,
-      gender: editAppointment.gender,
-      custid: editAppointment.custid,
-      // Add more fields as needed
-    });
+  useEffect(() => {
+    if (prefillData) {
+      setCustomerFormData({
+        name: prefillData.fullname,
+        number: prefillData.number,
+        email: prefillData.email,
+        gender: prefillData.gender,
+        custid: prefillData.custid,
+      });
 
-    // prefill service list
-    setServiceList([
-      {
-        servicename: editAppointment.servicecode,
-        practitioner: editAppointment.practitioner,
-        startTime: editAppointment.starttime,
-        endTime: editAppointment.endtime,
-        room: editAppointment.room,
-        note: editAppointment.notes,
-        duration: editAppointment.duration || "5",
-      }
-    ]);
-  }
-}, [editAppointment]);
+      setServiceList([
+        {
+          servicename: prefillData.servicecode,
+          practitioner: prefillData.doctorname,
+          startTime: prefillData.starttime,
+          endTime: prefillData.endtime,
+          room: prefillData.room,
+          note: prefillData.notes,
+          duration: prefillData.duration || "5",
+        },
+      ]);
+    }
+  }, [prefillData]);
+
   const handleAddService = (serviceData) => {
     if (!customerFormData) {
       setToast({ message: "Customer data is missing.", type: "error" });
@@ -114,7 +103,6 @@ useEffect(() => {
       setToast({ message: "Missing customer or service data.", type: "error" });
       return;
     }
-    
 
     const payload = serviceList.map((entry, index) => ({
       CustID: customerFormData.custid || " ",
@@ -128,7 +116,7 @@ useEffect(() => {
       Preference: entry.service.preference,
       Notes: entry.service.note,
       Amount: entry.service.amount,
-      Room: entry.service.room
+      Room: entry.service.room,
     }));
 
     const result = await createDataHandler(payload);
@@ -151,7 +139,7 @@ useEffect(() => {
 
   return (
     <>
-      <div className="service-booking apptfrmflx">
+      <div className="apptfrmflx">
         <CustomerForm
           prefillData={prefillData}
           setCustomerData={setCustomerFormData}
@@ -180,7 +168,7 @@ useEffect(() => {
         <button className="submitbtn editbtn" onClick={handleSubmitAll}>
           Save Appointment
         </button>
-        <button className="restbtn" onClick={handleCancel}>
+        <button className="restbtn" onClick={onClose}>
           Cancel
         </button>
       </div>

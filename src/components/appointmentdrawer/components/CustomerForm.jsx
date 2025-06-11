@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 const CreateDataHandler = async (query) => {
-  const res = await fetch(`https://mocki.io/v1/61470ee6-44fe-44a3-ac78-95d8009a8c07?firstname=${encodeURIComponent(query)}`); //https://mocki.io/v1/61470ee6-44fe-44a3-ac78-95d8009a8c07
+  const res = await fetch(`CustomerHandler.ashx?firstname=${encodeURIComponent(query)}`); //https://mocki.io/v1/61470ee6-44fe-44a3-ac78-95d8009a8c07
   if (!res.ok) throw new Error("Failed to fetch");
   return await res.json();
 };
@@ -32,6 +32,7 @@ const CustomerForm = ({ prefillData, setCustomerData, setLoading, customerFormDa
   const [isFetching, setIsFetching] = useState(false);
 
  useEffect(() => {
+  console.log("Prefill received", prefillData);
   if (
     prefillData &&
     typeof prefillData === "object" &&

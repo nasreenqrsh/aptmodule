@@ -10,7 +10,6 @@ const AppointmentDetails = ({ appointment, onClose, onEdit }) => {
 
   const createDataHandler = async (payload) => {
     try {
-      console.log("Sending payload:", payload);
       const response = await fetch("/AppointmentOperationHandler.ashx", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -63,14 +62,9 @@ const AppointmentDetails = ({ appointment, onClose, onEdit }) => {
     });
   };
 
-  // ✅ This will trigger the drawer with data
-  const handleEditAppointment = (appt) => {
-    console.log(appt)
-    if (typeof onEdit === "function") {
-      onEdit(appt);
-    }
-    if (typeof onClose === "function") {
-      onClose();
+  const handleEditClick = () => {
+    if (typeof onEdit === 'function') {
+      onEdit(appointment);
     }
   };
 
@@ -130,7 +124,7 @@ const AppointmentDetails = ({ appointment, onClose, onEdit }) => {
                 className="edit tooltip"
                 data-tooltip="Edit Appointment"
                 data-tooltip-pos="top"
-                onClick={() => handleEditAppointment(appointment)}
+                onClick={handleEditClick}
               >
                 <span className="stimg">
                   <img src={`${import.meta.env.BASE_URL}images/edtwht.svg`} alt="Edit" />

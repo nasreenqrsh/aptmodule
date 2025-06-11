@@ -1,12 +1,11 @@
 import React from "react";
 
-const ServiceList = ({ data=[], onDelete, onEdit }) => {
+const ServiceList = ({ data = [], onDelete, onEdit }) => {
   if (!data.length) return (
     <div className="service-list srvlist">
       <h4 className="frmlgnd">Booked Services</h4>
-
       <div className="noadded">No services added.</div>
-      </div>
+    </div>
   );
 
   return (
@@ -35,17 +34,15 @@ const ServiceList = ({ data=[], onDelete, onEdit }) => {
                 <td>{entry.service.end}</td>
                 <td>{entry.service.duration}</td>
                 <td>
-                 {/*  <button
-                    className="tblbtn edit"
-                    onClick={() => onEdit(index)}
-                  >
-                    Edit
-                  </button> */}
+                  {/* <button className="tblbtn edit" onClick={() => onEdit(index)}>Edit</button> */}
                   <button
                     className="tblbtn delete"
                     onClick={() => onDelete(index)}
                   >
-                    <img src={`${import.meta.env.BASE_URL}images/deletewt.svg`} alt="Add Service" />
+                    <img
+                      src={`${import.meta.env.BASE_URL}images/deletewt.svg`}
+                      alt="Delete"
+                    />
                   </button>
                 </td>
               </tr>
