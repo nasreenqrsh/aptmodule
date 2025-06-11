@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import CustomerForm from "./CustomerForm";
 import ServiceRequestForm from "./ServiceRequestForm";
 import ServiceList from "./ServiceList";
@@ -28,98 +28,162 @@ const createDataHandler = async (payload) => {
   }
 };
 
-const ServiceBookingContainer = ({
-  prefillData,
-  doctor,
-  timeSlot,
-  onClose,
-  onRefreshAppointments
-}) => {
-  const [customerData, setCustomerData] = useState({});
+const ServiceBookingContainer = ({ prefillData, doctor, timeSlot, onClose, onRefreshAppointments, editAppointment }) => {
+  const [customerFormData, setCustomerFormData] = useState(null);
   const [serviceList, setServiceList] = useState([]);
-  const [notes, setNotes] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [resetKey, setResetKey] = useState(Date.now());
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [editingService, setEditingService] = useState(null);
+  const [lastEndTime, setLastEndTime] = useState("10:00 AM");
   const [toast, setToast] = useState(null);
 
-  // ✅ Prefill logic - triggers only when drawer opens with edit data
-  useEffect(() => {
-    if (prefillData?.appointmentId) {
-      console.log("Applying prefill data", prefillData);
+  const handleCancel = () => {
+    setServiceList([]);
+    setCustomerFormData(null);
+    setResetKey(Date.now());
+    setEditingIndex(null);
+    setEditingService(null);
+    setLastEndTime("10:00 AM");
+    onClose?.();
+  };
+useEffect(() => {
+  if (editAppointment) {
+    // prefill customer form
+    setCustomerFormData({
+      name: editAppointment.fullname,
+      number: editAppointment.number,
+      email: editAppointment.email,
+      gender: editAppointment.gender,
+      custid: editAppointment.custid,
+      // Add more fields as needed
+    });
 
-      setCustomerData({
-        fullname: prefillData.fullname || "",
-        mobile: prefillData.number || "",
-        custid: prefillData.custid || "",
-        gender: prefillData.gender || "",
-        email: prefillData.email || "",
-        nationalityid: prefillData.nationalityid || "",
-        nationalitynumber: prefillData.nationalitynumber || "",
-      });
-
-      setServiceList([
-        {
-          servicename: prefillData.servicename || "",
-          servicecode: prefillData.servicecode || "",
-          duration: prefillData.duration || "5 mins",
-        },
-      ]);
-
-      setNotes(prefillData.notes || "");
-    } else {
-      // New appointment – reset form
-      setCustomerData({});
-      setServiceList([]);
-      setNotes("");
-    }
-  }, [prefillData]);
-
-  const handleSubmit = async () => {
-    if (!customerData || !customerData.custid || serviceList.length === 0) {
-      setToast({ message: "Please fill in all required fields", type: "error" });
+    // prefill service list
+    setServiceList([
+      {
+        servicename: editAppointment.servicecode,
+        practitioner: editAppointment.practitioner,
+        startTime: editAppointment.starttime,
+        endTime: editAppointment.endtime,
+        room: editAppointment.room,
+        note: editAppointment.notes,
+        duration: editAppointment.duration || "5",
+      }
+    ]);
+  }
+}, [editAppointment]);
+  const handleAddService = (serviceData) => {
+    if (!customerFormData) {
+      setToast({ message: "Customer data is missing.", type: "error" });
       return;
     }
 
-    const payload = {
-      appointmentid: prefillData?.appointmentId || undefined,
-      custid: customerData.custid,
-      fullname: customerData.fullname,
-      number: customerData.mobile,
-      email: customerData.email,
-      gender: customerData.gender,
-      nationalityid: customerData.nationalityid,
-      nationalitynumber: customerData.nationalitynumber,
-      doctorid: doctor?.id || "",
-      doctorname: doctor,
-      appointmentdate: new Date().toISOString().split("T")[0],
-      starttime: timeSlot,
-      endtime: "", // optional
-      duration: serviceList[0].duration,
-      servicecode: serviceList[0].servicecode,
-      servicename: serviceList[0].servicename,
-      notes: notes,
-      status: prefillData?.status || "Booked",
-      operation: prefillData ? "UPDATE" : "CREATE",
-    };
+    const combinedData = { customer: customerFormData, service: serviceData };
+
+    if (editingIndex !== null) {
+      const updatedList = [...serviceList];
+      updatedList[editingIndex] = combinedData;
+      setServiceList(updatedList);
+      setEditingIndex(null);
+      setEditingService(null);
+    } else {
+      setServiceList((prev) => [...prev, combinedData]);
+    }
+
+    setLastEndTime(serviceData.end);
+    setResetKey(Date.now());
+  };
+
+  const handleDelete = (index) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this service?");
+    if (!confirmDelete) return;
+    setServiceList((prev) => prev.filter((_, i) => i !== index));
+    setToast({ message: "Service removed.", type: "info" });
+  };
+
+  const handleEdit = (index) => {
+    const entry = serviceList[index];
+    setEditingService(entry.service);
+    setEditingIndex(index);
+    setResetKey(Date.now());
+  };
+
+  const handleSubmitAll = async () => {
+    if (!customerFormData || serviceList.length === 0) {
+      setToast({ message: "Missing customer or service data.", type: "error" });
+      return;
+    }
+    
+
+    const payload = serviceList.map((entry, index) => ({
+      CustID: customerFormData.custid || " ",
+      AppointmentDate: new Date().toISOString().split("T")[0],
+      StartTime: entry.service.start,
+      EndTime: entry.service.end,
+      Duration: entry.service.duration,
+      LineNo: index + 1,
+      ServiceCode: entry.service.servicename,
+      Practioner: entry.service.practitioner,
+      Preference: entry.service.preference,
+      Notes: entry.service.note,
+      Amount: entry.service.amount,
+      Room: entry.service.room
+    }));
 
     const result = await createDataHandler(payload);
-    setToast({ message: result.message, type: result.success ? "success" : "error" });
 
     if (result.success) {
-      setTimeout(() => {
-        onRefreshAppointments?.();
-        onClose?.();
-      }, 1500);
+      setToast({ message: result.message, type: "success" });
+      setServiceList([]);
+      setCustomerFormData(null);
+      setEditingIndex(null);
+      setEditingService(null);
+      setLastEndTime("10:00 AM");
+      setResetKey(Date.now());
+
+      if (onRefreshAppointments) onRefreshAppointments();
+      if (onClose) onClose();
+    } else {
+      setToast({ message: result.message, type: "error" });
     }
   };
 
   return (
-    <div className="service-booking-container">
-      <CustomerForm formData={customerData} setFormData={setCustomerData} />
-      <ServiceRequestForm serviceList={serviceList} setServiceList={setServiceList} />
-      <FormFooter notes={notes} setNotes={setNotes} />
-      <ServiceList services={serviceList} setServices={setServiceList} />
-      <button className="submitbtn" onClick={handleSubmit}>
-        {prefillData ? "Update Appointment" : "Save Appointment"}
-      </button>
+    <>
+      <div className="service-booking apptfrmflx">
+        <CustomerForm
+          prefillData={prefillData}
+          setCustomerData={setCustomerFormData}
+          setLoading={setLoading}
+          customerFormData={customerFormData}
+          setCustomerFormData={setCustomerFormData}
+        />
+
+        <ServiceRequestForm
+          onAddService={handleAddService}
+          resetKey={resetKey}
+          initialData={editingService}
+          lastEndTime={lastEndTime}
+          selectedDoctor={doctor}
+          selectedTime={timeSlot}
+        />
+
+        <ServiceList
+          data={serviceList}
+          onDelete={handleDelete}
+          onEdit={handleEdit}
+        />
+      </div>
+
+      <div style={{ marginTop: "1rem", display: "flex", gap: "15px", justifyContent: "center", borderTop: "1px solid #ccc", paddingTop: "20px" }}>
+        <button className="submitbtn editbtn" onClick={handleSubmitAll}>
+          Save Appointment
+        </button>
+        <button className="restbtn" onClick={handleCancel}>
+          Cancel
+        </button>
+      </div>
 
       {toast && (
         <Toast
@@ -128,7 +192,7 @@ const ServiceBookingContainer = ({
           onClose={() => setToast(null)}
         />
       )}
-    </div>
+    </>
   );
 };
 

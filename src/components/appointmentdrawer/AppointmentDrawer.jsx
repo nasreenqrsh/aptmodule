@@ -29,7 +29,7 @@ const AppointmentDrawer = ({
 
   return (
     <div ref={drawerRef} className="appointdrwr">
-      <div className="apptfrmflxwrp">
+      <div className="apptfrm flxwrp">
         <span className="clpse" onClick={handleClose}>
           <img
             src={`${import.meta.env.BASE_URL}images/closeicon.svg`}

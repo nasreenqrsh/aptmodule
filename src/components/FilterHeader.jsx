@@ -17,7 +17,8 @@ const FilterHeader = () => {
   const [counts, setCounts] = useState({});
 
   useEffect(() => {
-    createDataHandler("/AppointmentCountHandler.ashx")
+   // createDataHandler("/AppointmentCountHandler.ashx")
+   createDataHandler("https://mocki.io/v1/794ebde2-d262-4e15-8feb-e7b75862fbb8")
       .then((res) => {
         if (Array.isArray(res) && res.length > 0) {
           const raw = res[0];

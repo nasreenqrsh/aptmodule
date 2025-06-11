@@ -50,7 +50,8 @@ const AppointmentScheduler = () => {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const data = await fetchData('/LoadAllPractionerHandler.ashx');
+        //const data = await fetchData('/LoadAllPractionerHandler.ashx');
+        const data = await fetchData('https://mocki.io/v1/1cf6b4f2-e470-48e8-a013-3ffd7b3e6f6f');
         const doctorNames = data.map((doc) => doc.Name);
         setDoctors(doctorNames);
       } catch (error) {
@@ -70,7 +71,8 @@ const AppointmentScheduler = () => {
         searchtext: '',
         ...(cusID && { cusid: cusID }),
       };
-      const data = await fetchData('/AppointmentDetailsHandler.ashx', payload);
+     // const data = await fetchData('/AppointmentDetailsHandler.ashx', payload);
+     const data = await fetchData('https://mocki.io/v1/8778a051-7aeb-4e00-b98d-83e8930f3c9d')
       console.log('Appointments response:', data);
       setAppointments(data);
     } catch (error) {

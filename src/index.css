@@ -1862,10 +1862,12 @@ table {
 
                                 .appcell.active {
                                     border-left: 4px solid #394561;
+                                    border: 1px solid #394561;
                                 }
 
                                 .appcell.donest {
                                     border-left: 4px solid green;
+                                    border: 1px solid green;
                                 }
 
                                 .appcell.ppending {
@@ -1885,7 +1887,7 @@ table {
                                 }
 
                                 .appcell.cancelled{
-                                    border:2px solid red;
+                                    border-left:2px solid rgb(219, 60, 60);
                                 }
 
                                 .appcell.bked {
